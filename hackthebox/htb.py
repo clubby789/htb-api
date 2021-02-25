@@ -3,8 +3,8 @@ from typing import List, Callable
 import base64
 import json
 import time
-
 import requests
+import aiohttp
 
 from .constants import API_BASE, USER_AGENT
 from .errors import UnknownSolveException, AuthenticationException
@@ -23,19 +23,34 @@ class HTBClient:
     _access_token: str = None
     _refresh_token: str = None
 
-    # TODO: Handle token expiry
-    # Add a decorator to every API function to check?
+    def refresh_access_token(self):
+        headers = {"User-Agent": USER_AGENT}
+        r = requests.post(API_BASE + "login/refresh", json={
+                "refresh_token": self._refresh_token
+            }, headers=headers)
+        data = r.json()['message']
+        self._access_token = data['access_token']
+        self._refresh_token = data['refresh_token']
 
-    def do_request(self, endpoint, json_data=None, data=None, authorized=True) -> dict:
+    async def do_request(self, endpoint, json_data=None, data=None, authorized=True) -> dict:
         headers = {"User-Agent": USER_AGENT}
         if authorized:
             if check_expired_jwt(self._access_token):
-                r = requests.post(API_BASE + "login/refresh", json={
-                    "refresh_token": self._refresh_token
-                }, headers=headers)
-                data = r.json()['message']
-                self._access_token = data['access_token']
-                self._refresh_token = data['refresh_token']
+                self.refresh_access_token()
+            headers['Authorization'] = "Bearer " + self._access_token
+        async with aiohttp.ClientSession() as session:
+            if not json_data and not data:
+                async with session.get(API_BASE + endpoint, headers=headers) as r:
+                    return await r.json()
+            else:
+                async with session.post(API_BASE + endpoint, json=json_data, data=data) as r:
+                    return await r.json()
+
+    def do_synchronous_request(self, endpoint, json_data=None, data=None, authorized=True) -> dict:
+        headers = {"User-Agent": USER_AGENT}
+        if authorized:
+            if check_expired_jwt(self._access_token):
+                self.refresh_access_token()
             headers['Authorization'] = "Bearer " + self._access_token
         if not json_data and not data:
             r = requests.get(API_BASE + endpoint, headers=headers)
@@ -54,50 +69,66 @@ class HTBClient:
             print("Missing password")
             raise AuthenticationException
         else:
-            data = self.do_request("login", json_data={
+            data = self.do_synchronous_request("login", json_data={
                 "email": email, "password": password
             }, authorized=False)
             self._access_token = data['message']['access_token']
             self._refresh_token = data['message']['access_token']
 
-    def get_machine(self, machine_id: int) -> Machine:
-        data = self.do_request(f"machine/profile/{machine_id}")['info']
+    async def get_machine(self, machine_id: int) -> Machine:
+        data = (await self.do_request(f"machine/profile/{machine_id}"))['info']
         return Machine(data, self)
 
-    def get_machines(self, limit: int = None, retired: bool = False) -> List[Machine]:
+    async def get_synchronous_machine(self, machine_id: int) -> Machine:
+        data = self.do_synchronous_request(f"machine/profile/{machine_id}")['info']
+        return Machine(data, self)
+
+    async def get_machines(self, limit: int = None, retired: bool = False) -> List[Machine]:
         if not retired:
-            data = self.do_request("machine/list")['info'][:limit]
+            data = (await self.do_request("machine/list"))['info'][:limit]
         else:
-            data = self.do_request("machine/list/retired")['info'][:limit]
+            data = (await self.do_request("machine/list/retired"))['info'][:limit]
         return [Machine(m, self, summary=True) for m in data]
 
-    def get_challenge(self, challenge_id: int) -> Challenge:
-        data = self.do_request(f"challenge/info/{challenge_id}")['challenge']
+    async def get_challenge(self, challenge_id: int) -> Challenge:
+        data = (await self.do_request(f"challenge/info/{challenge_id}"))['challenge']
         return Challenge(data, self)
 
-    def get_challenges(self, limit=None, retired=False) -> List[Challenge]:
+    def get_synchronous_challenge(self, challenge_id: int) -> Challenge:
+        data = self.do_synchronous_request(f"challenge/info/{challenge_id}")['challenge']
+        return Challenge(data, self)
+
+    async def get_challenges(self, limit=None, retired=False) -> List[Challenge]:
         if retired:
-            data = self.do_request("challenge/list/retired")
+            data = await self.do_request("challenge/list/retired")
         else:
-            data = self.do_request("challenge/list")
+            data = await self.do_request("challenge/list")
         challenges = []
         for challenge in data['challenges'][:limit]:
             challenges.append(Challenge(challenge, self, summary=True))
         return challenges
 
-    def get_user(self, user_id: int) -> User:
-        data = self.do_request(f"user/profile/basic/{user_id}")['profile']
+    async def get_user(self, user_id: int) -> User:
+        data = (await self.do_request(f"user/profile/basic/{user_id}"))['profile']
         return User(data, self)
 
-    def get_team(self, team_id: int) -> Team:
-        data = self.do_request(f"team/info/{team_id}")
+    def get_synchronous_user(self, user_id: int) -> User:
+        data = self.do_synchronous_request(f"user/profile/basic/{user_id}")['profile']
+        return User(data, self)
+
+    async def get_team(self, team_id: int) -> Team:
+        data = await self.do_request(f"team/info/{team_id}")
+        return Team(data, self)
+
+    def get_synchronous_team(self, team_id: int) -> Team:
+        data = self.do_synchronous_request(f"team/info/{team_id}")
         return Team(data, self)
 
     @property
-    def user(self):
+    async def user(self):
         if not self._user:
-            uid = self.do_request("user/info")['info']['id']
-            self._user = self.get_user(uid)
+            uid = (await self.do_request("user/info"))['info']['id']
+            self._user = await self.get_user(uid)
         return self._user
 
 
@@ -154,7 +185,7 @@ class Challenge(HTBObject):
     def __init__(self, data: dict, client: HTBClient, summary: bool = False):
         """Initialise a `Challenge` using API data"""
         self._client = client
-        self._detailed_func = client.get_challenge
+        self._detailed_func = client.get_synchronous_challenge
         self.id = data['id']
         self.name = data['name']
         self.retired = bool(data['retired'])
@@ -202,6 +233,7 @@ class Team(HTBObject):
 
     def __init__(self, data: dict, client: HTBClient, summary: bool = False):
         self._client = client
+        self._detailed_func = client.get_synchronous_team
         self.id = data['id']
         self.name = data['name']
         if not summary:
@@ -221,16 +253,16 @@ class Team(HTBObject):
             self.join_request_sent = data['join_request_sent']
 
     @property
-    def ranking(self) -> int:
+    async def ranking(self) -> int:
         if not self._ranking:
-            data = self._client.do_request(f"team/stats/owns/{self.id}")
+            data = await self._client.do_request(f"team/stats/owns/{self.id}")
             self._ranking = data['rank']
         return self._ranking
 
     @property
-    def captain(self) -> User:
+    async def captain(self) -> User:
         if not self._captain:
-            self._captain = self._client.get_user(self._captain_id)
+            self._captain = await self._client.get_user(self._captain_id)
         return self._captain
 
 
@@ -275,10 +307,10 @@ class User(HTBObject):
     _activity: List[Solve] = None
 
     @property
-    def activity(self):
+    async def activity(self):
         if not self._activity:
             self._activity = []
-            solve_list = self._client.do_request(f"user/profile/activity/{self.id}")['profile']['activity']
+            solve_list = (await self._client.do_request(f"user/profile/activity/{self.id}"))['profile']['activity']
             for solve in solve_list:
                 solve_type = solve['object_type']
                 if solve_type == 'machine':
@@ -300,7 +332,7 @@ class User(HTBObject):
     def __init__(self, data: dict, client: HTBClient, summary: bool = False):
         """Initialise a `Challenge` using API data"""
         self._client = client
-        self._detailed_func = client.get_challenge
+        self._detailed_func = client.get_synchronous_user
         self.id = data['id']
         self.name = data['name']
         self.user_owns = data['user_owns']
@@ -370,15 +402,16 @@ class Machine(HTBObject):
     _author_ids: List[int] = None
 
     @property
-    def authors(self) -> List[User]:
+    async def authors(self) -> List[User]:
         if not self._authors:
             self._authors = []
             for uid in self._author_ids:
-                self._authors.append(self._client.get_user(uid))
+                self._authors.append(await self._client.get_user(uid))
         return self._authors
 
     def __init__(self, data: dict, client: HTBClient, summary: bool = False):
         self._client = client
+        self._detailed_func = client.get_synchronous_machine
         self.id = data['id']
         self.name = data['name']
         self.os = data['os']
@@ -447,10 +480,9 @@ class MachineSolve(Solve):
     type: str = None   # User/Root
 
     @property
-    def machine(self):
+    async def machine(self):
         if not self._item:
-            # TODO: Implement machines
-            self._item = self._client.get_machine(self.id)
+            self._item = await self._client.get_machine(self.id)
         return self._item
 
     def __init__(self, data: dict, client: HTBClient):
@@ -462,9 +494,9 @@ class ChallengeSolve(Solve):
     category: str = None
 
     @property
-    def challenge(self):
+    async def challenge(self):
         if not self._item:
-            self._item = self._client.get_challenge(self.id)
+            self._item = await self._client.get_challenge(self.id)
         return self._item
 
     def __init__(self, data: dict, client: HTBClient):
@@ -476,10 +508,10 @@ class EndgameSolve(Solve):
     flag_name: str = None
 
     @property
-    def endgame(self):
+    async def endgame(self):
         if not self._item:
             # TODO: Implement endgames
-            self._item = self._client.get_endgame(self.id)
+            self._item = await self._client.get_endgame(self.id)
         return self._item
 
     def __init__(self, data: dict, client: HTBClient):
@@ -491,10 +523,10 @@ class FortressSolve(Solve):
     flag_name: str = None
 
     @property
-    def endgame(self):
+    async def endgame(self):
         if not self._item:
             # TODO: Implement fortresses
-            self._item = self._client.get_fortress(self.id)
+            self._item = await self._client.get_fortress(self.id)
         return self._item
 
     def __init__(self, data: dict, client: HTBClient):

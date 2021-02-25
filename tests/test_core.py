@@ -1,5 +1,7 @@
+import pytest
 from pytest import raises
 from hackthebox.htb import HTBClient
+from hackthebox import errors
 
 
 def test_login(htb_client: HTBClient):
@@ -8,14 +10,14 @@ def test_login(htb_client: HTBClient):
 
 
 def test_incorrect_login():
-    # TODO: Add API-specific exceptions
-    with raises(Exception):
+    with raises(errors.AuthenticationException):
         HTBClient()
-    with raises(Exception):
+    with raises(errors.AuthenticationException):
         HTBClient(password="wrong")
-    with raises(Exception):
+    with raises(errors.AuthenticationException):
         HTBClient(email="wrong@wrong.com")
 
 
-def test_get_own_user(htb_client: HTBClient):
-    assert htb_client.user is not None
+@pytest.mark.asyncio
+async def test_get_own_user(htb_client: HTBClient):
+    assert (await htb_client.user) is not None
