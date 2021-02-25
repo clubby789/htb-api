@@ -9,6 +9,7 @@ import requests
 import aiohttp
 
 from .constants import API_BASE, USER_AGENT
+from .solve import Solve, MachineSolve, EndgameSolve, ChallengeSolve, FortressSolve
 from .errors import UnknownSolveException, AuthenticationException
 
 
@@ -331,18 +332,18 @@ class User(HTBObject):
         if not self._activity:
             self._activity = []
             solve_list = (await self._client.do_request(f"user/profile/activity/{self.id}"))['profile']['activity']
-            for solve in solve_list:
-                solve_type = solve['object_type']
+            for solve_item in solve_list:
+                solve_type = solve_item['object_type']
                 if solve_type == 'machine':
-                    self._activity.append(MachineSolve(solve, self._client))
+                    self._activity.append(MachineSolve(solve_item, self._client))
                 elif solve_type == 'challenge':
-                    self._activity.append(ChallengeSolve(solve, self._client))
+                    self._activity.append(ChallengeSolve(solve_item, self._client))
                 elif solve_type == 'endgame':
-                    self._activity.append(EndgameSolve(solve, self._client))
+                    self._activity.append(EndgameSolve(solve_item, self._client))
                 elif solve_type == 'fortress':
-                    self._activity.append(FortressSolve(solve, self._client))
+                    self._activity.append(FortressSolve(solve_item, self._client))
                 else:
-                    print(solve)
+                    print(solve_item)
                     raise UnknownSolveException
         return self._activity
 
@@ -474,81 +475,3 @@ class Machine(HTBObject):
                 }
                 self.root_blood = MachineSolve(user_blood_data, self._client)
                 self.root_blood_time = data['rootBlood']['blood_difference']
-
-
-class Solve:
-    _client: HTBClient = None
-    _item: HTBObject = None   # The solved item
-    id: int = None
-    name: str = None
-    date: str = None
-    blood: bool = None
-    points: int = None
-
-    def __repr__(self):
-        return f"<Solve '{self.name}'>"
-
-    def __init__(self, data: dict, client: HTBClient):
-        self._client = client
-        self.date = data['date']
-        self.blood = data['first_blood']
-        self.id = data['id']
-        self.name = data['name']
-
-
-class MachineSolve(Solve):
-    type: str = None   # User/Root
-
-    @property
-    async def machine(self):
-        if not self._item:
-            self._item = await self._client.get_machine(self.id)
-        return self._item
-
-    def __init__(self, data: dict, client: HTBClient):
-        super().__init__(data, client)
-        self.type = data['type']
-
-
-class ChallengeSolve(Solve):
-    category: str = None
-
-    @property
-    async def challenge(self):
-        if not self._item:
-            self._item = await self._client.get_challenge(self.id)
-        return self._item
-
-    def __init__(self, data: dict, client: HTBClient):
-        super().__init__(data, client)
-        self.category = data['challenge_category']
-
-
-class EndgameSolve(Solve):
-    flag_name: str = None
-
-    @property
-    async def endgame(self):
-        if not self._item:
-            # TODO: Implement endgames
-            self._item = await self._client.get_endgame(self.id)
-        return self._item
-
-    def __init__(self, data: dict, client: HTBClient):
-        super().__init__(data, client)
-        self.flag_name = data['flag_title']
-
-
-class FortressSolve(Solve):
-    flag_name: str = None
-
-    @property
-    async def endgame(self):
-        if not self._item:
-            # TODO: Implement fortresses
-            self._item = await self._client.get_fortress(self.id)
-        return self._item
-
-    def __init__(self, data: dict, client: HTBClient):
-        super().__init__(data, client)
-        self.flag_name = data['flag_title']
