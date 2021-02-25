@@ -20,6 +20,8 @@ def test_get_challenges(htb_client: HTBClient):
     """Tests that the challenges can be listed"""
     challenges = htb_client.get_challenges(limit=30)
     assert len(challenges) == 30
+    challenges = htb_client.get_challenges(limit=30, retired=True)
+    assert len(challenges) == 30
 
 
 def test_fill_in_summary(htb_client: HTBClient):
