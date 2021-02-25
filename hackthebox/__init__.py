@@ -1,1 +1,2 @@
-from .htb import HTBClient, Challenge
+from .htb import HTBClient
+from .challenge import Challenge
