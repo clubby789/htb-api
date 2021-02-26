@@ -1,4 +1,3 @@
-import pytest
 from pytest import raises
 from hackthebox import HTBClient
 

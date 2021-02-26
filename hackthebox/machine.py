@@ -5,6 +5,34 @@ from .solve import MachineSolve
 
 
 class Machine(htb.HTBObject):
+    """ The class representing Hack The Box machines
+
+    Attributes:
+        name: The Machine name
+        os: The name of the operating system
+        points: The points awarded for completion
+        release_date: The date the Machine was released
+        user_owns: The number of user owns the Machine has
+        root_owns: The number of root owns the Machine has
+        free: Whethere the Machine is available on free servers
+        user_owned: Whether the active User has owned the Machine's user account
+        root_owned: Whether the active User has owned the Machine's user account
+        reviewed: Whether the active User has reviewed the Machine
+        stars: The average star rating of the Machine
+        avatar: The relative URL of the Machine avatar
+        difficulty: The difficulty of the machine
+
+        active: Whether the Machine is active
+        retired: Whether the Machine is retired
+        difficulty_number: The numeric difficulty of the Machine
+        completed: Whether the active User has completed the Machine
+         :noindex: user_own_time: How long the active User took to own user
+         :noindex: root_own_time: How long the active User took to own root
+        user_blood: The Solve of the Machine's first user blood
+        root_blood: The Solve of the Machine's first root blood
+        user_own_time: How long the first User took to own user
+        root_own_time: How long the first User took to own root
+    """
     name: str = None
     os: str = None
     points: int = None
@@ -39,6 +67,11 @@ class Machine(htb.HTBObject):
     # noinspection PyUnresolvedReferences
     @property
     def authors(self) -> List["User"]:
+        """Fetch the author(s) of the Machine
+
+        Returns: List of User
+
+        """
         if not self._authors:
             self._authors = []
             for uid in self._author_ids:

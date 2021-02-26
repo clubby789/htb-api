@@ -19,12 +19,27 @@ def check_expired_jwt(token: str) -> bool:
 
 
 class HTBClient:
+    """The client via which API requests are made
+
+    Examples:
+        Connecting to the API::
+
+            from hackthebox import HTBClient
+            client = HTBClient(email="user@example.com", password="S3cr3tP455w0rd!")
+
+    """
     # noinspection PyUnresolvedReferences
     _user: "User" = None
     _access_token: str = None
     _refresh_token: str = None
 
-    def refresh_access_token(self):
+    def _refresh_access_token(self):
+        """
+
+        Use a saved refresh token to gain a new access token
+        when the current one expires
+
+        """
         headers = {"User-Agent": USER_AGENT}
         r = requests.post(API_BASE + "login/refresh", json={
                 "refresh_token": self._refresh_token
@@ -34,10 +49,21 @@ class HTBClient:
         self._refresh_token = data['refresh_token']
 
     def do_request(self, endpoint, json_data=None, data=None, authorized=True) -> dict:
+        """
+
+        Args:
+            endpoint: The API endpoint to request
+            json_data: Data to be sent in JSON format
+            data: Data to be sent in application/x-www-form-urlencoded format
+            authorized: If the request requires an Authorization header
+        Returns:
+            The JSON response from the API
+
+        """
         headers = {"User-Agent": USER_AGENT}
         if authorized:
             if check_expired_jwt(self._access_token):
-                self.refresh_access_token()
+                self._refresh_access_token()
             headers['Authorization'] = "Bearer " + self._access_token
         while True:
             if not json_data and not data:
@@ -70,12 +96,31 @@ class HTBClient:
 
     # noinspection PyUnresolvedReferences
     def get_machine(self, machine_id: int) -> "Machine":
+        """
+
+        Args:
+            machine_id: The platform ID of the `Machine` to fetch
+
+        Returns: The requested `Machine`
+
+        """
         from .machine import Machine
         data = self.do_request(f"machine/profile/{machine_id}")['info']
         return Machine(data, self)
 
     # noinspection PyUnresolvedReferences
     def get_machines(self, limit: int = None, retired: bool = False) -> List["Machine"]:
+        """
+
+        Retrieve a list of `Machine` from the API
+
+        Args:
+            limit: The maximum number to fetch
+            retired: Whether to fetch from the retired list instead of the active list
+
+        Returns: A list of `Machine`
+
+        """
         from .machine import Machine
         if not retired:
             data = self.do_request("machine/list")['info'][:limit]
@@ -85,12 +130,29 @@ class HTBClient:
 
     # noinspection PyUnresolvedReferences
     def get_challenge(self, challenge_id: int) -> "Challenge":
+        """
+
+        Args:
+            challenge_id: The platform ID of the `Challenge` to fetch
+
+        Returns: The requested `Challenge`
+
+        """
         from .challenge import Challenge
         data = self.do_request(f"challenge/info/{challenge_id}")['challenge']
         return Challenge(data, self)
 
     # noinspection PyUnresolvedReferences
     def get_challenges(self, limit=None, retired=False) -> List["Challenge"]:
+        """Requests a list of `Challenge` from the API
+
+        Args:
+            limit: The maximum number of `Challenge` to fetch
+            retired: Whether to fetch from the retired list instead of the active list
+
+        Returns: A list of `Challenge`
+
+        """
         from .challenge import Challenge
         if retired:
             data = self.do_request("challenge/list/retired")
@@ -103,18 +165,40 @@ class HTBClient:
 
     # noinspection PyUnresolvedReferences
     def get_user(self, user_id: int) -> "User":
+        """
+
+        Args:
+            user_id: The platform ID of the `User` to fetch
+
+        Returns: The requested `User`
+
+        """
         from .user import User
         data = self.do_request(f"user/profile/basic/{user_id}")['profile']
         return User(data, self)
 
     # noinspection PyUnresolvedReferences
     def get_team(self, team_id: int) -> "Team":
+        """
+
+        Args:
+            team_id: The platform ID of the `Team` to fetch
+
+        Returns: The requested `Team`
+
+        """
         from .team import Team
         data = self.do_request(f"team/info/{team_id}")
         return Team(data, self)
 
+    # noinspection PyUnresolvedReferences
     @property
-    def user(self):
+    def user(self) -> "User":
+        """
+
+        Returns: The `User` associated with the current `HTBClient`
+
+        """
         if not self._user:
             uid = self.do_request("user/info")['info']['id']
             self._user = self.get_user(uid)
@@ -122,7 +206,11 @@ class HTBClient:
 
 
 class HTBObject:
-    # Parent class of all other objects
+    """ Base class of all API objects
+
+    Attributes:
+        id: The ID of the associated object
+    """
     _client: HTBClient
     # Attributes not fetched by a summary
     _detailed_attributes: List[str]
@@ -130,7 +218,16 @@ class HTBObject:
     id: int
 
     def __getattr__(self, item):
-        # Missing items because of summary
+        """Retrieve attributes not given when initialised from a summary
+
+        Some endpoints only provide a subset of the attributes available for a given object.
+        If these extra attributes are requested, the object will request the full data from the
+        API and fill out the missing items.
+
+        Args:
+            item: The name of the property to retrieve
+
+        """
         if item in self._detailed_attributes:
             new_obj = self._detailed_func(self.id)
             for attr in self._detailed_attributes:

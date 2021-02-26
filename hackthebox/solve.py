@@ -2,6 +2,17 @@ from . import htb
 
 
 class Solve:
+    """Representation of completion of Hack The Box content
+
+    Attributes:
+        id: The ID of the solved item
+        name: The name of the solved item
+        date: The date of the solve
+        blood: Whether the solve was a first blood
+        points: The points awarded from the solve
+        item (HTBObject): The solved item
+
+    """
     _client: "htb.HTBClient" = None
     _item: "htb.HTBObject" = None   # The solved item
     id: int = None
@@ -22,6 +33,7 @@ class Solve:
 
 
 class MachineSolve(Solve):
+    """Representation of solving a Machine"""
     type: str = None   # User/Root
 
     def __repr__(self):
@@ -31,8 +43,10 @@ class MachineSolve(Solve):
     def item(self):
         return self.machine
 
+    # noinspection PyUnresolvedReferences
     @property
-    def machine(self):
+    def machine(self) -> "Machine":
+        """The solved Machine"""
         if not self._item:
             self._item = self._client.get_machine(self.id)
         return self._item
@@ -43,6 +57,7 @@ class MachineSolve(Solve):
 
 
 class ChallengeSolve(Solve):
+    """Representation of solving a Challenge"""
     category: str = None
 
     def __repr__(self):
@@ -54,6 +69,7 @@ class ChallengeSolve(Solve):
 
     @property
     def challenge(self):
+        """The solved Challenge"""
         if not self._item:
             self._item = self._client.get_challenge(self.id)
         return self._item
@@ -64,6 +80,7 @@ class ChallengeSolve(Solve):
 
 
 class EndgameSolve(Solve):
+    """Representation of solving a Endgame"""
     flag_name: str = None
 
     def __repr__(self):
@@ -75,6 +92,7 @@ class EndgameSolve(Solve):
 
     @property
     def endgame(self):
+        """The solved Endgame"""
         if not self._item:
             # TODO: Implement endgames
             self._item = self._client.get_endgame(self.id)
@@ -86,6 +104,7 @@ class EndgameSolve(Solve):
 
 
 class FortressSolve(Solve):
+    """Representation of solving a Fortress"""
     flag_name: str = None
 
     def __repr__(self):
@@ -97,6 +116,7 @@ class FortressSolve(Solve):
 
     @property
     def fortress(self):
+        """The solved Fortress"""
         if not self._item:
             # TODO: Implement fortresses
             self._item = self._client.get_fortress(self.id)

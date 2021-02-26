@@ -2,6 +2,24 @@ from . import htb
 
 
 class Team(htb.HTBObject):
+    """ The class representing Hack The Box teams
+
+    Attributes:
+        name: The name of the Team
+        points: The Team's total points
+        motto: The Team motto
+        description: The Team description
+        country_name: The name of the country the Team is based in
+        avatar_url: The relative URL of the Tean's avatar
+        twitter: The Team's Twitter account
+        facebook: The Team's Facebook account
+        discord: The Team's Discord
+        public: Whether the Team is publicly visible
+        can_delete_avatar: Whether the active User can delete the avatar
+        is_respected: Whether the active User has respected the Team
+        join_request_sent: Whether the active User has sent a request to join the Team
+
+    """
     name: str = None
 
     _detailed_attributes = ('points', 'motto', 'description', 'country_name', 'avatar_url', 'cover_image_url',
@@ -51,6 +69,11 @@ class Team(htb.HTBObject):
 
     @property
     def ranking(self) -> int:
+        """Retrieve the global ranking of the team
+
+        Returns:
+
+        """
         if not self._ranking:
             data = self._client.do_request(f"team/stats/owns/{self.id}")
             self._ranking = data['rank']

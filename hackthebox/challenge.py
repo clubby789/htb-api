@@ -2,6 +2,32 @@ from . import htb
 
 
 class Challenge(htb.HTBObject):
+    """ The class representing Hack The Box challenges
+
+    Attributes:
+        name (str): The name of the challenge
+        retired: Whether the challenge is retired
+        difficulty: The official difficulty of the challenge
+        avg_difficulty: The average user-given difficulty
+        points: The points awarded on completion
+        difficulty_ratings: A list of difficulty ratings given
+        solves: The number of solves a challenge has
+        likes: The number of likes a challenge has
+        dislikes: The number of dislikes a challenge has
+        release_date: The date the challenge was released
+        solved: Whether the active user has completed the challenge
+        is_liked: Whether the active user has liked the challenge
+        is_disliked: Whether the active user has disliked the challenge
+
+        description: The challenge description
+        category_id: The ID of the challenge category
+        category: The name of the category
+        author_id: The ID of the author
+        author_name: The name of the author
+        has_download: Whether the challenge has a download available
+        has_docker: Whether the challenge has a remote instance available
+
+    """
     name: str = None
     retired: bool = None
     difficulty: str = None
@@ -11,13 +37,10 @@ class Challenge(htb.HTBObject):
     solves: int = None
     likes: int = None
     dislikes: int = None
-    release_data: str = None
-    isCompleted: bool = None
+    release_date: str = None
     solved: bool = None
     is_liked: bool = None
     is_disliked: bool = None
-    has_download: bool = None
-    has_docker: bool = None
     recommended: bool = None
 
     _detailed_attributes = ('description', 'category', 'author_id', 'author_name', 'has_download', 'has_docker')

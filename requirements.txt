@@ -3,3 +3,5 @@ pytest==6.2.2
 python-dotenv==0.15.0
 pytest-cov==2.11.1
 pytest-xdist==2.2.1
+Sphinx==3.5.1
+sphinx-rtd-theme==0.5.1

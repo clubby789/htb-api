@@ -6,6 +6,42 @@ from .errors import UnknownSolveException
 
 
 class User(htb.HTBObject):
+    """ The class representing Hack The Box Users
+
+    Attributes:
+        name: The username of the User
+        avatar: The relative URL of the User's avatar
+        ranking: The User's position on the Hall of Fame
+        points: The User's current total points
+        user_owns: The User's total Machine user owns
+        root_owns: The User's total Machine root owns
+        user_bloods: The User's total Machine user bloods
+        root_bloods: The User's total Machine root bloods
+        rank_name: The name of the User's current rank
+        country_name: The name of the User's country
+        team: The User's Team
+        public: Whether the User's profile is publicly visible
+
+        timezone: The User's timezone
+        vip: Whether the User is VIP
+        vip_plus: Whether the user is VIP+
+        respects: The number of respects the User has
+        university: The User's University
+        university_name: The User's university's name
+        description: The User's description
+        github: The User's Github profile
+        linkedin: The User's LinkedIn profile
+        twitter: The User's Twitter account
+        website: The User's website
+        respected: Whether the active User respects the User
+        followed: Whether the active User follows the User
+        rank_id: The ID of the User's rank
+        rank_progress: The User's progress to the next rank
+        next_rank: The next rank the User will reach
+        next_rank_points: The points required to reach the next rank
+        rank_requirement: The ownership required for the current Rank
+
+    """
     name: str = None
     avatar: str = None
     ranking: int = None
