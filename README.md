@@ -1,6 +1,9 @@
 # HackTheBoxPy
+[![Run Tests](https://github.com/clubby789/htb-api/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/clubby789/htb-api/actions/workflows/tests.yml)
+[![codecov](https://codecov.io/gh/clubby789/htb-api/branch/master/graph/badge.svg?token=NPoxQPqdyN)](https://codecov.io/gh/clubby789/htb-api)
 
 HackTheBoxPy is an unofficial Python library to interact with the Hack The Box API.
+
 
 ## Install
 `python setup.py install`
