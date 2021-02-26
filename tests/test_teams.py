@@ -22,3 +22,9 @@ async def test_get_non_existent_team(htb_client: HTBClient):
 async def test_get_ranking(htb_client: HTBClient):
     team = await htb_client.get_team(2710)
     assert (await team.ranking) is not None
+
+
+@pytest.mark.asyncio
+async def test_get_captain(htb_client: HTBClient):
+    admins = await htb_client.get_team(21)
+    assert (await admins.captain).name == "ch4p"

@@ -1,5 +1,6 @@
 from . import htb
 
+
 class Challenge(htb.HTBObject):
     name: str = None
     retired: bool = None
