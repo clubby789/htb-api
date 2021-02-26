@@ -1,5 +1,6 @@
 from pytest import raises
 from hackthebox import HTBClient, HTBObject
+from hackthebox.solve import *
 
 
 def test_get_user(htb_client: HTBClient):
@@ -30,4 +31,15 @@ def test_get_activity(htb_client: HTBClient):
     """Tests retrieving a user's activity"""
     activity = htb_client.user.activity
     assert activity is not None
+    print(repr(activity[0]))
+
+
+def test_get_activity_items(htb_client: HTBClient):
+    """Tests retrieving associated items from activity"""
+    activity = htb_client.user.activity
     assert isinstance(activity[0].item, HTBObject)
+    for solve_type in MachineSolve, ChallengeSolve:
+        # TODO: Test Endgame and Fortress solves, when those are implemented
+        solve_of_type = next(filter(lambda x: isinstance(x, solve_type), activity))
+        assert solve_of_type.item is not None
+

@@ -21,9 +21,6 @@ class Solve:
     blood: bool = None
     points: int = None
 
-    def __repr__(self):
-        return f"<Solve '{self.name}'>"
-
     def __init__(self, data: dict, client: "htb.HTBClient"):
         self._client = client
         self.date = data['date']

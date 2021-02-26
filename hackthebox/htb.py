@@ -10,7 +10,16 @@ from .constants import API_BASE, USER_AGENT
 from .errors import AuthenticationException
 
 
-def check_expired_jwt(token: str) -> bool:
+def jwt_expired(token: str) -> bool:
+    """ Checks if a JWT token is expired
+
+    Args:
+        token: A JWT string - 3 Base64 sequences joined with .
+
+    Returns:
+        If the token is expired
+
+    """
     payload = base64.b64decode(token.split('.')[1]).decode()
     if time.time() > json.loads(payload)['exp']:
         return True
@@ -40,6 +49,7 @@ class HTBClient:
         when the current one expires
 
         """
+        # TODO: Find a way to test this
         headers = {"User-Agent": USER_AGENT}
         r = requests.post(API_BASE + "login/refresh", json={
                 "refresh_token": self._refresh_token
@@ -62,7 +72,7 @@ class HTBClient:
         """
         headers = {"User-Agent": USER_AGENT}
         if authorized:
-            if check_expired_jwt(self._access_token):
+            if jwt_expired(self._access_token):
                 self._refresh_access_token()
             headers['Authorization'] = "Bearer " + self._access_token
         while True:
