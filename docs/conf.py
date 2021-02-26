@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'HackTheBoxPy'
+project = 'PyHackTheBox'
 copyright = '2021, clubby789'
 author = 'clubby789'
 

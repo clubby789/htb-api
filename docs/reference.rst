@@ -1,4 +1,4 @@
-HackTheBoxPy
+PyHackTheBox
 ==================
 
 Challenge

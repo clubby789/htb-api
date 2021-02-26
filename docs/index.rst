@@ -1,4 +1,4 @@
-Welcome to HackTheBoxPy's documentation!
+Welcome to PyHackTheBox's documentation!
 ========================================
 
 .. toctree::
