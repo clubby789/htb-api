@@ -9,6 +9,7 @@ async def test_get_machine(htb_client: HTBClient):
     machine = await htb_client.get_machine(1)
     assert machine.id == 1
     assert machine.name == "Lame"
+    print(machine)
 
 
 @pytest.mark.asyncio

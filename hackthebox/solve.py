@@ -24,6 +24,13 @@ class Solve:
 class MachineSolve(Solve):
     type: str = None   # User/Root
 
+    def __repr__(self):
+        return f"<Solve {self.type}@{self.name}>"
+
+    @property
+    async def item(self):
+        return self.machine
+
     @property
     async def machine(self):
         if not self._item:
@@ -38,6 +45,13 @@ class MachineSolve(Solve):
 class ChallengeSolve(Solve):
     category: str = None
 
+    def __repr__(self):
+        return f"<Solve {self.name}@{self.category}>"
+
+    @property
+    async def item(self):
+        return self.challenge
+
     @property
     async def challenge(self):
         if not self._item:
@@ -51,6 +65,13 @@ class ChallengeSolve(Solve):
 
 class EndgameSolve(Solve):
     flag_name: str = None
+
+    def __repr__(self):
+        return f"<Solve {self.flag_name}@{self.name}>"
+
+    @property
+    async def item(self):
+        return self.endgame
 
     @property
     async def endgame(self):
@@ -67,8 +88,15 @@ class EndgameSolve(Solve):
 class FortressSolve(Solve):
     flag_name: str = None
 
+    def __repr__(self):
+        return f"<Solve {self.flag_name}@{self.name}>"
+
     @property
-    async def endgame(self):
+    async def item(self):
+        return self.fortress
+
+    @property
+    async def fortress(self):
         if not self._item:
             # TODO: Implement fortresses
             self._item = await self._client.get_fortress(self.id)

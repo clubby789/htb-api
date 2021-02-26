@@ -32,6 +32,7 @@ class Challenge(htb.HTBObject):
     def __repr__(self):
         return f"<Challenge '{self.name}'>"
 
+    # noinspection PyUnresolvedReferences
     def __init__(self, data: dict, client: "HTBClient", summary: bool = False):
         """Initialise a `Challenge` using API data"""
         self._client = client

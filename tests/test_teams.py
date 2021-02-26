@@ -9,6 +9,7 @@ async def test_get_team(htb_client: HTBClient):
     team = await htb_client.get_team(2710)
     assert team.id == 2710
     assert team.name == "TheWINRaRs"
+    print(team)
 
 
 @pytest.mark.asyncio

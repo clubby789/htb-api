@@ -16,6 +16,7 @@ class User(htb.HTBObject):
     user_bloods: int = None
     rank_name: str = None
     country_name: str = None
+    # noinspection PyUnresolvedReferences
     team: "Team" = None
     public: bool = None
 
@@ -68,6 +69,7 @@ class User(htb.HTBObject):
     def __repr__(self):
         return f"<User '{self.name}'>"
 
+    # noinspection PyUnresolvedReferences
     def __init__(self, data: dict, client: "HTBClient", summary: bool = False):
         """Initialise a `Challenge` using API data"""
         self._client = client

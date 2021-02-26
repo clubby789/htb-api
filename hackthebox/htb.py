@@ -38,6 +38,7 @@ def check_expired_jwt(token: str) -> bool:
 
 
 class HTBClient:
+    # noinspection PyUnresolvedReferences
     _user: "User" = None
     _access_token: str = None
     _refresh_token: str = None
@@ -94,16 +95,19 @@ class HTBClient:
             self._access_token = data['message']['access_token']
             self._refresh_token = data['message']['access_token']
 
+    # noinspection PyUnresolvedReferences
     async def get_machine(self, machine_id: int) -> "Machine":
         from .machine import Machine
         data = (await self.do_request(f"machine/profile/{machine_id}"))['info']
         return Machine(data, self)
 
+    # noinspection PyUnresolvedReferences
     async def get_synchronous_machine(self, machine_id: int) -> "Machine":
         from .machine import Machine
         data = self.do_synchronous_request(f"machine/profile/{machine_id}")['info']
         return Machine(data, self)
 
+    # noinspection PyUnresolvedReferences
     async def get_machines(self, limit: int = None, retired: bool = False) -> List["Machine"]:
         from .machine import Machine
         if not retired:
@@ -112,16 +116,19 @@ class HTBClient:
             data = (await self.do_request("machine/list/retired"))['info'][:limit]
         return [Machine(m, self, summary=True) for m in data]
 
+    # noinspection PyUnresolvedReferences
     async def get_challenge(self, challenge_id: int) -> "Challenge":
         from .challenge import Challenge
         data = (await self.do_request(f"challenge/info/{challenge_id}"))['challenge']
         return Challenge(data, self)
 
+    # noinspection PyUnresolvedReferences
     def get_synchronous_challenge(self, challenge_id: int) -> "Challenge":
         from .challenge import Challenge
         data = self.do_synchronous_request(f"challenge/info/{challenge_id}")['challenge']
         return Challenge(data, self)
 
+    # noinspection PyUnresolvedReferences
     async def get_challenges(self, limit=None, retired=False) -> List["Challenge"]:
         from .challenge import Challenge
         if retired:
@@ -133,21 +140,25 @@ class HTBClient:
             challenges.append(Challenge(challenge, self, summary=True))
         return challenges
 
+    # noinspection PyUnresolvedReferences
     async def get_user(self, user_id: int) -> "User":
         from .user import User
         data = (await self.do_request(f"user/profile/basic/{user_id}"))['profile']
         return User(data, self)
 
+    # noinspection PyUnresolvedReferences
     def get_synchronous_user(self, user_id: int) -> "User":
         from .user import User
         data = self.do_synchronous_request(f"user/profile/basic/{user_id}")['profile']
         return User(data, self)
 
+    # noinspection PyUnresolvedReferences
     async def get_team(self, team_id: int) -> "Team":
         from .team import Team
         data = await self.do_request(f"team/info/{team_id}")
         return Team(data, self)
 
+    # noinspection PyUnresolvedReferences
     def get_synchronous_team(self, team_id: int) -> "Team":
         from .team import Team
         data = self.do_synchronous_request(f"team/info/{team_id}")

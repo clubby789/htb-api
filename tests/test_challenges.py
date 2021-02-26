@@ -10,6 +10,7 @@ async def test_get_challenge(htb_client: HTBClient):
     assert challenge.id == 69
     assert challenge.name == "TheFutureBender"
     assert challenge.retired
+    print(challenge)
 
 
 @pytest.mark.asyncio

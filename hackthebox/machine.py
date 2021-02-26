@@ -32,9 +32,11 @@ class Machine(htb.HTBObject):
     user_blood_time: str = None
     root_blood_time: str = None
 
+    # noinspection PyUnresolvedReferences
     _authors: List["User"] = None
     _author_ids: List[int] = None
 
+    # noinspection PyUnresolvedReferences
     @property
     async def authors(self) -> List["User"]:
         if not self._authors:
@@ -42,6 +44,9 @@ class Machine(htb.HTBObject):
             for uid in self._author_ids:
                 self._authors.append(await self._client.get_user(uid))
         return self._authors
+
+    def __repr__(self):
+        return f"<Machine '{self.name}'>"
 
     def __init__(self, data: dict, client: htb.HTBClient, summary: bool = False):
         self._client = client

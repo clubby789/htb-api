@@ -18,6 +18,7 @@ class Team(htb.HTBObject):
     discord: str
     public: bool
     can_delete_avatar: bool
+    # noinspection PyUnresolvedReferences
     _captain: "User" = None
     is_respected: bool
     join_request_sent: bool
@@ -55,6 +56,7 @@ class Team(htb.HTBObject):
             self._ranking = data['rank']
         return self._ranking
 
+    # noinspection PyUnresolvedReferences
     @property
     async def captain(self) -> "User":
         if not self._captain:

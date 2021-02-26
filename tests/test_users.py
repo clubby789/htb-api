@@ -1,6 +1,6 @@
 import pytest
 from pytest import raises
-from hackthebox import HTBClient
+from hackthebox import HTBClient, HTBObject
 
 
 @pytest.mark.asyncio
@@ -9,6 +9,7 @@ async def test_get_user(htb_client: HTBClient):
     user = await htb_client.get_user(83743)
     assert user.id == 83743
     assert user.name == "clubby789"
+    print(user)
 
 
 @pytest.mark.asyncio
@@ -32,4 +33,6 @@ async def test_get_user_team(htb_client: HTBClient):
 @pytest.mark.asyncio
 async def test_get_activity(htb_client: HTBClient):
     """Tests retrieving a user's activity"""
-    assert (await (await htb_client.user).activity) is not None
+    activity = await (await htb_client.user).activity
+    assert activity is not None
+    assert isinstance(await (await (activity[0]).item), HTBObject)
