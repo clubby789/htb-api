@@ -38,11 +38,11 @@ class Machine(htb.HTBObject):
 
     # noinspection PyUnresolvedReferences
     @property
-    async def authors(self) -> List["User"]:
+    def authors(self) -> List["User"]:
         if not self._authors:
             self._authors = []
             for uid in self._author_ids:
-                self._authors.append(await self._client.get_user(uid))
+                self._authors.append(self._client.get_user(uid))
         return self._authors
 
     def __repr__(self):
@@ -50,7 +50,7 @@ class Machine(htb.HTBObject):
 
     def __init__(self, data: dict, client: htb.HTBClient, summary: bool = False):
         self._client = client
-        self._detailed_func = client.get_synchronous_machine
+        self._detailed_func = client.get_machine
         self.id = data['id']
         self.name = data['name']
         self.os = data['os']

@@ -36,7 +36,7 @@ class Challenge(htb.HTBObject):
     def __init__(self, data: dict, client: "HTBClient", summary: bool = False):
         """Initialise a `Challenge` using API data"""
         self._client = client
-        self._detailed_func = client.get_synchronous_challenge
+        self._detailed_func = client.get_challenge
         self.id = data['id']
         self.name = data['name']
         self.retired = bool(data['retired'])

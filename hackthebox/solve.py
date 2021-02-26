@@ -28,13 +28,13 @@ class MachineSolve(Solve):
         return f"<Solve {self.type}@{self.name}>"
 
     @property
-    async def item(self):
+    def item(self):
         return self.machine
 
     @property
-    async def machine(self):
+    def machine(self):
         if not self._item:
-            self._item = await self._client.get_machine(self.id)
+            self._item = self._client.get_machine(self.id)
         return self._item
 
     def __init__(self, data: dict, client: "htb.HTBClient"):
@@ -49,13 +49,13 @@ class ChallengeSolve(Solve):
         return f"<Solve {self.name}@{self.category}>"
 
     @property
-    async def item(self):
+    def item(self):
         return self.challenge
 
     @property
-    async def challenge(self):
+    def challenge(self):
         if not self._item:
-            self._item = await self._client.get_challenge(self.id)
+            self._item = self._client.get_challenge(self.id)
         return self._item
 
     def __init__(self, data: dict, client: "htb.HTBClient"):
@@ -70,14 +70,14 @@ class EndgameSolve(Solve):
         return f"<Solve {self.flag_name}@{self.name}>"
 
     @property
-    async def item(self):
+    def item(self):
         return self.endgame
 
     @property
-    async def endgame(self):
+    def endgame(self):
         if not self._item:
             # TODO: Implement endgames
-            self._item = await self._client.get_endgame(self.id)
+            self._item = self._client.get_endgame(self.id)
         return self._item
 
     def __init__(self, data: dict, client: "htb.HTBClient"):
@@ -92,14 +92,14 @@ class FortressSolve(Solve):
         return f"<Solve {self.flag_name}@{self.name}>"
 
     @property
-    async def item(self):
+    def item(self):
         return self.fortress
 
     @property
-    async def fortress(self):
+    def fortress(self):
         if not self._item:
             # TODO: Implement fortresses
-            self._item = await self._client.get_fortress(self.id)
+            self._item = self._client.get_fortress(self.id)
         return self._item
 
     def __init__(self, data: dict, client: "htb.HTBClient"):

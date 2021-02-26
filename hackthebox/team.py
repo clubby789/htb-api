@@ -30,7 +30,7 @@ class Team(htb.HTBObject):
 
     def __init__(self, data: dict, client: htb.HTBClient, summary: bool = False):
         self._client = client
-        self._detailed_func = client.get_synchronous_team
+        self._detailed_func = client.get_team
         self.id = data['id']
         self.name = data['name']
         if not summary:
@@ -50,15 +50,15 @@ class Team(htb.HTBObject):
             self.join_request_sent = data['join_request_sent']
 
     @property
-    async def ranking(self) -> int:
+    def ranking(self) -> int:
         if not self._ranking:
-            data = await self._client.do_request(f"team/stats/owns/{self.id}")
+            data = self._client.do_request(f"team/stats/owns/{self.id}")
             self._ranking = data['rank']
         return self._ranking
 
     # noinspection PyUnresolvedReferences
     @property
-    async def captain(self) -> "User":
+    def captain(self) -> "User":
         if not self._captain:
-            self._captain = await self._client.get_user(self._captain_id)
+            self._captain = self._client.get_user(self._captain_id)
         return self._captain

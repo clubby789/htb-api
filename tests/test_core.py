@@ -20,4 +20,4 @@ def test_incorrect_login():
 
 @pytest.mark.asyncio
 async def test_get_own_user(htb_client: HTBClient):
-    assert (await htb_client.user) is not None
+    assert htb_client.user is not None

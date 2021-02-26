@@ -47,10 +47,10 @@ class User(htb.HTBObject):
     _activity: List[Solve] = None
 
     @property
-    async def activity(self):
+    def activity(self):
         if not self._activity:
             self._activity = []
-            solve_list = (await self._client.do_request(f"user/profile/activity/{self.id}"))['profile']['activity']
+            solve_list = (self._client.do_request(f"user/profile/activity/{self.id}"))['profile']['activity']
             for solve_item in solve_list:
                 solve_type = solve_item['object_type']
                 if solve_type == 'machine':
@@ -73,7 +73,7 @@ class User(htb.HTBObject):
     def __init__(self, data: dict, client: "HTBClient", summary: bool = False):
         """Initialise a `Challenge` using API data"""
         self._client = client
-        self._detailed_func = client.get_synchronous_user
+        self._detailed_func = client.get_user
         self.id = data['id']
         self.name = data['name']
         self.user_owns = data['user_owns']

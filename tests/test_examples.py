@@ -11,6 +11,5 @@ def example_fns():
 
 
 @pytest.mark.parametrize("example_fn", example_fns())
-@pytest.mark.asyncio
-async def test_example(htb_client, example_fn):
-    await example_fn.main(htb_client)
+def test_example(htb_client, example_fn):
+    example_fn.main(htb_client)
