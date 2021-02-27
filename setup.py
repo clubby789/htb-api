@@ -13,6 +13,10 @@ setuptools.setup(
     author_email="clubby789@gmail.com",
     description="A wrapper for the Hack The Box API.",
     long_description=long_description,
+    url="https://github.com/clubby789/htb-api",
+    project_urls={
+        "Documentation": "https://pyhackthebox.readthedocs.io/en/latest/"
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",
