@@ -10,6 +10,6 @@ load_dotenv()
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 
-@fixture
+@fixture(scope="session")
 def htb_client() -> HTBClient:
     return HTBClient(email=getenv("HTB_EMAIL"), password=getenv("HTB_PASSWORD"))
