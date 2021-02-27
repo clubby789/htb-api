@@ -217,7 +217,6 @@ class HTBClient:
     # noinspection PyUnresolvedReferences
     def get_hof_countries(self) -> "Leaderboard":
         from .leaderboard import Leaderboard, Country
-        from .user import User
         """
         Returns: A Leaderboard of Countries
         """
@@ -226,10 +225,25 @@ class HTBClient:
 
     # noinspection PyUnresolvedReferences
     def get_hof_teams(self) -> "Leaderboard":
+        """
+
+        Returns: A Leaderboard of Teams
+
+        """
         from .leaderboard import Leaderboard
         from .team import Team
         data = self.do_request("rankings/teams")['data']
         return Leaderboard(data, self, Team)
+
+    # noinspection PyUnresolvedReferences
+    def get_hof_universities(self) -> "Leaderboard":
+        """
+        Returns: A Leaderboard of Universities
+
+        """
+        from .leaderboard import Leaderboard, University
+        data = self.do_request("rankings/universities")['data']
+        return Leaderboard(data, self, University)
 
     # noinspection PyUnresolvedReferences
     @property

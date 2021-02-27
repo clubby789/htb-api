@@ -43,6 +43,8 @@ class Leaderboard(htb.HTBObject):
             self._items = [Team(team, client, summary=True) for team in data]
         elif leaderboard_type == Country:
             self._items = [Country(country) for country in data]
+        elif leaderboard_type == University:
+            self._items = [University(university) for university in data]
 
 
 class Country(htb.HTBObject):
@@ -55,6 +57,7 @@ class Country(htb.HTBObject):
         points: The Country's total points
         user_owns: The Country's total user owns
         root_owns: The Country's total root owns
+        challenge_owns: The Country's total challenge owns
         user_bloods: The Country's total user bloods
         root_bloods: The Country's total root bloods
         fortress: The Country's total Fortress flags
@@ -73,6 +76,7 @@ class Country(htb.HTBObject):
     points: int
     user_owns: int
     root_owns: int
+    challenge_owns: int
     user_bloods: int
     root_bloods: int
     fortress: int
@@ -86,6 +90,53 @@ class Country(htb.HTBObject):
         self.points = data['points']
         self.user_owns = data['user_owns']
         self.root_owns = data['root_owns']
+        self.challenge_owns = data['challenge_owns']
+        self.user_bloods = data['user_bloods']
+        self.root_owns = data['root_bloods']
+        self.fortress = data['fortress']
+        self.endgame = data['endgame']
+        self.name = data['name']
+
+
+class University(htb.HTBObject):
+    """ The class representing a University
+
+    Attributes:
+        rank: The University's global rank
+        students: The number of students from the University
+        points: The University's total points
+        user_owns: The University's total user owns
+        root_owns: The University's total root owns
+        challenge_owns: The University's total challenge owns
+        user_bloods: The University's total user bloods
+        root_bloods: The University's total root bloods
+        fortress: The University's total Fortress flags
+        endgame: The University's total Endgame flags
+        name: The name of the University
+    Args:
+        data: The data of the University
+
+    """
+
+    rank: int
+    students: int
+    points: int
+    user_owns: int
+    root_owns: int
+    challenge_owns: int
+    user_bloods: int
+    root_bloods: int
+    fortress: int
+    endgame: int
+    name: str
+
+    def __init__(self, data: dict):
+        self.rank = data['rank']
+        self.students = data['students']
+        self.points = data['points']
+        self.user_owns = data['user_owns']
+        self.root_owns = data['root_owns']
+        self.challenge_owns = data['challenge_owns']
         self.user_bloods = data['user_bloods']
         self.root_owns = data['root_bloods']
         self.fortress = data['fortress']

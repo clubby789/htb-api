@@ -15,3 +15,6 @@ def test_get_hofs(htb_client: HTBClient):
 
     hof_countries = htb_client.get_hof_countries()
     assert len(hof_countries) >= 100
+
+    hof_universities = htb_client.get_hof_universities()
+    assert len(hof_universities) >= 100
