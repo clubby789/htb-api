@@ -66,6 +66,8 @@ class Team(htb.HTBObject):
             self._captain_id = data['captain']['id']
             self.is_respected = data['is_respected']
             self.join_request_sent = data['join_request_sent']
+        else:
+            self._is_summary = True
 
     @property
     def ranking(self) -> int:
