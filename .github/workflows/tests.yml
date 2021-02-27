@@ -28,7 +28,7 @@ jobs:
       - name: Run tests and generate coverage report
 
         run: |
-          python3 -m pytest --cov=hackthebox --cov-report=xml
+          python3 -m pytest -n auto --cov=hackthebox --cov-report=xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
