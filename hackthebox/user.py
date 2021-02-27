@@ -117,6 +117,7 @@ class User(htb.HTBObject):
         self.points = data['points']
 
         if summary:
+            self._is_summary = True
             self.ranking = data['rank']
             self.root_owns = data['root_owns']
             self.user_bloods = data.get('user_bloods_count')
