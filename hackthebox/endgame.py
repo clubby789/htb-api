@@ -2,6 +2,7 @@ from typing import List
 
 from . import htb
 from .user import User
+from .errors import IncorrectFlagException
 
 
 class Endgame(htb.HTBObject):
@@ -36,6 +37,19 @@ class Endgame(htb.HTBObject):
 
     _authors: List[User] = None
     _author_ids: List[int] = None
+
+    def submit(self, flag: str):
+        """ Submits a flag for an Endgame
+
+        Args:
+            flag: The flag for the Endgame
+
+        """
+        submission = self._client.do_request(f"endgame/{self.id}/flag", json_data={
+            "flag": flag,
+        })
+        if submission['message'] == "Wrong flag":
+            raise IncorrectFlagException
 
     @property
     def authors(self):
