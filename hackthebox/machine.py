@@ -2,6 +2,7 @@ from typing import List
 
 from . import htb
 from .solve import MachineSolve
+from .errors import IncorrectArgumentException, IncorrectFlagException
 
 
 class Machine(htb.HTBObject):
@@ -63,6 +64,25 @@ class Machine(htb.HTBObject):
     # noinspection PyUnresolvedReferences
     _authors: List["User"] = None
     _author_ids: List[int] = None
+
+    def submit(self, flag: str, difficulty: int):
+        """ Submits a flag for a Machine
+
+        Args:
+            flag: The flag for the Machine
+            difficulty: A rating between 10 and 100 of the Machine difficulty
+
+        """
+        if difficulty < 10 or difficulty > 100 or difficulty % 10 != 0:
+            raise IncorrectArgumentException
+
+        submission = self._client.do_request("machine/own", json_data={
+            "flag": flag,
+            "id": self.id,
+            "difficulty": difficulty
+        })
+        if submission['message'] == "Incorrect flag!":
+            raise IncorrectFlagException
 
     # noinspection PyUnresolvedReferences
     @property

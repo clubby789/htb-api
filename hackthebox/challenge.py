@@ -1,4 +1,5 @@
 from . import htb
+from .errors import IncorrectFlagException, IncorrectArgumentException
 
 
 class Challenge(htb.HTBObject):
@@ -51,6 +52,26 @@ class Challenge(htb.HTBObject):
     author_name: str
     has_download: bool
     has_docker: bool
+
+    def submit(self, flag: str, difficulty: int):
+        """ Submits a flag for a Challenge
+
+        Args:
+            flag: The flag for the Challenge
+            difficulty: A rating between 10 and 100 of the Challenge difficulty.
+                        Must be a multiple of 10.
+
+        """
+        if difficulty < 10 or difficulty > 100 or difficulty % 10 != 0:
+            raise IncorrectArgumentException
+
+        submission = self._client.do_request("challenge/own", json_data={
+            "flag": flag,
+            "challenge_id": self.id,
+            "difficulty": difficulty
+        })
+        if submission['message'] == "Incorrect flag":
+            raise IncorrectFlagException
 
     def __repr__(self):
         return f"<Challenge '{self.name}'>"
