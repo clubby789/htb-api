@@ -178,6 +178,37 @@ class HTBClient:
         return challenges
 
     # noinspection PyUnresolvedReferences
+    def get_endgame(self, endgame_id: int) -> "Endgame":
+        """Requests an Endgame from the API
+
+        Args:
+            endgame_id: The ID of the Endgame to fetch
+
+        Returns: A list of Endgame
+
+        """
+        from .endgame import Endgame
+        data = self.do_request(f"endgame/{endgame_id}")["data"]
+        return Endgame(data, self)
+
+    # noinspection PyUnresolvedReferences
+    def get_endgames(self, limit: int = None) -> List["Endgame"]:
+        """Requests a list of Endgames from the API
+
+        Args:
+            limit: The maximum number of Endgames to fetch
+
+        Returns: A list of Endgames
+
+        """
+        from .endgame import Endgame
+        data = self.do_request(f"endgames")["data"][:limit]
+        endgames = []
+        for endgame in data:
+            endgames.append(Endgame(endgame, self, summary=True))
+        return endgames
+
+    # noinspection PyUnresolvedReferences
     def get_user(self, user_id: int) -> "User":
         """
 
@@ -273,6 +304,7 @@ class HTBObject:
     # Attributes not fetched by a summary
     _detailed_attributes: List[str]
     _detailed_func: Callable
+    _is_summary: bool = False
     id: int
 
     def __getattr__(self, item):
@@ -286,10 +318,11 @@ class HTBObject:
             item: The name of the property to retrieve
 
         """
-        if item in self._detailed_attributes:
+        if item in self._detailed_attributes and self._is_summary:
             new_obj = self._detailed_func(self.id)
             for attr in self._detailed_attributes:
                 setattr(self, attr, getattr(new_obj, attr))
-            return getattr(self, item)
+            self._is_summary = False
+            return getattr(new_obj, item)
         else:
             raise AttributeError

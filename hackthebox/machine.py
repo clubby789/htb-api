@@ -147,3 +147,5 @@ class Machine(htb.HTBObject):
                 }
                 self.root_blood = MachineSolve(user_blood_data, self._client)
                 self.root_blood_time = data['rootBlood']['blood_difference']
+        else:
+            self._is_summary = True

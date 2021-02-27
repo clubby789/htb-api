@@ -98,3 +98,5 @@ class Challenge(htb.HTBObject):
             self.author_name = data['creator_name']
             self.has_download = data['download']
             self.has_docker = data['docker']
+        else:
+            self._is_summary = True
