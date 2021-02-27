@@ -72,6 +72,7 @@ class Challenge(htb.HTBObject):
         })
         if submission['message'] == "Incorrect flag":
             raise IncorrectFlagException
+        return True
 
     def __repr__(self):
         return f"<Challenge '{self.name}'>"
