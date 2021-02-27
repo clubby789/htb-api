@@ -91,7 +91,6 @@ class EndgameSolve(Solve):
     def endgame(self):
         """The solved Endgame"""
         if not self._item:
-            # TODO: Implement endgames
             self._item = self._client.get_endgame(self.id)
         return self._item
 
