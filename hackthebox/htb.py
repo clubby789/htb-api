@@ -41,6 +41,7 @@ class HTBClient:
     _user: "User" = None
     _access_token: str = None
     _refresh_token: str = None
+    _api_base: str = None
 
     def _refresh_access_token(self):
         """
@@ -71,15 +72,17 @@ class HTBClient:
 
         """
         headers = {"User-Agent": USER_AGENT}
-        if authorized:
+        if authorized and self._api_base == API_BASE:
+            # Don't use authorization if the API base URL isn't the real one -
+            # i.e. we're running a test
             if jwt_expired(self._access_token):
                 self._refresh_access_token()
             headers['Authorization'] = "Bearer " + self._access_token
         while True:
             if not json_data and not data:
-                r = requests.get(API_BASE + endpoint, headers=headers)
+                r = requests.get(self._api_base + endpoint, headers=headers)
             else:
-                r = requests.post(API_BASE + endpoint, json=json_data, data=data, headers=headers)
+                r = requests.post(self._api_base + endpoint, json=json_data, data=data, headers=headers)
             # Not sure on the exact ratelimit - loop until we don't get 429
             if r.status_code == 429:
                 time.sleep(1)
@@ -87,7 +90,8 @@ class HTBClient:
                 break
         return r.json()
 
-    def __init__(self, password=None, email=None):
+    def __init__(self, email: str = None, password: str = None, api_base: str = API_BASE):
+        self._api_base = api_base
         if not password and not email:
             print("Must give an authentication method")
             raise AuthenticationException

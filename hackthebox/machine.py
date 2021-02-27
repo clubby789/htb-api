@@ -83,6 +83,7 @@ class Machine(htb.HTBObject):
         })
         if submission['message'] == "Incorrect flag!":
             raise IncorrectFlagException
+        return True
 
     # noinspection PyUnresolvedReferences
     @property
