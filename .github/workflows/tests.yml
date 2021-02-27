@@ -1,10 +1,13 @@
 name: Run Tests
 
 on:
-  push:
-    branches: [ master ]
   pull_request:
     branches: [ master ]
+    paths:
+    -  'examples/*'
+    -  'hackthebox/*'
+    -  'tests/*'
+    -  'setup.py'
 
 jobs:
   test:
