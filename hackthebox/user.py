@@ -51,14 +51,11 @@ class User(htb.HTBObject):
     root_bloods: int = None
     user_bloods: int = None
     rank_name: str = None
-    country_name: str = None
-    # noinspection PyUnresolvedReferences
-    team: "Team" = None
-    public: bool = None
 
     _detailed_attributes = ('timezone', 'vip', 'vip_plus', 'respects', 'university', 'university_name', 'description',
                             'github', 'linkedin', 'twitter', 'website', 'respected', 'followed', 'rank_id',
-                            'rank_progress', 'next_rank', 'next_rank_points', 'rank_ownership', 'rank_requirement')
+                            'rank_progress', 'next_rank', 'next_rank_points', 'rank_ownership', 'rank_requirement',
+                            'country_name', 'team', 'public')
     timezone: str = None
     vip: bool = None
     vip_plus: bool = None
@@ -79,6 +76,10 @@ class User(htb.HTBObject):
     next_rank_points: int = None
     rank_ownership: float = None
     rank_requirement: int = None
+    country_name: str = None
+    # noinspection PyUnresolvedReferences
+    team: "Team" = None
+    public: bool = None
 
     _activity: List[Solve] = None
 
@@ -114,15 +115,13 @@ class User(htb.HTBObject):
         self.name = data['name']
         self.user_owns = data['user_owns']
         self.points = data['points']
-        self.country_name = data['country_name']
-        self.team = data['team']
-        self.public = bool(data['public'])
+
         if summary:
             self.ranking = data['rank']
             self.root_owns = data['root_owns']
-            self.user_bloods = data['user_bloods_count']
-            self.root_bloods = data['root_bloods_count']
-            self.rank_name = data['rank_text']
+            self.user_bloods = data.get('user_bloods_count')
+            self.root_bloods = data.get('root_bloods_count')
+            self.rank_name = data.get('rank_text')
         else:
             self.ranking = data['ranking']
             self.root_owns = data['system_owns']
@@ -145,3 +144,6 @@ class User(htb.HTBObject):
             self.next_rank_points = data['next_rank_points']
             self.rank_ownership = float(data['rank_ownership'])
             self.rank_requirement = data['rank_requirement']
+            self.country_name = data['country_name']
+            self.team = data['team']
+            self.public = bool(data['public'])
