@@ -1,1 +1,1 @@
-from . import choose_machine, get_activity, login
+from . import choose_machine, get_activity, leaderboards, login
