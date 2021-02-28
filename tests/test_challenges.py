@@ -31,8 +31,9 @@ def test_fill_in_summary(htb_client: HTBClient):
     assert challenge.description is not None
 
 
-def test_challenge_author(htb_client: HTBClient):
-    """Tests retrieving the author of a machine"""
-    challenge = htb_client.get_challenge(1)
-    author = challenge.authors[0]
-    assert author.name == "Thiseas"
+def test_challenge_authors(htb_client: HTBClient):
+    """Tests retrieving the authors of a machine"""
+    challenge = htb_client.get_challenge(196)
+    author1, author2 = challenge.authors
+    assert author1.name == "makelarisjr"
+    assert author2.name == "makelaris"
