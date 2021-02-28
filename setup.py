@@ -8,7 +8,7 @@ with open('requirements.txt') as f:
 
 setuptools.setup(
     name="PyHackTheBox",
-    version="0.1.0",
+    version="0.1.1",
     author="clubby789@github.com",
     author_email="clubby789@gmail.com",
     description="A wrapper for the Hack The Box API.",
