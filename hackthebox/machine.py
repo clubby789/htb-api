@@ -25,7 +25,7 @@ class Machine(htb.HTBObject):
 
         active: Whether the Machine is active
         retired: Whether the Machine is retired
-        difficulty_number: The numeric difficulty of the Machine
+        avg_difficulty: The average numeric difficulty of the Machine
         completed: Whether the active User has completed the Machine
          :noindex: user_own_time: How long the active User took to own user
          :noindex: root_own_time: How long the active User took to own root
@@ -33,6 +33,7 @@ class Machine(htb.HTBObject):
         root_blood: The Solve of the Machine's first root blood
         user_own_time: How long the first User took to own user
         root_own_time: How long the first User took to own root
+        difficulty_ratings: A dict of difficulty ratings given
     """
     name: str = None
     os: str = None
@@ -49,10 +50,10 @@ class Machine(htb.HTBObject):
     difficulty: str = None
 
     _detailed_attributes = ('active', 'retired', 'user_own_time', 'root_own_time', 'user_blood',
-                            'root_blood', 'user_blood_time', 'root_blood_time')
+                            'root_blood', 'user_blood_time', 'root_blood_time', 'difficulty_ratings')
     active: bool = None
     retired: bool = None
-    difficulty_number: int = None
+    avg_difficulty: int = None
     completed: bool = None
     user_own_time: str = None
     root_own_time: str = None
@@ -60,6 +61,7 @@ class Machine(htb.HTBObject):
     root_blood: MachineSolve = None
     user_blood_time: str = None
     root_blood_time: str = None
+    difficulty_ratings: dict = None
 
     # noinspection PyUnresolvedReferences
     _authors: List["User"] = None
@@ -127,6 +129,7 @@ class Machine(htb.HTBObject):
             self.retired = bool(data['retired'])
             self.user_own_time = data['authUserFirstUserTime']
             self.root_own_time = data['authUserFirstRootTime']
+            self.difficulty_ratings = data['feedbackForChart']
             if data['userBlood']:
                 user_blood_data = {
                     "date": data['userBlood']['created_at'],

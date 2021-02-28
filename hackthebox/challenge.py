@@ -11,7 +11,7 @@ class Challenge(htb.HTBObject):
         difficulty: The official difficulty of the challenge
         avg_difficulty: The average user-given difficulty
         points: The points awarded on completion
-        difficulty_ratings: A list of difficulty ratings given
+        difficulty_ratings: A dict of difficulty ratings given
         solves: The number of solves a challenge has
         likes: The number of likes a challenge has
         dislikes: The number of dislikes a challenge has
