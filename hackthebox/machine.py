@@ -1,8 +1,11 @@
 from typing import List
+import dateutil.parser
+from datetime import datetime, timedelta
 
 from . import htb
 from .solve import MachineSolve
 from .errors import IncorrectArgumentException, IncorrectFlagException
+from .utils import parse_delta
 
 
 class Machine(htb.HTBObject):
@@ -38,7 +41,7 @@ class Machine(htb.HTBObject):
     name: str = None
     os: str = None
     points: int = None
-    release_date: str = None
+    release_date: datetime = None
     user_owns: int = None
     root_owns: int = None
     free: bool = None
@@ -55,12 +58,12 @@ class Machine(htb.HTBObject):
     retired: bool = None
     avg_difficulty: int = None
     completed: bool = None
-    user_own_time: str = None
-    root_own_time: str = None
+    user_own_time: timedelta = None
+    root_own_time: timedelta = None
     user_blood: MachineSolve = None
     root_blood: MachineSolve = None
-    user_blood_time: str = None
-    root_blood_time: str = None
+    user_blood_time: timedelta = None
+    root_blood_time: timedelta = None
     difficulty_ratings: dict = None
 
     # noinspection PyUnresolvedReferences
@@ -111,7 +114,7 @@ class Machine(htb.HTBObject):
         self.name = data['name']
         self.os = data['os']
         self.points = data['points']
-        self.release_date = data['release']
+        self.release_date = dateutil.parser.parse(data['release'])
         self.user_owns = data['user_owns_count']
         self.root_owns = data['root_owns_count']
         self.user_owned = data['authUserInUserOwns']
@@ -127,28 +130,28 @@ class Machine(htb.HTBObject):
         if not summary:
             self.active = bool(data['active'])
             self.retired = bool(data['retired'])
-            self.user_own_time = data['authUserFirstUserTime']
-            self.root_own_time = data['authUserFirstRootTime']
+            self.user_own_time = parse_delta(data['authUserFirstUserTime'])
+            self.root_own_time = parse_delta(data['authUserFirstRootTime'])
             self.difficulty_ratings = data['feedbackForChart']
             if data['userBlood']:
                 user_blood_data = {
-                    "date": data['userBlood']['created_at'],
+                    "date": dateutil.parser.parse(data['userBlood']['created_at']),
                     "first_blood": True,
                     "id": data['id'],
                     "name": data['name'],
                     "type": "user"
                 }
                 self.user_blood = MachineSolve(user_blood_data, self._client)
-                self.user_blood_time = data['userBlood']['blood_difference']
+                self.user_blood_time = parse_delta(data['userBlood']['blood_difference'])
             if data['rootBlood']:
                 user_blood_data = {
-                    "date": data['rootBlood']['created_at'],
+                    "date": dateutil.parser.parse(data['rootBlood']['created_at']),
                     "first_blood": True,
                     "id": data['id'],
                     "name": data['name'],
                     "type": "root"
                 }
                 self.root_blood = MachineSolve(user_blood_data, self._client)
-                self.root_blood_time = data['rootBlood']['blood_difference']
+                self.root_blood_time = parse_delta(data['rootBlood']['blood_difference'])
         else:
             self._is_summary = True

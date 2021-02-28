@@ -1,5 +1,7 @@
 from . import htb
 from .errors import IncorrectFlagException, IncorrectArgumentException
+from datetime import datetime
+import dateutil.parser
 
 
 class Challenge(htb.HTBObject):
@@ -38,7 +40,7 @@ class Challenge(htb.HTBObject):
     solves: int = None
     likes: int = None
     dislikes: int = None
-    release_date: str = None
+    release_date: datetime = None
     solved: bool = None
     is_liked: bool = None
     is_disliked: bool = None
@@ -91,6 +93,7 @@ class Challenge(htb.HTBObject):
         self.solved = data['authUserSolve']
         self.likes = data['likes']
         self.dislikes = data['dislikes']
+        self.release_date = dateutil.parser.parse(data['release_date'])
         if not summary:
             self.description = data['description']
             self.category = data['category_name']
