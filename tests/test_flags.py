@@ -1,5 +1,5 @@
 from pytest import raises
-from hackthebox import HTBClient, Machine, Challenge
+from hackthebox import HTBClient, Machine, Challenge, Endgame
 from hackthebox.errors import IncorrectFlagException, IncorrectArgumentException
 
 
@@ -41,7 +41,7 @@ def test_machine_flags(mock_htb_client: HTBClient):
 
 def test_challenge_flags(mock_htb_client: HTBClient):
     """Tests the ability to submit challenge flags"""
-    # Create a fake machine to test with
+    # Create a fake challenge to test with
     challenge = Challenge({
         "id": 1,
         "name": "Crack This",
@@ -61,3 +61,27 @@ def test_challenge_flags(mock_htb_client: HTBClient):
 
     with raises(IncorrectArgumentException):
         challenge.submit(CORRECT_CHALLENGE, 5)
+
+
+def test_endgame_flags(mock_htb_client: HTBClient):
+    """Tests the ability to submit endgame flags"""
+    # Create a fake endgame to test with
+    endgame = Endgame({
+        "id": 1,
+        "name": "P.O.O.",
+        "avatar_url": "nothing.png",
+        "cover_image_url": "nothing.png",
+        "retired": True,
+        "vip": True,
+        "creators": [{
+            "id": 302,
+            "name": "eks",
+            }, {
+            "id": 2984,
+            "name": "mrb3n",
+            }]
+    }, mock_htb_client, summary=True)
+    assert endgame.submit(CORRECT_HASH) is True
+
+    with raises(IncorrectFlagException):
+        endgame.submit("wrong")

@@ -1,5 +1,6 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
+import re
 from threading import Thread
 
 
@@ -38,6 +39,13 @@ class MockApiHandler(BaseHTTPRequestHandler):
                     "refresh_token": "FakeToken"
                 }
             }).encode())
+        elif re.match(r"/api/v4/endgame/\d+/flag", self.path):
+            if message['flag'] == CORRECT_HASH:
+                self._set_headers()
+                self.wfile.write(json.dumps({"message": "Congratulations"}).encode())
+            else:
+                self._set_headers()
+                self.wfile.write(json.dumps({"message": "Wrong flag"}).encode())
 
 
 def start_mock_server():

@@ -50,6 +50,7 @@ class Endgame(htb.HTBObject):
         })
         if submission['message'] == "Wrong flag":
             raise IncorrectFlagException
+        return True
 
     @property
     def authors(self):
