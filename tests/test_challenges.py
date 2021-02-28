@@ -29,3 +29,11 @@ def test_fill_in_summary(htb_client: HTBClient):
     """Test that partial `Challenges` can be 'filled in'"""
     challenge = htb_client.get_challenges(limit=1)[0]
     assert challenge.description is not None
+
+
+def test_challenge_authors(htb_client: HTBClient):
+    """Tests retrieving the authors of a machine"""
+    challenge = htb_client.get_challenge(196)
+    author1, author2 = challenge.authors
+    assert author1.name == "makelarisjr"
+    assert author2.name == "makelaris"

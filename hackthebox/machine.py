@@ -95,7 +95,7 @@ class Machine(htb.HTBObject):
     def authors(self) -> List["User"]:
         """Fetch the author(s) of the Machine
 
-        Returns: List of User
+        Returns: List of Users
 
         """
         if not self._authors:

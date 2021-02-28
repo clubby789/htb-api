@@ -1,7 +1,10 @@
+from typing import List
+from datetime import datetime
+
+import dateutil.parser
+
 from . import htb
 from .errors import IncorrectFlagException, IncorrectArgumentException
-from datetime import datetime
-import dateutil.parser
 
 
 class Challenge(htb.HTBObject):
@@ -25,8 +28,6 @@ class Challenge(htb.HTBObject):
         description: The challenge description
         category_id: The ID of the challenge category
         category: The name of the category
-        author_id: The ID of the author
-        author_name: The name of the author
         has_download: Whether the challenge has a download available
         has_docker: Whether the challenge has a remote instance available
 
@@ -46,12 +47,14 @@ class Challenge(htb.HTBObject):
     is_disliked: bool = None
     recommended: bool = None
 
-    _detailed_attributes = ('description', 'category', 'author_id', 'author_name', 'has_download', 'has_docker')
+    # noinspection PyUnresolvedReferences
+    _authors: List["User"] = None
+    _author_ids: List[int] = None
+
+    _detailed_attributes = ('description', 'category', 'has_download', 'has_docker')
     description: str
     category_id: int
     category: str
-    author_id: int
-    author_name: str
     has_download: bool
     has_docker: bool
 
@@ -76,6 +79,20 @@ class Challenge(htb.HTBObject):
             raise IncorrectFlagException
         return True
 
+    # noinspection PyUnresolvedReferences
+    @property
+    def authors(self) -> List["User"]:
+        """Fetch the author(s) of the Challenge
+
+        Returns: List of Users
+
+        """
+        if not self._authors:
+            self._authors = []
+            for uid in self._author_ids:
+                self._authors.append(self._client.get_user(uid))
+        return self._authors
+
     def __repr__(self):
         return f"<Challenge '{self.name}'>"
 
@@ -97,8 +114,9 @@ class Challenge(htb.HTBObject):
         if not summary:
             self.description = data['description']
             self.category = data['category_name']
-            self.author_id = data['creator_id']
-            self.author_name = data['creator_name']
+            self._author_ids = [data['creator_id']]
+            if data['creator2_id']:
+                self._author_ids.append(data['creator2_id'])
             self.has_download = data['download']
             self.has_docker = data['docker']
         else:
