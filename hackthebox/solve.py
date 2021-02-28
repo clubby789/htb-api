@@ -1,4 +1,5 @@
 from . import htb
+from datetime import datetime
 
 
 class Solve:
@@ -17,7 +18,7 @@ class Solve:
     _item: "htb.HTBObject" = None   # The solved item
     id: int = None
     name: str = None
-    date: str = None
+    date: datetime = None
     blood: bool = None
     points: int = None
 
