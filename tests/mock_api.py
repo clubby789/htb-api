@@ -46,6 +46,17 @@ class MockApiHandler(BaseHTTPRequestHandler):
             else:
                 self._set_headers()
                 self.wfile.write(json.dumps({"message": "Wrong flag"}).encode())
+        elif re.match(r"/api/v4/fortress/\d+/flag", self.path):
+            if message['flag'] == CORRECT_HASH:
+                self._set_headers()
+                self.wfile.write(json.dumps({"message": "Congratulations"}).encode())
+            else:
+                self._set_headers()
+                self.wfile.write(json.dumps({"message": "Wrong flag"}).encode())
+
+    def log_message(self, fmt, *args):
+        # Silence logging
+        return
 
 
 def start_mock_server():
