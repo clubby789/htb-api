@@ -1,5 +1,5 @@
 from pytest import raises
-from hackthebox import HTBClient
+from hackthebox import HTBClient, NoDockerException
 
 
 def test_get_challenge(htb_client: HTBClient):
@@ -37,3 +37,20 @@ def test_challenge_authors(htb_client: HTBClient):
     author1, author2 = challenge.authors
     assert author1.name == "makelarisjr"
     assert author2.name == "makelaris"
+
+
+def test_start_challenge(htb_client: HTBClient, mock_htb_client: HTBClient):
+    """Tests the ability to start an instance of a challenge"""
+    # Use mock API for the starting so we don't spam
+    bad_challenge = htb_client.get_challenge(1)
+    bad_challenge._client = mock_htb_client
+    with raises(NoDockerException):
+        bad_challenge.start()
+
+    # TODO: Test loading a started challenge on the API
+    # Will require the mock API tracking the challenges which have 'started'
+    good_challenge = htb_client.get_challenge(144)
+    good_challenge._client = mock_htb_client
+    instance = good_challenge.start()
+    assert instance.ip is not None
+    instance.stop()

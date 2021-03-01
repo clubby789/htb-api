@@ -1,4 +1,4 @@
-def main(client):
+def main(client, _testing=False):
     print(client.user.activity)
 
 

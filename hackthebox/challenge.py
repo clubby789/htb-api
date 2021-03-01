@@ -1,10 +1,11 @@
+from __future__ import annotations
 from typing import List
 from datetime import datetime
 
 import dateutil.parser
 
 from . import htb
-from .errors import IncorrectFlagException, IncorrectArgumentException
+from .errors import IncorrectFlagException, IncorrectArgumentException, NoDockerException
 
 
 class Challenge(htb.HTBObject):
@@ -51,12 +52,13 @@ class Challenge(htb.HTBObject):
     _authors: List["User"] = None
     _author_ids: List[int] = None
 
-    _detailed_attributes = ('description', 'category', 'has_download', 'has_docker')
+    _detailed_attributes = ('description', 'category', 'has_download', 'has_docker', 'instance')
     description: str
     category_id: int
     category: str
     has_download: bool
     has_docker: bool
+    instance: DockerInstance
 
     def submit(self, flag: str, difficulty: int):
         """ Submits a flag for a Challenge
@@ -78,6 +80,21 @@ class Challenge(htb.HTBObject):
         if submission['message'] == "Incorrect flag":
             raise IncorrectFlagException
         return True
+
+    def start(self) -> DockerInstance:
+        """
+        Requests the challenge be started
+
+        Returns:
+            The DockerInstance that was started
+
+        """
+        if not self.has_docker:
+            raise NoDockerException
+        instance = self._client.do_request("challenge/start", json_data={"challenge_id": self.id})
+        # TODO: Handle failure to start
+        self.instance = DockerInstance(instance['ip'], instance['port'], self.id, self._client, instance['id'])
+        return self.instance
 
     # noinspection PyUnresolvedReferences
     @property
@@ -119,5 +136,46 @@ class Challenge(htb.HTBObject):
                 self._author_ids.append(data['creator2_id'])
             self.has_download = data['download']
             self.has_docker = data['docker']
+            if data['docker_ip']:
+                self.instance = DockerInstance(data['docker_ip'], data['docker_port'], self.id, self._client)
+            else:
+                self.instance = None
         else:
             self._is_summary = True
+
+
+class DockerInstance:
+    """Representation of an active Docker container instance of a Challenge
+
+    Attributes:
+        container_id: The ID of the container
+        port: The port the container is listening on
+        ip: The IP the instance can be reached at
+        chall_id: The connected challenge
+        client: The passed-through API client
+
+    """
+
+    id: str = None
+    port: int = None
+    ip: str = None
+    chall_id: int = None
+    client: htb.HTBClient = None
+
+    def __init__(self, ip: str, port: int,  chall_id: int, client: htb.HTBClient, container_id: str = None):
+        self.client = client
+        self.id = container_id
+        self.port = port
+        self.ip = ip
+        self.chall_id = chall_id
+
+    def stop(self):
+        """Request the instance be stopped. Zeroes out all properties"""
+        self.client.do_request("challenge/stop", json_data={"challenge_id": self.chall_id})
+        # TODO: Handle failures to stop
+
+        # Can't delete referencees to the object from here so we just have
+        # to set everything to None and prevent further usage
+        self.id = None
+        self.port = None
+        self.ip = None

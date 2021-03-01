@@ -42,3 +42,8 @@ class IncorrectArgumentException(HtbException):
     def __init__(self, reason: str):
         self.reason = reason
     pass
+
+
+class NoDockerException(HtbException):
+    """A challenge was 'started' when no Docker is available"""
+    pass

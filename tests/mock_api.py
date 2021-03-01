@@ -49,6 +49,20 @@ class MockApiHandler(BaseHTTPRequestHandler):
                     "refresh_token": "FakeToken"
                 }
             }).encode())
+        elif self.path == "/api/v4/challenge/start":
+            if message['challenge_id'] == 144:
+                self._set_headers()
+                self.wfile.write(json.dumps({"message": "Instance Created!", "id": "pwnhunting-83743",
+                                             "port": 31475, "ip": "10.10.10.10"}).encode()
+                                 )
+            else:
+                self._set_headers()
+                self.wfile.write(json.dumps({"message": "Incorrect Parameters"}).encode())
+
+        elif self.path == "/api/v4/challenge/stop":
+            self._set_headers()
+            self.wfile.write(json.dumps({"message": "Container Stopped"}).encode())
+
         elif re.match(r"/api/v4/endgame/\d+/flag", self.path):
             if message['flag'] == CORRECT_HASH:
                 self._set_headers()
