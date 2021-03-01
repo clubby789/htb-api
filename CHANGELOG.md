@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] 01/03/2021
+### Added
+- More informative error messages
+
+### Fixed
+- A bug where incorrect refresh tokens were loaded, meaning expired access tokens could not be refreshed.
+
+### Development
+- 100% test coverage!
+
 ## [0.2.0] 01/03/2021
 ### Added
 - Retrieving authors of a challenge
