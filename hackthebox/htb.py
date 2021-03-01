@@ -7,7 +7,7 @@ import time
 import requests
 
 from .constants import API_BASE, USER_AGENT
-from .errors import AuthenticationException
+from .errors import AuthenticationException, MissingPasswordException, MissingEmailException
 
 
 def jwt_expired(token: str) -> bool:
@@ -95,11 +95,9 @@ class HTBClient:
             print("Must give an authentication method")
             raise AuthenticationException
         elif password and not email:
-            print("Missing email")
-            raise AuthenticationException
+            raise MissingEmailException
         elif email and not password:
-            print("Missing password")
-            raise AuthenticationException
+            raise MissingPasswordException
         else:
             data = self.do_request("login", json_data={
                 "email": email, "password": password
