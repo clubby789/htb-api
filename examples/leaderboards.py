@@ -1,4 +1,4 @@
-def main(client):
+def main(client, _testing=False):
     hof = client.get_hof()
     print(hof[0])
     for i in hof:

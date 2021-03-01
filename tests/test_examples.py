@@ -12,4 +12,6 @@ def example_fns():
 
 @pytest.mark.parametrize("example_fn", example_fns())
 def test_example(htb_client, example_fn):
-    example_fn.main(htb_client)
+    # 2nd param is `testing` - some examples shouldn't
+    # be run as part of the test suite
+    example_fn.main(htb_client, True)

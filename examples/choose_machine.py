@@ -1,7 +1,7 @@
 import random
 
 
-def main(client):
+def main(client, _testing=False):
     machines = client.get_machines()
     print(f"Chosen Machine: {random.choice(machines)}")
 

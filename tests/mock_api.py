@@ -49,6 +49,20 @@ class MockApiHandler(BaseHTTPRequestHandler):
                     "refresh_token": "FakeToken"
                 }
             }).encode())
+        elif self.path == "/api/v4/challenge/start":
+            if message['challenge_id'] == 144:
+                self._set_headers()
+                self.wfile.write(json.dumps({"message": "Instance Created!", "id": "pwnhunting-83743",
+                                             "port": 31475, "ip": "10.10.10.10"}).encode()
+                                 )
+            else:
+                self._set_headers()
+                self.wfile.write(json.dumps({"message": "Incorrect Parameters"}).encode())
+
+        elif self.path == "/api/v4/challenge/stop":
+            self._set_headers()
+            self.wfile.write(json.dumps({"message": "Container Stopped"}).encode())
+
         elif re.match(r"/api/v4/endgame/\d+/flag", self.path):
             if message['flag'] == CORRECT_HASH:
                 self._set_headers()
@@ -70,7 +84,8 @@ class MockApiHandler(BaseHTTPRequestHandler):
 
 
 def start_mock_server():
-    mock_server = HTTPServer(('localhost', 9000), MockApiHandler)
+    mock_server = HTTPServer(('localhost', 0), MockApiHandler)
     mock_server_thread = Thread(target=mock_server.serve_forever)
     mock_server_thread.setDaemon(True)
     mock_server_thread.start()
+    return mock_server.server_address[1]
