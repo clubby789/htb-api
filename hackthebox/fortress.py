@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import List
 
 from . import htb
+from .errors import IncorrectFlagException
 
 
 class Fortress(htb.HTBObject):
@@ -31,6 +32,20 @@ class Fortress(htb.HTBObject):
     flags: List
     company: Company
     ip: str
+
+    def submit(self, flag: str):
+        """ Submits a flag for an Fortress
+
+        Args:
+            flag: The flag for the Fortress
+
+        """
+        submission = self._client.do_request(f"fortress/{self.id}/flag", json_data={
+            "flag": flag,
+        })
+        if submission['message'] == "Wrong flag":
+            raise IncorrectFlagException
+        return True
 
     def __repr__(self):
         return f"<Fortress '{self.name}'>"

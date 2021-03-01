@@ -1,5 +1,5 @@
 from pytest import raises
-from hackthebox import HTBClient, Machine, Challenge, Endgame
+from hackthebox import HTBClient, Machine, Challenge, Endgame, Fortress
 from hackthebox.errors import IncorrectFlagException, IncorrectArgumentException
 
 
@@ -85,3 +85,19 @@ def test_endgame_flags(mock_htb_client: HTBClient):
 
     with raises(IncorrectFlagException):
         endgame.submit("wrong")
+
+
+def test_fortress_flags(mock_htb_client: HTBClient):
+    """Tests the ability to submit fortress flags"""
+    # Create a fake fortress to test with
+    fortress = Fortress({
+        "id": 1,
+        "name": "Jet",
+        "ip": "10.13.37.10",
+        "image": "https://www.hackthebox.eu/storage/companies/3.png",
+        "number_of_flags": 11
+    }, mock_htb_client, summary=True)
+    assert fortress.submit(CORRECT_HASH) is True
+
+    with raises(IncorrectFlagException):
+        fortress.submit("wrong")
