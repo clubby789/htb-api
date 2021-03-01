@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] 01/03/2021
+### Added
+- The ability to spawn and kill challenge Docker instances.
+
+### Development
+- Dynamically set the port used by the mock API to prevent random conflicts.
+
 ## [0.2.1] 01/03/2021
 ### Added
 - More informative error messages
