@@ -68,7 +68,7 @@ class Challenge(htb.HTBObject):
 
         """
         if difficulty < 10 or difficulty > 100 or difficulty % 10 != 0:
-            raise IncorrectArgumentException
+            raise IncorrectArgumentException(reason="Difficulty must be a multiple of 10, between 10 and 100")
 
         submission = self._client.do_request("challenge/own", json_data={
             "flag": flag,

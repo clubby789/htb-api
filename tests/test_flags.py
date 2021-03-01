@@ -62,6 +62,11 @@ def test_challenge_flags(mock_htb_client: HTBClient):
     with raises(IncorrectArgumentException):
         challenge.submit(CORRECT_CHALLENGE, 5)
 
+    try:
+        challenge.submit(CORRECT_CHALLENGE, 5)
+    except IncorrectArgumentException as e:
+        print(e)
+
 
 def test_endgame_flags(mock_htb_client: HTBClient):
     """Tests the ability to submit endgame flags"""
