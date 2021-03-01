@@ -29,6 +29,21 @@ Machine
    :members:
    :show-inheritance:
 
+Fortress
+-------------------------
+
+.. automodule:: hackthebox.fortress
+   :members:
+   :show-inheritance:
+
+Endgame
+-------------------------
+
+.. automodule:: hackthebox.endgame
+   :members:
+   :show-inheritance:
+
+
 Team
 ----------------------
 
@@ -42,6 +57,14 @@ User
 .. automodule:: hackthebox.user
    :members:
    :show-inheritance:
+
+Search
+----------------------
+
+.. automodule:: hackthebox.search
+   :members:
+   :show-inheritance:
+
 
 Errors
 ------------------------

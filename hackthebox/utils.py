@@ -32,5 +32,4 @@ def parse_delta(time: str) -> timedelta:
     del time_params['years']
     time_params['days'] += time_params['months'] * 30
     del time_params['months']
-    print(time_params)
     return timedelta(**time_params)

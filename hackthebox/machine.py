@@ -130,8 +130,10 @@ class Machine(htb.HTBObject):
         if not summary:
             self.active = bool(data['active'])
             self.retired = bool(data['retired'])
-            self.user_own_time = parse_delta(data['authUserFirstUserTime'])
-            self.root_own_time = parse_delta(data['authUserFirstRootTime'])
+            if data['authUserInUserOwns']:
+                self.user_own_time = parse_delta(data['authUserFirstUserTime'])
+            if data['authUserInRootOwns']:
+                self.root_own_time = parse_delta(data['authUserFirstRootTime'])
             self.difficulty_ratings = data['feedbackForChart']
             if data['userBlood']:
                 user_blood_data = {
