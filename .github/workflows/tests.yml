@@ -7,7 +7,12 @@ on:
     -  'examples/*'
     -  'hackthebox/*'
     -  'tests/*'
-    -  'setup.py'
+  push:
+    branches: [ master ]
+    paths:
+    -  'examples/*'
+    -  'hackthebox/*'
+    -  'tests/*
 
 jobs:
   test:
