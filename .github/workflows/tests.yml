@@ -12,7 +12,7 @@ on:
     paths:
     -  'examples/*'
     -  'hackthebox/*'
-    -  'tests/*
+    -  'tests/*'
 
 jobs:
   test:
