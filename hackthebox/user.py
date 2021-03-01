@@ -2,7 +2,6 @@ from typing import List
 
 from . import htb
 from .solve import MachineSolve, ChallengeSolve, EndgameSolve, FortressSolve, Solve
-from .errors import UnknownSolveException
 
 
 class User(htb.HTBObject):
@@ -98,9 +97,7 @@ class User(htb.HTBObject):
                     self._activity.append(EndgameSolve(solve_item, self._client))
                 elif solve_type == 'fortress':
                     self._activity.append(FortressSolve(solve_item, self._client))
-                else:
-                    print(solve_item)
-                    raise UnknownSolveException
+
         return self._activity
 
     def __repr__(self):
