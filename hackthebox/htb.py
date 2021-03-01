@@ -109,6 +109,11 @@ class HTBClient:
             self._refresh_token = data['message']['access_token']
 
     # noinspection PyUnresolvedReferences
+    def do_search(self, search_term: str) -> "Search":
+        from .search import Search
+        return Search(search_term, self)
+
+    # noinspection PyUnresolvedReferences
     def get_machine(self, machine_id: int) -> "Machine":
         """
 
