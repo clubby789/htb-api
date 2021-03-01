@@ -84,7 +84,8 @@ class MockApiHandler(BaseHTTPRequestHandler):
 
 
 def start_mock_server():
-    mock_server = HTTPServer(('localhost', 9000), MockApiHandler)
+    mock_server = HTTPServer(('localhost', 0), MockApiHandler)
     mock_server_thread = Thread(target=mock_server.serve_forever)
     mock_server_thread.setDaemon(True)
     mock_server_thread.start()
+    return mock_server.server_address[1]

@@ -21,8 +21,8 @@ def htb_client() -> HTBClient:
 
 @fixture(scope="session")
 def mock_htb_client() -> HTBClient:
-    mock_api.start_mock_server()
-    client = HTBClient(email="user@example.com", password="password", api_base="http://localhost:9000/api/v4/")
+    port = mock_api.start_mock_server()
+    client = HTBClient(email="user@example.com", password="password", api_base=f"http://localhost:{port}/api/v4/")
     return client
 
 
