@@ -47,6 +47,10 @@ class MockApiHandler(BaseHTTPRequestHandler):
                 self._set_headers()
                 self.wfile.write(json.dumps({"message": "Wrong flag"}).encode())
 
+    def log_message(self, fmt, *args):
+        # Silence logging
+        return
+
 
 def start_mock_server():
     mock_server = HTTPServer(('localhost', 9000), MockApiHandler)

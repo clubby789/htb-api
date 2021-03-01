@@ -6,6 +6,7 @@ def test_get_endgame(htb_client: HTBClient):
     endgame = htb_client.get_endgame(1)
     assert endgame.id == 1
     assert endgame.name == "P.O.O."
+    print(endgame)
 
 
 def test_get_endgames(htb_client: HTBClient):

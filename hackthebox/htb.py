@@ -184,7 +184,7 @@ class HTBClient:
         Args:
             endgame_id: The ID of the Endgame to fetch
 
-        Returns: A list of Endgame
+        Returns: An Endgame
 
         """
         from .endgame import Endgame
@@ -207,6 +207,39 @@ class HTBClient:
         for endgame in data:
             endgames.append(Endgame(endgame, self, summary=True))
         return endgames
+
+    # noinspection PyUnresolvedReferences
+    def get_fortress(self, fortress_id: int) -> "Fortress":
+        """Requests an Fortress from the API
+
+        Args:
+            fortress_id: The ID of the Fortress to fetch
+
+        Returns: A Fortresse
+
+        """
+        from .fortress import Fortress
+        data = self.do_request(f"fortress/{fortress_id}")["data"]
+        return Fortress(data, self)
+
+    # noinspection PyUnresolvedReferences
+    def get_fortresses(self, limit: int = None) -> List["Fortress"]:
+        """Requests a list of Fortresses from the API
+
+        Args:
+            limit: The maximum number of Fortresses to fetch
+
+        Returns: A list of Fortresses
+
+        """
+        from .fortress import Fortress
+        data = self.do_request(f"fortresses")["data"]
+        fortresses = []
+        # For some  reason, the fortress list is in the format {"1": <fortress1>, "2": <fortress2>}
+        # instead of [<fortress1>, <fortress2>], meaning we have to sort it ourselves
+        for fortress_id, fortress in sorted(data.items())[:limit]:
+            fortresses.append(Fortress(fortress, self, summary=True))
+        return fortresses
 
     # noinspection PyUnresolvedReferences
     def get_user(self, user_id: int) -> "User":

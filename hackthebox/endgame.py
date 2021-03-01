@@ -15,7 +15,7 @@ class Endgame(htb.HTBObject):
         retired: Whether the Endgame is retired
         vip: Whether the Endgame requires VIP
         points: The points awarded by the Endgame
-        completions: The number of players who havee completed the Endgame
+        completions: The number of players who have completed the Endgame
         reset_votes: The number of votes to reset the Endgame
         entry_points: IP addresses the Endgame can be contacted on
         description: The HTML description of the Endgame

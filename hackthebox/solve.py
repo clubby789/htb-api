@@ -115,7 +115,6 @@ class FortressSolve(Solve):
     def fortress(self):
         """The solved Fortress"""
         if not self._item:
-            # TODO: Implement fortresses
             self._item = self._client.get_fortress(self.id)
         return self._item
 

@@ -38,8 +38,7 @@ def test_get_activity_items(htb_client: HTBClient):
     """Tests retrieving associated items from activity"""
     activity = htb_client.user.activity
     assert isinstance(activity[0].item, HTBObject)
-    for solve_type in MachineSolve, ChallengeSolve:
-        # TODO: Test Endgame and Fortress solves, when those are implemented
+    for solve_type in MachineSolve, ChallengeSolve, EndgameSolve, FortressSolve:
         solve_of_type = next(filter(lambda x: isinstance(x, solve_type), activity))
         assert solve_of_type.item is not None
 
