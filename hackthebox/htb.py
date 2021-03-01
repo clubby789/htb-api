@@ -50,7 +50,6 @@ class HTBClient:
         when the current one expires
 
         """
-        # TODO: Find a way to test this
         headers = {"User-Agent": USER_AGENT}
         r = requests.post(API_BASE + "login/refresh", json={
                 "refresh_token": self._refresh_token
@@ -83,11 +82,11 @@ class HTBClient:
                 r = requests.get(self._api_base + endpoint, headers=headers)
             else:
                 r = requests.post(self._api_base + endpoint, json=json_data, data=data, headers=headers)
-            # Not sure on the exact ratelimit - loop until we don't get 429
-            if r.status_code == 429:
-                time.sleep(1)
-            else:
+            if r.status_code != 429:
                 break
+            # Not sure on the exact ratelimit - loop until we don't get 429
+            else:
+                time.sleep(0.25)
         return r.json()
 
     def __init__(self, email: str = None, password: str = None, api_base: str = API_BASE):
@@ -106,7 +105,7 @@ class HTBClient:
                 "email": email, "password": password
             }, authorized=False)
             self._access_token = data['message']['access_token']
-            self._refresh_token = data['message']['access_token']
+            self._refresh_token = data['message']['refresh_token']
 
     # noinspection PyUnresolvedReferences
     def do_search(self, search_term: str) -> "Search":

@@ -8,11 +8,6 @@ class AuthenticationException(HtbException):
     pass
 
 
-class UnknownSolveException(HtbException):
-    """An unknown solve type was passed"""
-    pass
-
-
 class IncorrectFlagException(HtbException):
     """An incorrect flag was submitted"""
     pass

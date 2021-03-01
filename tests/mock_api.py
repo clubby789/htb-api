@@ -7,6 +7,8 @@ from threading import Thread
 CORRECT_CHALLENGE = "HTB{a_challenge_flag}"
 CORRECT_HASH = "30ea86803e0d85be51599c3a4e422266"
 
+has_ratelimited: bool = False
+
 
 class MockApiHandler(BaseHTTPRequestHandler):
     def _set_headers(self):
@@ -15,6 +17,14 @@ class MockApiHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_POST(self):
+        global has_ratelimited
+        if not has_ratelimited:
+            # Simulate ratelimit by sending a 429 once
+            self.send_response(429)
+            self.end_headers()
+            has_ratelimited = True
+            self.wfile.write(b"")
+            return
         length = int(self.headers.get('content-length'))
         message = json.loads(self.rfile.read(length))
         if self.path == "/api/v4/challenge/own":
