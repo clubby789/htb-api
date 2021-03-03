@@ -24,3 +24,15 @@ print(client.user)
 ## Documentation
 
 The documentation is available [here](https://pyhackthebox.readthedocs.io/en/latest/).
+
+## Current Features
+- Logging into the API (and automatically refreshing access tokens)
+- Challenges, Machines, Fortresses and Endgames
+  * Getting details
+  * Viewing authors
+  * Viewing first bloods
+  * Submitting flags 
+- Searching Users, Challenges, Machines and Teams
+- Spawning and stopping Challenge instances
+- Retrieving user activity
+- Viewing Hall(s) of Fame (Top 100, VIP, Team and University Leaderboards)
