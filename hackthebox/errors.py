@@ -8,6 +8,11 @@ class AuthenticationException(HtbException):
     pass
 
 
+class NotFoundException(HtbException):
+    """The API returned a 404 response for this request"""
+    pass
+
+
 class MissingEmailException(AuthenticationException):
     """An email was not given where it was required"""
     pass
