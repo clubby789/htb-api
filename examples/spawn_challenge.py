@@ -1,7 +1,7 @@
 def main(client, testing=False):
     if testing:
         return
-    search = client.do_search("Hunting")
+    search = client.search("Hunting")
     challenge = search.challenges[0]
     challenge.start()
     instance = challenge.instance

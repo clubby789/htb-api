@@ -4,6 +4,7 @@ from .user import User
 from .machine import Machine
 from .team import Team
 from .challenge import Challenge
+from .errors import NotFoundException
 from . import htb
 
 
@@ -35,28 +36,51 @@ class Search:
     _is_resolved: bool = False
     _term: str = None
 
+    # The search API can return non-existent items (i.e. deleted). This should be handled and
+    # not passed back to the user.
+
     @property
     def users(self) -> List[User]:
         if self._users is None:
-            self._users = [self._client.get_user(uid) for uid in self._user_ids]
+            self._users = []
+            for uid in self._user_ids:
+                try:
+                    self._users.append(self._client.get_user(uid))
+                except NotFoundException:
+                    pass
         return self._users
 
     @property
     def machines(self) -> List[Machine]:
         if self._machines is None:
-            self._machines = [self._client.get_machine(uid) for uid in self._machine_ids]
+            self._machines = []
+            for uid in self._machine_ids:
+                try:
+                    self._machines.append(self._client.get_machine(uid))
+                except NotFoundException:
+                    pass
         return self._machines
 
     @property
     def teams(self) -> List[Team]:
         if self._teams is None:
-            self._teams = [self._client.get_team(uid) for uid in self._team_ids]
+            self._teams = []
+            try:
+                for uid in self._team_ids:
+                    self._teams.append(self._client.get_team(uid))
+            except NotFoundException:
+                pass
         return self._teams
 
     @property
     def challenges(self) -> List[Challenge]:
         if self._challenges is None:
-            self._challenges = [self._client.get_challenge(uid) for uid in self._challenge_ids]
+            self._challenges = []
+            for uid in self._challenge_ids:
+                try:
+                    self._challenges.append(self._client.get_challenge(uid))
+                except NotFoundException:
+                    pass
         return self._challenges
 
     @property

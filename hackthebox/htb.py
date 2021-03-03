@@ -7,7 +7,7 @@ import time
 import requests
 
 from .constants import API_BASE, USER_AGENT
-from .errors import AuthenticationException, MissingPasswordException, MissingEmailException
+from .errors import AuthenticationException, MissingPasswordException, MissingEmailException, NotFoundException
 
 
 def jwt_expired(token: str) -> bool:
@@ -87,6 +87,8 @@ class HTBClient:
             # Not sure on the exact ratelimit - loop until we don't get 429
             else:
                 time.sleep(0.25)
+        if r.status_code == 404:
+            raise NotFoundException
         return r.json()
 
     def __init__(self, email: str = None, password: str = None, api_base: str = API_BASE):
@@ -106,7 +108,15 @@ class HTBClient:
             self._refresh_token = data['message']['refresh_token']
 
     # noinspection PyUnresolvedReferences
-    def do_search(self, search_term: str) -> "Search":
+    def search(self, search_term: str) -> "Search":
+        """
+
+        Args:
+            search_term: The search term to pass to the API
+
+        Returns: A Search object with lists of the items retrieved from the API
+
+        """
         from .search import Search
         return Search(search_term, self)
 
@@ -273,11 +283,11 @@ class HTBClient:
 
     # noinspection PyUnresolvedReferences
     def get_hof(self, vip: bool = False) -> "Leaderboard":
+        """
+        Returns: A Leaderboard of the top 100 Users
+        """
         from .leaderboard import Leaderboard
         from .user import User
-        """
-        Returns: A Leaderboard of Users
-        """
         endpoint = "rankings/users"
         if vip:
             endpoint += "?vip=1"
@@ -286,10 +296,10 @@ class HTBClient:
 
     # noinspection PyUnresolvedReferences
     def get_hof_countries(self) -> "Leaderboard":
+        """
+        Returns: A Leaderboard of the top 100 Countries
+        """
         from .leaderboard import Leaderboard, Country
-        """
-        Returns: A Leaderboard of Countries
-        """
         data = self.do_request("rankings/countries")['data']
         return Leaderboard(data, self, Country)
 
