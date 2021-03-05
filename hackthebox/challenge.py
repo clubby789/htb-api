@@ -1,11 +1,12 @@
 from __future__ import annotations
 from typing import List
 from datetime import datetime
+import os
 
 import dateutil.parser
 
 from . import htb
-from .errors import IncorrectFlagException, IncorrectArgumentException, NoDockerException
+from .errors import IncorrectFlagException, IncorrectArgumentException, NoDockerException, NoDownloadException
 
 
 class Challenge(htb.HTBObject):
@@ -95,6 +96,24 @@ class Challenge(htb.HTBObject):
         # TODO: Handle failure to start
         self.instance = DockerInstance(instance['ip'], instance['port'], self.id, self._client, instance['id'])
         return self.instance
+
+    def download(self, path=None) -> str:
+        """
+
+        Args:
+            path: The name of the zipfile to download to. If none is provided, it is saved to the current directory.
+
+        Returns: The path of the file
+
+        """
+        if not self.has_download:
+            raise NoDownloadException
+        if path is None:
+            path = os.path.join(os.getcwd(), f"{self.name}.zip")
+        data = self._client.do_request(f"challenge/download/{self.id}", download=True)
+        with open(path, 'wb') as f:
+            f.write(data)
+        return path
 
     # noinspection PyUnresolvedReferences
     @property

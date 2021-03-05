@@ -52,3 +52,8 @@ class IncorrectArgumentException(HtbException):
 class NoDockerException(HtbException):
     """A challenge was 'started' when no Docker is available"""
     pass
+
+
+class NoDownloadException(HtbException):
+    """A challenge was 'downloaded' when no download is available"""
+    pass

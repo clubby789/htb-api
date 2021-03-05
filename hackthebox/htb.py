@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Callable
+from typing import List, Callable, Union
 import base64
 import json
 import time
@@ -58,7 +58,7 @@ class HTBClient:
         self._access_token = data['access_token']
         self._refresh_token = data['refresh_token']
 
-    def do_request(self, endpoint, json_data=None, data=None, authorized=True) -> dict:
+    def do_request(self, endpoint, json_data=None, data=None, authorized=True, download=False) -> Union[dict, bytes]:
         """
 
         Args:
@@ -66,8 +66,9 @@ class HTBClient:
             json_data: Data to be sent in JSON format
             data: Data to be sent in application/x-www-form-urlencoded format
             authorized: If the request requires an Authorization header
+            download: If we are downloading raw data
         Returns:
-            The JSON response from the API
+            The JSON response from the API or the raw data (if `download` is set)
 
         """
         headers = {"User-Agent": USER_AGENT}
@@ -79,9 +80,11 @@ class HTBClient:
             headers['Authorization'] = "Bearer " + self._access_token
         while True:
             if not json_data and not data:
-                r = requests.get(self._api_base + endpoint, headers=headers)
+                r = requests.get(self._api_base + endpoint, headers=headers, stream=download)
             else:
-                r = requests.post(self._api_base + endpoint, json=json_data, data=data, headers=headers)
+                r = requests.post(
+                    self._api_base + endpoint, json=json_data, data=data, headers=headers, stream=download
+                )
             if r.status_code != 429:
                 break
             # Not sure on the exact ratelimit - loop until we don't get 429
@@ -89,7 +92,10 @@ class HTBClient:
                 time.sleep(0.25)
         if r.status_code == 404:
             raise NotFoundException
-        return r.json()
+        if download:
+            return r.content
+        else:
+            return r.json()
 
     def __init__(self, email: str = None, password: str = None, api_base: str = API_BASE):
         self._api_base = api_base
