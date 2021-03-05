@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] 05/03/2021
+### Added
+- Added the ability to download challenges (with a download)
+
 ## [0.3.1] 03/03/2021
 ### Fixed
 - Handle the API returning invalid search results
