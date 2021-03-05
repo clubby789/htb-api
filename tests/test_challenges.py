@@ -58,14 +58,19 @@ def test_start_challenge(htb_client: HTBClient, mock_htb_client: HTBClient):
     instance.stop()
 
 
-def test_download_challenge(htb_client: HTBClient):
+def test_download_challenge(htb_client: HTBClient, mock_htb_client: HTBClient):
     """Tests the ability to download a challenge"""
-    path = htb_client.get_challenge(1).download()
+    downloadable = htb_client.get_challenge(1)
+    not_downloadable = htb_client.get_challenge(143)
+    downloadable._client = mock_htb_client
+    not_downloadable._client = mock_htb_client
+
+    path = downloadable.download()
     assert os.path.exists(path)
     os.remove(path)
-    htb_client.challenge_cooldown = 253407876721
+    downloadable._client.challenge_cooldown = 253407876721
     # The year 10,000 - should be fine
     with raises(RateLimitException):
-        htb_client.get_challenge(1).download()
+        downloadable.download()
     with raises(NoDownloadException):
-        htb_client.get_challenge(143).download()
+        not_downloadable.download()
