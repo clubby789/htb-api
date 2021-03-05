@@ -2,9 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.1] 05/03/2021
+### Fixed
+- Ratelimited challenge downloads to 1 per 30 seconds
+
 ## [0.4.0] 05/03/2021
 ### Added
-- Added the ability to download challenges (with a download)
+- Added the ability to download challenges (with a download available)
 
 ## [0.3.1] 03/03/2021
 ### Fixed

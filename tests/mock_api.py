@@ -77,6 +77,11 @@ class MockApiHandler(BaseHTTPRequestHandler):
             else:
                 self._set_headers()
                 self.wfile.write(json.dumps({"message": "Wrong flag"}).encode())
+        elif re.match(r"/api/v4/challenge/download/\d+", self.path):
+            self.send_response(200)
+            self.send_header('Content-type', 'application/zip')
+            self.end_headers()
+            self.wfile.write(b"Not really zip data!")
 
     def log_message(self, fmt, *args):
         # Silence logging

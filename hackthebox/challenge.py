@@ -2,11 +2,14 @@ from __future__ import annotations
 from typing import List
 from datetime import datetime
 import os
+import time
+from .constants import DOWNLOAD_COOLDOWN
 
 import dateutil.parser
 
 from . import htb
-from .errors import IncorrectFlagException, IncorrectArgumentException, NoDockerException, NoDownloadException
+from .errors import IncorrectFlagException, IncorrectArgumentException, NoDockerException,\
+    NoDownloadException, RateLimitException
 
 
 class Challenge(htb.HTBObject):
@@ -108,9 +111,12 @@ class Challenge(htb.HTBObject):
         """
         if not self.has_download:
             raise NoDownloadException
+        if self._client.challenge_cooldown > time.time():
+            raise RateLimitException("Challenge download ratelimit exceeded - please do not remove this")
         if path is None:
             path = os.path.join(os.getcwd(), f"{self.name}.zip")
         data = self._client.do_request(f"challenge/download/{self.id}", download=True)
+        self._client._cooldown = time.time() + DOWNLOAD_COOLDOWN
         with open(path, 'wb') as f:
             f.write(data)
         return path
