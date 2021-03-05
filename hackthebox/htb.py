@@ -35,6 +35,8 @@ class HTBClient:
 
             from hackthebox import HTBClient
             client = HTBClient(email="user@example.com", password="S3cr3tP455w0rd!")
+    Attributes:
+        challenge_cooldown: Time when next download is allowed
 
     """
     # noinspection PyUnresolvedReferences
@@ -42,6 +44,7 @@ class HTBClient:
     _access_token: str = None
     _refresh_token: str = None
     _api_base: str = None
+    challenge_cooldown: int = 0
 
     def _refresh_access_token(self):
         """

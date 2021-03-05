@@ -1,7 +1,7 @@
 import os
 
 from pytest import raises
-from hackthebox import HTBClient, NoDockerException, NoDownloadException
+from hackthebox import HTBClient, NoDockerException, NoDownloadException, RateLimitException
 
 
 def test_get_challenge(htb_client: HTBClient):
@@ -63,5 +63,9 @@ def test_download_challenge(htb_client: HTBClient):
     path = htb_client.get_challenge(1).download()
     assert os.path.exists(path)
     os.remove(path)
+    htb_client.challenge_cooldown = 253407876721
+    # The year 10,000 - should be fine
+    with raises(RateLimitException):
+        htb_client.get_challenge(1).download()
     with raises(NoDownloadException):
         htb_client.get_challenge(143).download()

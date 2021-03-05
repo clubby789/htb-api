@@ -57,3 +57,10 @@ class NoDockerException(HtbException):
 class NoDownloadException(HtbException):
     """A challenge was 'downloaded' when no download is available"""
     pass
+
+
+class RateLimitException(HtbException):
+    """An internal ratelimit to prevent spam was violated"""
+    def __init__(self, message):
+        print(message)
+        super().__init__(message)
