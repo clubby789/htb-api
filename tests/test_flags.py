@@ -47,6 +47,7 @@ def test_challenge_flags(mock_htb_client: HTBClient):
         "name": "Crack This",
         "retired": True,
         "points": 0,
+        "difficulty" : "Easy",
         "difficulty_chart": "0",
         "release_date": "2018-04-25",
         "solves": 0,

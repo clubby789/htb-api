@@ -147,6 +147,7 @@ class Challenge(htb.HTBObject):
         self.name = data['name']
         self.retired = bool(data['retired'])
         self.points = int(data['points'])
+        self.difficulty = data["difficulty"]
         self.difficulty_ratings = data['difficulty_chart']
         self.solves = data['solves']
         self.solved = data['authUserSolve']
