@@ -13,7 +13,9 @@ def test_get_endgames(htb_client: HTBClient):
     """Tests the ability to retrieve the list of Endgames"""
     endgames = htb_client.get_endgames()
     assert len(endgames) >= 5
-    assert endgames[-1].points == 150
+    assert endgames[-1].name == "P.O.O."
+    # The Endgame has been retired
+    assert endgames[-1].points == 0
 
 
 def test_get_endgame_authors(htb_client: HTBClient):
