@@ -100,7 +100,7 @@ class HTBClient:
         else:
             return r.json()
 
-    def __init__(self, email: str = None, password: str = None, api_base: str = API_BASE):
+    def __init__(self, email: str = None, password: str = None, otp: str|int = None, api_base: str = API_BASE):
         self._api_base = api_base
         if not password and not email:
             print("Must give an authentication method")
@@ -115,6 +115,17 @@ class HTBClient:
             }, authorized=False)
             self._access_token = data['message']['access_token']
             self._refresh_token = data['message']['refresh_token']
+            if data['message']['is2FAEnabled'] is True:
+                if otp is None:
+                    raise MissingOTPException
+                if type(otp) == int:
+                    # Optimistically try and create a string
+                    otp = f"{otp:06d}"
+                resp = self.do_request("2fa/login", json_data={
+                    "one_time_password": otp
+                })
+                if "correct" not in resp['message']:
+                    raise IncorrectOTPException
 
     # noinspection PyUnresolvedReferences
     def search(self, search_term: str) -> "Search":

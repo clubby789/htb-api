@@ -23,6 +23,16 @@ class MissingPasswordException(AuthenticationException):
     pass
 
 
+class MissingOTPException(AuthenticationException):
+    """An OTP was not given but 2FA is enabled"""
+    pass
+
+
+class IncorrectOTPException(AuthenticationException):
+    """An OTP was given but not accepted"""
+    pass
+
+
 class UnknownSolveException(HtbException):
     """An unknown solve type was passed"""
     pass
