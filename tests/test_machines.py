@@ -10,6 +10,13 @@ def test_get_machine(mock_htb_client: HTBClient):
     print(machine)
 
 
+def test_get_solves(mock_htb_client: HTBClient):
+    """Tests the ability to retrieve a specific machine"""
+    machine = mock_htb_client.get_machine(1)
+    print(machine.root_blood)
+    assert machine.root_blood.machine == machine
+
+
 def test_get_non_existent_machine(mock_htb_client: HTBClient):
     """Tests for a failure upon a non existent challenge"""
     with raises(Exception):

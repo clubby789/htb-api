@@ -54,7 +54,7 @@ class HTBClient:
 
         """
         headers = {"User-Agent": USER_AGENT}
-        r = requests.post(API_BASE + "login/refresh", json={
+        r = requests.post(self._api_base + "login/refresh", json={
                 "refresh_token": self._refresh_token
             }, headers=headers)
         data = r.json()['message']
@@ -75,7 +75,7 @@ class HTBClient:
 
         """
         headers = {"User-Agent": USER_AGENT}
-        if authorized and self._api_base == API_BASE:
+        if authorized:
             # Don't use authorization if the API base URL isn't the real one -
             # i.e. we're running a test
             if jwt_expired(self._access_token):
@@ -88,7 +88,6 @@ class HTBClient:
                 r = requests.post(
                     self._api_base + endpoint, json=json_data, data=data, headers=headers, stream=download
                 )
-            print(r.text)
             if r.status_code != 429:
                 break
             # Not sure on the exact ratelimit - loop until we don't get 429
@@ -392,3 +391,6 @@ class HTBObject:
             return getattr(new_obj, item)
         else:
             raise AttributeError
+
+    def __eq__(self, other):
+        return self.id == other.id and type(self) == type(other)

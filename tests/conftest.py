@@ -22,4 +22,3 @@ def mock_htb_client() -> HTBClient:
     time.sleep(0.5)
     client = HTBClient(email="user@example.com", password="password", api_base=f"http://localhost:{port}/api/v4/")
     return client
-

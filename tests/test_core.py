@@ -8,6 +8,23 @@ def test_login(mock_htb_client: HTBClient):
     assert mock_htb_client._access_token is not None
 
 
+def test_otp_login():
+    """Tests the OTP functionality"""
+    import random
+    from mock_api.app import start_server
+    import time
+    port = random.randint(1024, 65535)
+    thread = start_server(port)
+    # Wait for server thread to start
+    time.sleep(0.5)
+
+    with raises(errors.MissingOTPException):
+        HTBClient(email="otpuser@example.com", password="password", api_base=f"http://localhost:{port}/api/v4/")
+    with raises(errors.IncorrectOTPException):
+        HTBClient(email="otpuser@example.com", password="password", otp=555555, api_base=f"http://localhost:{port}/api/v4/")
+    HTBClient(email="otpuser@example.com", password="password", otp=111111, api_base=f"http://localhost:{port}/api/v4/")
+
+
 def test_incorrect_login():
     with raises(errors.AuthenticationException):
         HTBClient()

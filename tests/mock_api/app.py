@@ -1,4 +1,8 @@
+import base64
+import json
+import time
 from threading import Thread
+
 from flask import Flask, request, jsonify, Response
 
 CORRECT_CHALLENGE = "HTB{a_challenge_flag}"
@@ -44,7 +48,8 @@ CHALLENGE_WEATHERAPP = {
     "creator2_name": "makelaris",
     "download": True,
     "docker": True,
-    "docker_ip": None,
+    "docker_ip": "10.0.0.0",
+    "docker_port": 1337,
     "release_date": "2021-01-29T20:00:00.000000Z",
 }
 
@@ -68,7 +73,8 @@ CHALLENGE_NGINXATSU = {
     "creator2_name": "makelaris",
     "download": True,
     "docker": True,
-    "docker_ip": None,
+    "docker_ip": "10.0.0.0",
+    "docker_port": 1337,
     "release_date": "2021-01-29T20:00:00.000000Z",
 }
 
@@ -91,7 +97,8 @@ CHALLENGE_QUICKR = {
     "creator2_name": "makelaris",
     "download": False,
     "docker": True,
-    "docker_ip": None,
+    "docker_ip": "10.0.0.0",
+    "docker_port": 1337,
     "release_date": "2021-01-29T20:00:00.000000Z",
 }
 
@@ -347,14 +354,37 @@ MACHINE_LAME = {
       "id": 1,
       "name": "ch4p",
     },
-    "maker2": None,
-    "userBlood": {},
-    "rootBlood": {},
+    "maker2": {
+      "id": 1,
+      "name": "ch4p",
+    },
     "recommended": 0,
     "sp_flag": 0,
     "avatar": None,
     "authUserFirstUserTime": "2Y 5M 17D",
     "authUserFirstRootTime": "2Y 5M 17D",
+    "userBlood": {
+        "user": {
+            "name": "0x1Nj3cT0R",
+            "id": 22,
+            "avatar": None
+        },
+        "created_at": "2017-04-02 23:50:16",
+        "blood_difference": "18D 22H 55M"
+    },
+    "userBloodAvatar": None,
+    "rootBlood": {
+        "user": {
+            "name": "0x1Nj3cT0R",
+            "id": 22,
+            "avatar": None
+        },
+        "created_at": "2017-04-02 23:49:27",
+        "blood_difference": "18D 22H 54M"
+    },
+    "rootBloodAvatar": None,
+    "firstUserBloodTime": "18D 22H 55M",
+    "firstRootBloodTime": "18D 22H 54M",
 }
 
 ENDGAME_POO = {
@@ -518,11 +548,36 @@ def get_machine(num):
 
 @app.route("/api/v4/login", methods=["POST"])
 def login():
+    otp = request.json['email'] == 'otpuser@example.com'
+    token = (
+                base64.b64encode(json.dumps({"typ": "JWT", "alg": "RS256"}).encode()).decode() + "." +
+                base64.b64encode(json.dumps({"aud": "0", "jti": "", "iat": 0, "nbf": 0,
+                                             "exp": time.time() + 100, "sub": "0", "scopes": []}).encode()).decode() + ".")
     return jsonify({"message": {
-        "access_token": "FakeToken",
+        "access_token": token,
         "refresh_token": "FakeToken",
-        "is2FAEnabled": False
+        "is2FAEnabled": otp
     }})
+
+
+@app.route("/api/v4/2fa/login", methods=["POST"])
+def otp_login():
+    if request.json['one_time_password'] == '111111':
+        return jsonify({"message": "OTP correct"})
+    else:
+        return jsonify({"message": "OTP wrong"}), 400
+
+
+@app.route("/api/v4/login/refresh", methods=["POST"])
+def refresh():
+    token = (
+            base64.b64encode(json.dumps({"typ": "JWT", "alg": "RS256"}).encode()).decode() + "." +
+            base64.b64encode(json.dumps({"aud": "0", "jti": "", "iat": 0, "nbf": 0,
+                                         "exp": time.time() + 100, "sub": "0", "scopes": []}).encode()).decode() + ".")
+    return jsonify({"message": {
+        "access_token": token,
+        "refresh_token": "FakeToken"
+       }})
 
 
 @app.route("/api/v4/challenge/start", methods=["POST"])
@@ -669,6 +724,15 @@ def get_own_user():
 @app.route("/api/v4/search/fetch")
 def search():
     return jsonify({"challenges": [], "machines": [MACHINE_LAME], "teams": [], "users": []})
+
+
+@app.before_request
+def ratelimit():
+    global has_ratelimited
+    if not has_ratelimited:
+        has_ratelimited = True
+        return "Wait", 429
+    return None
 
 
 def start_server(port: int):
