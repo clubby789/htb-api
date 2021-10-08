@@ -16,9 +16,6 @@ on:
 
 jobs:
   test:
-    env:
-      HTB_EMAIL: ${{ secrets.HTB_EMAIL }}
-      HTB_PASSWORD: ${{ secrets.HTB_PASSWORD }}
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2

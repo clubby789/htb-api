@@ -7,3 +7,4 @@ Sphinx==3.5.1
 sphinx-rtd-theme==0.5.1
 python-dateutil==2.8.1
 twine
+flask==2.0.2

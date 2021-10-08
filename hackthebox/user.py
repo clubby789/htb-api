@@ -105,7 +105,7 @@ class User(htb.HTBObject):
 
     # noinspection PyUnresolvedReferences
     def __init__(self, data: dict, client: "HTBClient", summary: bool = False):
-        """Initialise a `Challenge` using API data"""
+        """Initialise a `User` using API data"""
         self._client = client
         self._detailed_func = client.get_user
         self.id = data['id']
