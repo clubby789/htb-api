@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 @fixture(scope="session")
 def htb_client() -> HTBClient:
-    return HTBClient(email=getenv("HTB_EMAIL"), password=getenv("HTB_PASSWORD"))
+    return HTBClient(email=getenv("HTB_EMAIL"), password=getenv("HTB_PASSWORD"), otp=getenv("HTB_OTP"))
 
 
 @fixture(scope="session")
@@ -28,7 +28,7 @@ def mock_htb_client() -> HTBClient:
 
 @fixture
 def expired_htb_client() -> HTBClient:
-    client = HTBClient(email=getenv("HTB_EMAIL"), password=getenv("HTB_PASSWORD"))
+    client = HTBClient(email=getenv("HTB_EMAIL"), password=getenv("HTB_PASSWORD"), otp=getenv("HTB_OTP"))
     # Fake access token which will expire immediately
     client._access_token = (base64.b64encode(json.dumps({"typ": "JWT", "alg": "RS256"}).encode()).decode() + "." +
                             base64.b64encode(json.dumps({"aud": "0", "jti": "", "iat": 0, "nbf": 0,

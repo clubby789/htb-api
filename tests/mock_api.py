@@ -46,7 +46,8 @@ class MockApiHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({
                 "message": {
                     "access_token": "FakeToken",
-                    "refresh_token": "FakeToken"
+                    "refresh_token": "FakeToken",
+                    "is2FAEnabled": False
                 }
             }).encode())
         elif self.path == "/api/v4/challenge/start":

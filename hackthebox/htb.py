@@ -7,7 +7,7 @@ import time
 import requests
 
 from .constants import API_BASE, USER_AGENT
-from .errors import AuthenticationException, MissingPasswordException, MissingEmailException, NotFoundException
+from .errors import AuthenticationException, MissingPasswordException, MissingEmailException, NotFoundException, MissingOTPException, IncorrectOTPException
 
 
 def jwt_expired(token: str) -> bool:
@@ -88,11 +88,12 @@ class HTBClient:
                 r = requests.post(
                     self._api_base + endpoint, json=json_data, data=data, headers=headers, stream=download
                 )
+            print(r.text)
             if r.status_code != 429:
                 break
             # Not sure on the exact ratelimit - loop until we don't get 429
             else:
-                time.sleep(0.25)
+                time.sleep(1)
         if r.status_code == 404:
             raise NotFoundException
         if download:
