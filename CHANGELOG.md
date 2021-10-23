@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.2] 23/10/2021
+### Added
+- Added the ability to list VPN servers
+- Added the ability to switch between and download VPN packs
+
+### Development
+- Fully mock the API for unit testing
+
 ## [0.4.1] 05/03/2021
 ### Fixed
 - Ratelimited challenge downloads to 1 per 30 seconds
