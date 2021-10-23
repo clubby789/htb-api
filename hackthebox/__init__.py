@@ -1,10 +1,11 @@
-from .htb import HTBClient, HTBObject
 from .challenge import Challenge
-from .machine import Machine
 from .endgame import Endgame
-from .fortress import Fortress
-from .search import Search
-from .user import User
-from .team import Team
-from .solve import *
 from .errors import *
+from .fortress import Fortress
+from .htb import HTBClient, HTBObject
+from .machine import Machine
+from .search import Search
+from .solve import *
+from .team import Team
+from .user import User
+from .vpn import VPNServer
