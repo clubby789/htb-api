@@ -1,14 +1,15 @@
 from __future__ import annotations
-from typing import List
-from datetime import datetime
+
 import os
 import time
-from .constants import DOWNLOAD_COOLDOWN
+from datetime import datetime
+from typing import List
 
 import dateutil.parser
 
 from . import htb
-from .errors import IncorrectFlagException, IncorrectArgumentException, NoDockerException,\
+from .constants import DOWNLOAD_COOLDOWN
+from .errors import IncorrectFlagException, IncorrectArgumentException, NoDockerException, \
     NoDownloadException, RateLimitException
 
 
@@ -200,7 +201,7 @@ class DockerInstance:
         self.client.do_request("challenge/stop", json_data={"challenge_id": self.chall_id})
         # TODO: Handle failures to stop
 
-        # Can't delete referencees to the object from here so we just have
+        # Can't delete references to the object from here so we just have
         # to set everything to None and prevent further usage
         self.id = None
         self.port = None

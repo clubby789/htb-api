@@ -1,10 +1,8 @@
 from typing import List, Iterator
 
 from . import htb
-from .user import User
 from .team import Team
-
-# TODO: Implement universities
+from .user import User
 
 
 class Leaderboard(htb.HTBObject):

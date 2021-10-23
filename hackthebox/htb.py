@@ -1,13 +1,15 @@
 from __future__ import annotations
-from typing import List, Callable, Union
+
 import base64
 import json
 import time
+from typing import List, Callable, Union
 
 import requests
 
 from .constants import API_BASE, USER_AGENT
-from .errors import AuthenticationException, MissingPasswordException, MissingEmailException, NotFoundException, MissingOTPException, IncorrectOTPException
+from .errors import AuthenticationException, MissingPasswordException, MissingEmailException, NotFoundException, \
+    MissingOTPException, IncorrectOTPException
 
 
 def jwt_expired(token: str) -> bool:
@@ -61,7 +63,7 @@ class HTBClient:
         self._access_token = data['access_token']
         self._refresh_token = data['refresh_token']
 
-    def do_request(self, endpoint, json_data=None, data=None, authorized=True, download=False) -> Union[dict, bytes]:
+    def do_request(self, endpoint, json_data=None, data=None, authorized=True, download=False, post=False) -> Union[dict, bytes]:
         """
 
         Args:
@@ -70,6 +72,7 @@ class HTBClient:
             data: Data to be sent in application/x-www-form-urlencoded format
             authorized: If the request requires an Authorization header
             download: If we are downloading raw data
+            post: Force POST request
         Returns:
             The JSON response from the API or the raw data (if `download` is set)
 
@@ -83,7 +86,10 @@ class HTBClient:
             headers['Authorization'] = "Bearer " + self._access_token
         while True:
             if not json_data and not data:
-                r = requests.get(self._api_base + endpoint, headers=headers, stream=download)
+                if post:
+                    r = requests.post(self._api_base + endpoint, headers=headers, stream=download)
+                else:
+                    r = requests.get(self._api_base + endpoint, headers=headers, stream=download)
             else:
                 r = requests.post(
                     self._api_base + endpoint, json=json_data, data=data, headers=headers, stream=download
@@ -344,6 +350,41 @@ class HTBClient:
         from .leaderboard import Leaderboard, University
         data = self.do_request("rankings/universities")['data']
         return Leaderboard(data, self, University)
+
+    # noinspection PyUnresolvedReferences
+    def get_current_vpn_server(self, release_arena=False) -> "VPNServer":
+        """
+        Returns: The currently assigned `VPNServer`
+
+        Args:
+            release_arena: Get the current release arena VPN server
+        """
+        from .vpn import VPNServer
+        if release_arena:
+            data = self.do_request("connections/servers?product=release_arena")["data"]["assigned"]
+        else:
+            data = self.do_request("connections/servers?product=labs")["data"]["assigned"]
+        return VPNServer(data, self)
+
+    # noinspection PyUnresolvedReferences
+    def get_all_vpn_servers(self, release_arena=False) -> "List[VPNServer]":
+        """
+        Returns: A list of `VPNServer`s
+
+        Args:
+            release_arena: Use the release arena VPN servers
+        """
+        from .vpn import VPNServer
+        if release_arena:
+            data = self.do_request("connections/servers?product=release_arena")["data"]["options"]
+        else:
+            data = self.do_request("connections/servers?product=labs")["data"]["options"]
+        servers = []
+        for location in data.keys():  # 'EU'
+            for location_role in data[location].keys():  # 'EU - Free'
+                for server in data[location][location_role]["servers"].values():
+                    servers.append(VPNServer(server, self))
+        return servers
 
     # noinspection PyUnresolvedReferences
     @property
