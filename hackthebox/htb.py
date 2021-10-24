@@ -22,7 +22,7 @@ def jwt_expired(token: str) -> bool:
         If the token is expired
 
     """
-    payload = base64.b64decode(token.split('.')[1]).decode()
+    payload = base64.b64decode(token.split('.')[1] + "==").decode()
     if time.time() > json.loads(payload)['exp']:
         return True
     else:
