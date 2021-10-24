@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.4] 24/10/2021
+### Added
+- Added the ability to spawn machines (both release arena and not)
+- Added retrieving a machine's IP
+
 ## [0.4.3] 24/10/2021
 ### Fixed
 - The API can return improperly padded base64 tokens. Manually pad them for some internal logic.
