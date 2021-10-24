@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.3] 24/10/2021
+### Fixed
+- The API can return improperly padded base64 tokens. Manually pad them for some internal logic.
+
 ## [0.4.2] 23/10/2021
 ### Added
 - Added the ability to list VPN servers
