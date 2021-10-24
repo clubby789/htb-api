@@ -369,7 +369,7 @@ class HTBClient:
     # noinspection PyUnresolvedReferences
     def get_all_vpn_servers(self, release_arena=False) -> "List[VPNServer]":
         """
-        Returns: A list of `VPNServer`s
+        Returns: A list of `VPNServer`
 
         Args:
             release_arena: Use the release arena VPN servers

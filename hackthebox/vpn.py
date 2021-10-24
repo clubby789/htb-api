@@ -1,3 +1,18 @@
+"""
+Examples:
+    Retrieving the current VPN server::
+
+        print(client.get_current_vpn_server())
+
+    Switching to a given VPN server::
+
+        req = input("What server? ")
+        server = next(filter(lambda x: x.friendly_name == req), client.get_all_vpn_servers()))
+        server.switch()
+        server.download(path="/tmp/out.ovpn")
+
+"""
+
 from __future__ import annotations
 
 import os
@@ -21,7 +36,6 @@ class VPNServer(htb.HTBObject):
 
     # noinspection PyUnresolvedReferences
     def __init__(self, data: dict, client: "HTBClient", summary=False):
-        """Initialise a `VPNServer` using API data"""
         self._client = client
         self._detailed_func = lambda x: None
         self.id = data["id"]
@@ -34,6 +48,11 @@ class VPNServer(htb.HTBObject):
         return f"<VPN Server '{self.friendly_name}'>"
 
     def switch(self) -> bool:
+        """
+        Switches the client to use this VPN server
+
+        Returns: Whether the switch was completed successfully
+        """
         # TODO: Throw exception on failure
         return self._client.do_request(f"connections/servers/switch/{self.id}", post=True)["status"] is True
 

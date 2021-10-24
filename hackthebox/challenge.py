@@ -1,3 +1,16 @@
+"""
+Examples:
+    Starting a challenge and submitting the flag::
+
+        challenge = client.get_challenge(100)
+        instance = challenge.start()
+        r = remote(instance.ip, instance.port)
+        # Do the challenge.....
+        instance.stop()
+        challenge.submit(flag, difficulty=50)
+
+"""
+
 from __future__ import annotations
 
 import os
