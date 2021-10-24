@@ -1,10 +1,11 @@
-from typing import List
-import dateutil.parser
 from datetime import datetime, timedelta
+from typing import List, Union
 
-from . import htb
-from .solve import MachineSolve
+import dateutil.parser
+
+from . import htb, vpn
 from .errors import IncorrectArgumentException, IncorrectFlagException
+from .solve import MachineSolve
 from .utils import parse_delta
 
 
@@ -18,13 +19,14 @@ class Machine(htb.HTBObject):
         release_date: The date the Machine was released
         user_owns: The number of user owns the Machine has
         root_owns: The number of root owns the Machine has
-        free: Whethere the Machine is available on free servers
+        free: Whether the Machine is available on free servers
         user_owned: Whether the active User has owned the Machine's user account
         root_owned: Whether the active User has owned the Machine's user account
         reviewed: Whether the active User has reviewed the Machine
         stars: The average star rating of the Machine
         avatar: The relative URL of the Machine avatar
         difficulty: The difficulty of the machine
+        ip: The IP address of the machine
 
         active: Whether the Machine is active
         retired: Whether the Machine is retired
@@ -69,6 +71,8 @@ class Machine(htb.HTBObject):
     # noinspection PyUnresolvedReferences
     _authors: List["User"] = None
     _author_ids: List[int] = None
+    _is_release: bool = None
+    _ip: str = None
 
     def submit(self, flag: str, difficulty: int):
         """ Submits a flag for a Machine
@@ -103,6 +107,61 @@ class Machine(htb.HTBObject):
             for uid in self._author_ids:
                 self._authors.append(self._client.get_user(uid))
         return self._authors
+
+    @property
+    def is_release(self):
+        if self._is_release is not None:
+            return self._is_release
+        self._is_release = False
+
+        data = self._client.do_request("connections")["data"]
+        try:
+            if data['release_arena']['machine']['id'] == self.id:
+                self._is_release = True
+        except AttributeError:
+            pass
+        return self._is_release
+
+    @property
+    def ip(self):
+        """The IP of an active machine."""
+        if self._ip is not None:
+            return self._ip
+        listing = self._client.do_request("machine/list")["info"]
+        m = next(filter(lambda x: x["id"] == self.id, listing))
+        self._ip = m["ip"]
+        return self._ip
+
+    def start(self, release_arena=False) -> Union["MachineInstance", None]:
+        """Alias for `Machine.spawn()`"""
+        return self.spawn(release_arena)
+
+    def spawn(self, release_arena=False) -> "MachineInstance":
+        """Spawn an instance of this machine.
+
+        Args:
+            release_arena: Whether to use Release Arena to spawn the machine
+
+        Returns:
+            The spawned `MachineInstance`
+        """
+        if release_arena:
+            if not self.is_release:
+                # TODO: Better exception
+                raise Exception("Machine is not on release arena")
+            data = self._client.do_request("release_arena/spawn", post=True)
+            if data.get("success") != 1:
+                raise Exception(f"Failed to spawn: {data}")
+            ip = self._client.do_request("release_arena/active")["info"]["ip"]
+            server = self._client.get_current_vpn_server(release_arena=True)
+        else:
+            data = self._client.do_request("vm/spawn", json_data={"machine_id": self.id})
+            if "Machine deployed" in data.get("message"):
+                ip = self._client.do_request(f"machine/profile/{self.id}")["info"]["ip"]
+                server = self._client.get_current_vpn_server()
+            else:
+                raise Exception(f"Failed to spawn: {data}")
+        return MachineInstance(ip, server, self, self._client)
 
     def __repr__(self):
         return f"<Machine '{self.name}'>"
@@ -157,3 +216,42 @@ class Machine(htb.HTBObject):
                 self.root_blood_time = parse_delta(data['rootBlood']['blood_difference'])
         else:
             self._is_summary = True
+
+
+class MachineInstance:
+    """Representation of an active machine instance
+
+    Attributes:
+        ip: The IP the instance can be reached at
+        server: The `VPNServer` that the machine is on
+        machine: The `Machine` this is an instance of
+        client: The passed-through API client
+    """
+
+    ip: str = None
+    server: vpn.VPNServer = None
+    client: htb.HTBClient = None
+    machine: Machine = None
+
+    def __init__(self, ip: str, server: vpn.VPNServer, machine: Machine, client: htb.HTBClient):
+        self.client = client
+        self.ip = ip
+        self.server = server
+        self.machine = machine
+
+    def __repr__(self):
+        return f"<'{self.machine.name}'@{self.server.friendly_name} - {self.ip}>"
+
+    def stop(self):
+        """Request the instance be stopped."""
+        if self.machine.is_release:
+            self.client.do_request("release_arena/terminate", post=True)
+        else:
+            self.client.do_request("vm/terminate", json_data={"machine_id": self.machine.id})
+
+        # Can't delete references to the object from here so we just have
+        # to set everything to None and prevent further usage
+        self.server = None
+        self.ip = None
+        self.client = None
+        self.machine = None
