@@ -147,11 +147,11 @@ class HTBClient:
         return Search(search_term, self)
 
     # noinspection PyUnresolvedReferences
-    def get_machine(self, machine_id: int) -> "Machine":
+    def get_machine(self, machine_id: int | str) -> "Machine":
         """
 
         Args:
-            machine_id: The platform ID of the `Machine` to fetch
+            machine_id: The platform ID or name of the `Machine` to fetch
 
         Returns: The requested `Machine`
 
@@ -181,11 +181,11 @@ class HTBClient:
         return [Machine(m, self, summary=True) for m in data]
 
     # noinspection PyUnresolvedReferences
-    def get_challenge(self, challenge_id: int) -> "Challenge":
+    def get_challenge(self, challenge_id: int | str) -> "Challenge":
         """
 
         Args:
-            challenge_id: The platform ID of the `Challenge` to fetch
+            challenge_id: The platform ID or name of the `Challenge` to fetch
 
         Returns: The requested `Challenge`
 
