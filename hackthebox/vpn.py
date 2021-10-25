@@ -25,8 +25,13 @@ class VPNServer(htb.HTBObject):
 
     Attributes:
         friendly_name: Friendly name of the server
+
+            Example: ``'US Free 1'``
+
         current_clients: The number of currently connected clients
         location: The physical location of the server
+
+            Example: ``'US'``
 
     """
 
@@ -46,6 +51,9 @@ class VPNServer(htb.HTBObject):
 
     def __repr__(self):
         return f"<VPN Server '{self.friendly_name}'>"
+
+    def __str__(self):
+        return f"{self.friendly_name}"
 
     def switch(self) -> bool:
         """
