@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.0] 26/10/2021
+### Added
+- Caching mechanism ([docs](https://pyhackthebox.readthedocs.io/en/latest/htb.html))
+- Automatic prompting for details
+### Fixed
+- Handling some unusual API responses
+
 ## [0.4.4] 24/10/2021
 ### Added
 - Added the ability to spawn machines (both release arena and not)
