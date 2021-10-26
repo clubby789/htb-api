@@ -156,7 +156,7 @@ class Machine(htb.HTBObject):
             server = self._client.get_current_vpn_server(release_arena=True)
         else:
             data = self._client.do_request("vm/spawn", json_data={"machine_id": self.id})
-            if "Machine deployed" in data.get("message"):
+            if "Machine deployed" in data.get("message") or "You have been assigned" in data.get("message"):
                 ip = self._client.do_request(f"machine/profile/{self.id}")["info"]["ip"]
                 server = self._client.get_current_vpn_server()
             else:
