@@ -16,4 +16,6 @@ If the :code:`cache` option is sent when initializing an API client, the library
 
 If the option is not set, no cache is used at all.
 
-.. automodule:: hackthebox.htb
+API Client
+----------
+.. autoclass:: hackthebox.htb.HTBClient

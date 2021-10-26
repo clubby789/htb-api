@@ -1,4 +1,10 @@
 :mod:`hackthebox.machine` --- HTB Machines
 ===================================================
 
-.. automodule:: hackthebox.machine
+Machines
+--------
+.. autoclass:: hackthebox.machine.Machine
+
+Machine Instances
+-----------------
+.. autoclass:: hackthebox.machine.MachineInstance

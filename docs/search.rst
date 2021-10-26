@@ -1,4 +1,6 @@
 :mod:`hackthebox.search` --- The HTB Searching API
 ===================================================
 
-.. automodule:: hackthebox.search
+Searches
+--------
+.. autoclass:: hackthebox.search.Search

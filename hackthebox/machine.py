@@ -26,7 +26,7 @@ class Machine(htb.HTBObject):
         stars: The average star rating of the Machine
         avatar: The relative URL of the Machine avatar
         difficulty: The difficulty of the machine
-        ip: The IP address of the machine
+        :noindex: ip: The IP address of the machine
 
         active: Whether the Machine is active
         retired: Whether the Machine is retired

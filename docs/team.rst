@@ -1,4 +1,6 @@
 :mod:`hackthebox.team` --- HTB Teams
 ===================================================
 
-.. automodule:: hackthebox.team
+Teams
+-----
+.. autoclass:: hackthebox.team.Team

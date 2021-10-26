@@ -1,4 +1,6 @@
 :mod:`hackthebox.fortress` --- HTB Fortresses
 ===================================================
 
-.. automodule:: hackthebox.fortress
+Fortresses
+----------
+.. autoclass:: hackthebox.fortress.Fortress

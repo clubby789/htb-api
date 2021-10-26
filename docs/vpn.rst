@@ -1,4 +1,6 @@
 :mod:`hackthebox.vpn` --- HTB VPN Utilities
 ===================================================
 
-.. automodule:: hackthebox.vpn
+VPN Servers
+-----------
+.. autoclass:: hackthebox.vpn.VPNServer

@@ -27,7 +27,7 @@ Module Index
 ---------------
 
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 3
     :glob:
 
     htb
@@ -35,6 +35,7 @@ Module Index
     machine
     fortress
     endgame
+    leaderboard
     team
     user
     search

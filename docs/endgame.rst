@@ -1,4 +1,6 @@
 :mod:`hackthebox.endgame` --- HTB Endgames
 ===================================================
 
-.. automodule:: hackthebox.endgame
+Endgames
+--------
+.. autoclass:: hackthebox.endgame.Endgame
