@@ -3,6 +3,10 @@ class HtbException(Exception):
     pass
 
 
+class ApiError(HtbException):
+    """The API responded in an unexpected way"""
+
+
 class AuthenticationException(HtbException):
     """An error authenticating to the API"""
     pass
@@ -74,3 +78,8 @@ class RateLimitException(HtbException):
     def __init__(self, message):
         print(message)
         super().__init__(message)
+
+
+class CacheException(HtbException):
+    """There was an issue with the token cache"""
+    pass

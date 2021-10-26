@@ -1,15 +1,18 @@
 from __future__ import annotations
 
+import atexit
 import base64
+import getpass
 import json
+import os
 import time
 from typing import List, Callable, Union
 
 import requests
 
 from .constants import API_BASE, USER_AGENT
-from .errors import AuthenticationException, MissingPasswordException, MissingEmailException, NotFoundException, \
-    MissingOTPException, IncorrectOTPException
+from .errors import AuthenticationException, NotFoundException, \
+    IncorrectOTPException, ApiError
 
 
 def jwt_expired(token: str) -> bool:
@@ -57,13 +60,16 @@ class HTBClient:
         """
         headers = {"User-Agent": USER_AGENT}
         r = requests.post(self._api_base + "login/refresh", json={
-                "refresh_token": self._refresh_token
-            }, headers=headers)
+            "refresh_token": self._refresh_token
+        }, headers=headers)
         data = r.json()['message']
+        if data == "Unauthenticated":
+            raise AuthenticationException
         self._access_token = data['access_token']
         self._refresh_token = data['refresh_token']
 
-    def do_request(self, endpoint, json_data=None, data=None, authorized=True, download=False, post=False) -> Union[dict, bytes]:
+    def do_request(self, endpoint, json_data=None, data=None, authorized=True, download=False, post=False) -> Union[
+            dict, bytes]:
         """
 
         Args:
@@ -106,32 +112,95 @@ class HTBClient:
         else:
             return r.json()
 
-    def __init__(self, email: str = None, password: str = None, otp: str|int = None, api_base: str = API_BASE):
+    def __init__(self, email: str = None, password: str = None, otp: str | int = None,
+                 cache: str = None, api_base: str = API_BASE):
+        """
+        Authenticates to the API.
+
+        If `cache` is set, the client will attempt to load access tokens from the given path. If they cannot be found,
+        or are expired, normal API authentication will take place, and the tokens will be dumped to the file for the
+        next launch.
+
+        Args:
+            email: The authenticating user's email address
+            password: The authenticating user's password
+            otp: The current OTP of the user, if 2FA is enabled
+            cache: The path to load/store access tokens from/to
+        """
         self._api_base = api_base
-        if not password and not email:
-            print("Must give an authentication method")
-            raise AuthenticationException
-        elif password and not email:
-            raise MissingEmailException
-        elif email and not password:
-            raise MissingPasswordException
+        if cache is not None:
+            if self.load_from_cache(cache) is False:
+                self.do_login(email, password, otp)
+                self.dump_to_cache(cache)
+            # Make sure we dump our current tokens out when we exit
+            atexit.register(self.dump_to_cache, cache)
         else:
-            data = self.do_request("login", json_data={
-                "email": email, "password": password
-            }, authorized=False)
-            self._access_token = data['message']['access_token']
-            self._refresh_token = data['message']['refresh_token']
-            if data['message']['is2FAEnabled'] is True:
-                if otp is None:
-                    raise MissingOTPException
-                if type(otp) == int:
-                    # Optimistically try and create a string
-                    otp = f"{otp:06d}"
-                resp = self.do_request("2fa/login", json_data={
-                    "one_time_password": otp
-                })
-                if "correct" not in resp['message']:
-                    raise IncorrectOTPException
+            self.do_login(email, password, otp)
+
+    def load_from_cache(self, cache: str) -> bool:
+        """
+        Args:
+            cache: The cache file path
+
+        Returns: Whether loading from the cache was successful
+        """
+        if not os.path.exists(cache):
+            return False
+        with open(cache, 'r') as f:
+            data = json.load(f)
+        self._access_token = data['access_token']
+        self._refresh_token = data['refresh_token']
+        if jwt_expired(self._access_token):
+            try:
+                self._refresh_access_token()
+            # Our refresh token is also invalid, we must log in again
+            except AuthenticationException:
+                return False
+        return True
+
+    def dump_to_cache(self, cache):
+        """
+        Dumps the current access and refresh tokens to a file
+        Args:
+            cache: The path to the cache file
+        """
+        with open(cache, 'w') as f:
+            json.dump({
+                "access_token": self._access_token,
+                "refresh_token": self._refresh_token
+            }, f)
+
+    def do_login(self, email: str = None, password: str = None, otp: str | int = None):
+        """
+        Authenticates against the API. If credentials are not provided, they will be prompted for.
+        """
+        if email is None:
+            email = input("Email: ")
+        if password is None:
+            password = getpass.getpass()
+
+        data = self.do_request("login", json_data={
+            "email": email, "password": password
+        }, authorized=False)
+        msg = data['message']
+
+        self._access_token = msg.get('access_token')
+        if self._access_token is None:
+            raise ApiError(f"Failed to get access token: {msg}")
+        self._refresh_token = msg.get('refresh_token')
+        if self._refresh_token is None:
+            raise ApiError(f"Failed to get refresh token: {msg}")
+        if data['message']['is2FAEnabled'] is True:
+            if otp is None:
+                otp = input("OTP: ")
+            if type(otp) == int:
+                # Optimistically try and create a string
+                otp = f"{otp:06d}"
+            resp = self.do_request("2fa/login", json_data={
+                "one_time_password": otp
+            })
+            if "correct" not in resp['message']:
+                raise IncorrectOTPException
 
     # noinspection PyUnresolvedReferences
     def search(self, search_term: str) -> "Search":
