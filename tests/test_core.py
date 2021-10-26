@@ -1,6 +1,7 @@
 from pytest import raises
-from hackthebox.htb import HTBClient
+
 from hackthebox import errors
+from hackthebox.htb import HTBClient
 
 
 def test_login(mock_htb_client: HTBClient):
@@ -18,20 +19,9 @@ def test_otp_login():
     # Wait for server thread to start
     time.sleep(0.5)
 
-    with raises(errors.MissingOTPException):
-        HTBClient(email="otpuser@example.com", password="password", api_base=f"http://localhost:{port}/api/v4/")
     with raises(errors.IncorrectOTPException):
         HTBClient(email="otpuser@example.com", password="password", otp=555555, api_base=f"http://localhost:{port}/api/v4/")
     HTBClient(email="otpuser@example.com", password="password", otp=111111, api_base=f"http://localhost:{port}/api/v4/")
-
-
-def test_incorrect_login():
-    with raises(errors.AuthenticationException):
-        HTBClient()
-    with raises(errors.AuthenticationException):
-        HTBClient(password="wrong")
-    with raises(errors.AuthenticationException):
-        HTBClient(email="wrong@wrong.com")
 
 
 def test_get_own_user(mock_htb_client: HTBClient):
