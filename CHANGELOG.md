@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.1] 27/10/2021
+### Fixed
+- Move to the new 'hackthebox.com' domain
+
 ## [0.5.0] 26/10/2021
 ### Added
 - Caching mechanism ([docs](https://pyhackthebox.readthedocs.io/en/latest/htb.html))
