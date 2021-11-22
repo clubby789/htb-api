@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.2] 22/11/2021
+### Fixed
+- Use the correct API endpoint for retrieving the current VPN server
+
 ## [0.5.1] 27/10/2021
 ### Fixed
 - Move to the new 'hackthebox.com' domain
