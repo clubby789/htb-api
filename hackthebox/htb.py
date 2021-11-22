@@ -429,10 +429,12 @@ class HTBClient:
             release_arena: Get the current release arena VPN server
         """
         from .vpn import VPNServer
+        connections = self.do_request('connections')['data']
         if release_arena:
-            data = self.do_request("connections/servers?product=release_arena")["data"]["assigned"]
+            data = connections['release_arena']['assigned_server']
         else:
-            data = self.do_request("connections/servers?product=labs")["data"]["assigned"]
+            data = connections['lab']['assigned_server']
+
         return VPNServer(data, self)
 
     # noinspection PyUnresolvedReferences
