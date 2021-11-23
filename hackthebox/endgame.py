@@ -1,4 +1,4 @@
-from typing import List, cast
+from typing import List, cast, Optional
 
 from . import htb
 from .user import User
@@ -35,8 +35,8 @@ class Endgame(htb.HTBObject):
     entry_points: List[str]
     description: str
 
-    _authors: List[User]
-    _author_ids: List[int]
+    _authors: Optional[List[User]] = None
+    _author_ids: Optional[List[int]] = None
 
     def submit(self, flag: str):
         """ Submits a flag for an Endgame

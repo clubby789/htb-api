@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import List, Union, cast, TYPE_CHECKING
+from typing import List, Union, cast, Optional, TYPE_CHECKING
 
 import dateutil.parser
 
@@ -71,10 +71,10 @@ class Machine(htb.HTBObject):
     difficulty_ratings: dict
 
     # noinspection PyUnresolvedReferences
-    _authors: List["User"]
+    _authors: Optional[List["User"]] = None
     _author_ids: List[int]
-    _is_release: bool
-    _ip: str
+    _is_release: Optional[bool] = None
+    _ip: Optional[str] = None
 
     def submit(self, flag: str, difficulty: int):
         """ Submits a flag for a Machine

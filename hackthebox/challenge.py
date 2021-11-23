@@ -49,7 +49,6 @@ class Challenge(htb.HTBObject):
         is_disliked: Whether the active user has disliked the challenge
 
         description: The challenge description
-        category_id: The ID of the challenge category
         category: The name of the category
         has_download: Whether the challenge has a download available
         has_docker: Whether the challenge has a remote instance available
@@ -71,15 +70,14 @@ class Challenge(htb.HTBObject):
     recommended: bool
 
     # noinspection PyUnresolvedReferences
-    _authors: List["User"]
+    _authors: Optional[List["User"]] = None
     _author_ids: List[int]
 
-    _detailed_attributes = ('description', 'category_id', 'category', 'has_download', 'has_docker', 'instance')
-    description: Optional[str]
-    category_id: Optional[int]
-    category: Optional[str]
-    has_download: Optional[bool]
-    has_docker: Optional[bool]
+    _detailed_attributes = ('description', 'category', 'has_download', 'has_docker', 'instance')
+    description: str
+    category: str
+    has_download: bool
+    has_docker: bool
     instance: Optional[DockerInstance]
 
     def submit(self, flag: str, difficulty: int):

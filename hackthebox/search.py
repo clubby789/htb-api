@@ -1,4 +1,4 @@
-from typing import List, cast
+from typing import List, cast, Optional
 
 from .user import User
 from .machine import Machine
@@ -23,10 +23,10 @@ class Search:
         _tags: The list of tags to filter by
     """
 
-    _users: List[User]
-    _machines: List[Machine]
-    _teams: List[Team]
-    _challenges: List[Challenge]
+    _users: Optional[List[User]] = None
+    _machines: Optional[List[Machine]] = None
+    _teams: Optional[List[Team]] = None
+    _challenges: Optional[List[Challenge]] = None
 
     _user_ids: List[int]
     _machine_ids: List[int]

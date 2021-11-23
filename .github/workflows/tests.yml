@@ -31,6 +31,9 @@ jobs:
 
         run: |
           python3 -m pytest -n auto --cov=hackthebox --cov-report=xml
+      - name: Perform type checking
+        run: |
+            python3 -m mypy hackthebox
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:

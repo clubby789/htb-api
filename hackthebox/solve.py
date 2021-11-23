@@ -1,7 +1,7 @@
 from . import htb
 from datetime import datetime
 
-from typing import TYPE_CHECKING, cast
+from typing import Optional, TYPE_CHECKING, cast
 if TYPE_CHECKING:
     from .htb import HTBClient, HTBObject
     from .machine import Machine
@@ -20,7 +20,7 @@ class Solve:
 
     """
     _client: "HTBClient"
-    _item: "HTBObject"   # The solved item
+    _item: Optional["HTBObject"] = None   # The solved item
     id: int
     name: str
     date: datetime
@@ -50,6 +50,7 @@ class MachineSolve(Solve):
     @property
     def machine(self) -> "Machine":
         """The solved Machine"""
+        from .machine import Machine
         if not self._item:
             self._item = self._client.get_machine(self.id)
         return cast(Machine, self._item)

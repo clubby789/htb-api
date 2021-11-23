@@ -1,6 +1,6 @@
 from . import htb
 
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, cast, Optional
 if TYPE_CHECKING:
     from .user import User
 
@@ -41,10 +41,10 @@ class Team(htb.HTBObject):
     public: bool
     can_delete_avatar: bool
     # noinspection PyUnresolvedReferences
-    _captain: "User"
-    is_respected: bool
-    join_request_sent: bool
-    _ranking: int
+    _captain: Optional["User"] = None
+    is_respected: Optional[bool] = None
+    join_request_sent: Optional[bool] = None
+    _ranking: Optional[int] = None
     _captain_id: int
 
     def __repr__(self):
@@ -83,11 +83,12 @@ class Team(htb.HTBObject):
         if not self._ranking:
             data = cast(dict, self._client.do_request(f"team/stats/owns/{self.id}"))
             self._ranking = data['rank']
-        return self._ranking
+        return cast(int, self._ranking)
 
     # noinspection PyUnresolvedReferences
     @property
     def captain(self) -> "User":
+        from .user import User
         if not self._captain:
             self._captain = self._client.get_user(self._captain_id)
-        return self._captain
+        return cast(User, self._captain)

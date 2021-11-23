@@ -85,7 +85,7 @@ class User(htb.HTBObject):
     team: "Team"
     public: bool
 
-    _activity: List[Solve]
+    _activity: Optional[List[Solve]] = None
 
     @property
     def activity(self):
