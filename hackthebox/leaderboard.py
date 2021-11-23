@@ -14,9 +14,9 @@ class Leaderboard(htb.HTBObject):
 
     """
 
-    _type: type = None
-    _items: List[htb.HTBObject] = []
-    _iter: Iterator[None] = None
+    _type: type
+    _items: List[htb.HTBObject]
+    _iter: Iterator[None]
 
     def __getitem__(self, key):
         return self._items[key]

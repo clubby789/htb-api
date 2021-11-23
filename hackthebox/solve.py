@@ -1,6 +1,11 @@
 from . import htb
 from datetime import datetime
 
+from typing import TYPE_CHECKING, cast
+if TYPE_CHECKING:
+    from .htb import HTBClient, HTBObject
+    from .machine import Machine
+
 
 class Solve:
     """Representation of completion of Hack The Box content
@@ -14,15 +19,15 @@ class Solve:
         item (HTBObject): The solved item
 
     """
-    _client: "htb.HTBClient" = None
-    _item: "htb.HTBObject" = None   # The solved item
-    id: int = None
-    name: str = None
-    date: datetime = None
-    blood: bool = None
-    points: int = None
+    _client: "HTBClient"
+    _item: "HTBObject"   # The solved item
+    id: int
+    name: str
+    date: datetime
+    blood: bool
+    points: int
 
-    def __init__(self, data: dict, client: "htb.HTBClient"):
+    def __init__(self, data: dict, client: "HTBClient"):
         self._client = client
         self.date = data['date']
         self.blood = data['first_blood']
@@ -32,7 +37,7 @@ class Solve:
 
 class MachineSolve(Solve):
     """Representation of solving a Machine"""
-    type: str = None   # User/Root
+    type: str   # User/Root
 
     def __repr__(self):
         return f"<Solve {self.type}@{self.name}>"
@@ -47,7 +52,7 @@ class MachineSolve(Solve):
         """The solved Machine"""
         if not self._item:
             self._item = self._client.get_machine(self.id)
-        return self._item
+        return cast(Machine, self._item)
 
     def __init__(self, data: dict, client: "htb.HTBClient"):
         super().__init__(data, client)
@@ -56,7 +61,7 @@ class MachineSolve(Solve):
 
 class ChallengeSolve(Solve):
     """Representation of solving a Challenge"""
-    category: str = None
+    category: str
 
     def __repr__(self):
         return f"<Solve {self.name}@{self.category}>"
@@ -79,7 +84,7 @@ class ChallengeSolve(Solve):
 
 class EndgameSolve(Solve):
     """Representation of solving a Endgame"""
-    flag_name: str = None
+    flag_name: str
 
     def __repr__(self):
         return f"<Solve {self.flag_name}@{self.name}>"
@@ -102,7 +107,7 @@ class EndgameSolve(Solve):
 
 class FortressSolve(Solve):
     """Representation of solving a Fortress"""
-    flag_name: str = None
+    flag_name: str
 
     def __repr__(self):
         return f"<Solve {self.flag_name}@{self.name}>"

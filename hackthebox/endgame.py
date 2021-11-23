@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, cast
 
 from . import htb
 from .user import User
@@ -22,11 +22,11 @@ class Endgame(htb.HTBObject):
 
     """
 
-    name: str = None
-    avatar: str = None
-    cover_image: str = None
-    retired: bool = None
-    vip: bool = None
+    name: str
+    avatar: str
+    cover_image: str
+    retired: bool
+    vip: bool
 
     _detailed_attributes = ('points', 'completions', 'reset_votes', 'entry_points', 'description')
     points: int
@@ -35,8 +35,8 @@ class Endgame(htb.HTBObject):
     entry_points: List[str]
     description: str
 
-    _authors: List[User] = None
-    _author_ids: List[int] = None
+    _authors: List[User]
+    _author_ids: List[int]
 
     def submit(self, flag: str):
         """ Submits a flag for an Endgame
@@ -45,9 +45,9 @@ class Endgame(htb.HTBObject):
             flag: The flag for the Endgame
 
         """
-        submission = self._client.do_request(f"endgame/{self.id}/flag", json_data={
+        submission = cast(dict, self._client.do_request(f"endgame/{self.id}/flag", json_data={
             "flag": flag,
-        })
+        }))
         if submission['message'] == "Wrong flag":
             raise IncorrectFlagException
         return True
@@ -70,7 +70,7 @@ class Endgame(htb.HTBObject):
 
     def __init__(self, data: dict, client: htb.HTBClient, summary=False):
         self._client = client
-        self._detailed_func = client.get_endgame
+        self._detailed_func = client.get_endgame  # type: ignore
         self.id = data['id']
         self.name = data['name']
         self.avatar = data['avatar_url']

@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import List, Union
+from typing import List, Union, cast, TYPE_CHECKING
 
 import dateutil.parser
 
@@ -7,6 +7,9 @@ from . import htb, vpn
 from .errors import IncorrectArgumentException, IncorrectFlagException
 from .solve import MachineSolve
 from .utils import parse_delta
+
+if TYPE_CHECKING:
+    from .user import User
 
 
 class Machine(htb.HTBObject):
@@ -40,39 +43,38 @@ class Machine(htb.HTBObject):
         root_own_time: How long the first User took to own root
         difficulty_ratings: A dict of difficulty ratings given
     """
-    name: str = None
-    os: str = None
-    points: int = None
-    release_date: datetime = None
-    user_owns: int = None
-    root_owns: int = None
-    free: bool = None
-    user_owned: bool = None
-    root_owned: bool = None
-    reviewed: bool = None
-    stars: float = None
-    avatar: str = None
-    difficulty: str = None
+    name: str
+    os: str
+    points: int
+    release_date: datetime
+    root_owns: int
+    free: bool
+    user_owned: bool
+    root_owned: bool
+    reviewed: bool
+    stars: float
+    avatar: str
+    difficulty: str
 
     _detailed_attributes = ('active', 'retired', 'user_own_time', 'root_own_time', 'user_blood',
                             'root_blood', 'user_blood_time', 'root_blood_time', 'difficulty_ratings')
-    active: bool = None
-    retired: bool = None
-    avg_difficulty: int = None
-    completed: bool = None
-    user_own_time: timedelta = None
-    root_own_time: timedelta = None
-    user_blood: MachineSolve = None
-    root_blood: MachineSolve = None
-    user_blood_time: timedelta = None
-    root_blood_time: timedelta = None
-    difficulty_ratings: dict = None
+    active: bool
+    retired: bool
+    avg_difficulty: int
+    completed: bool
+    user_own_time: timedelta
+    root_own_time: timedelta
+    user_blood: MachineSolve
+    root_blood: MachineSolve
+    user_blood_time: timedelta
+    root_blood_time: timedelta
+    difficulty_ratings: dict
 
     # noinspection PyUnresolvedReferences
-    _authors: List["User"] = None
-    _author_ids: List[int] = None
-    _is_release: bool = None
-    _ip: str = None
+    _authors: List["User"]
+    _author_ids: List[int]
+    _is_release: bool
+    _ip: str
 
     def submit(self, flag: str, difficulty: int):
         """ Submits a flag for a Machine
@@ -85,11 +87,11 @@ class Machine(htb.HTBObject):
         if difficulty < 10 or difficulty > 100 or difficulty % 10 != 0:
             raise IncorrectArgumentException(reason="Difficulty must be a multiple of 10, between 10 and 100")
 
-        submission = self._client.do_request("machine/own", json_data={
+        submission = cast(dict, self._client.do_request("machine/own", json_data={
             "flag": flag,
             "id": self.id,
             "difficulty": difficulty
-        })
+        }))
         if submission['message'] == "Incorrect flag!":
             raise IncorrectFlagException
         return True
@@ -149,15 +151,15 @@ class Machine(htb.HTBObject):
             if not self.is_release:
                 # TODO: Better exception
                 raise Exception("Machine is not on release arena")
-            data = self._client.do_request("release_arena/spawn", post=True)
+            data = cast(dict, self._client.do_request("release_arena/spawn", post=True))
             if data.get("success") != 1:
                 raise Exception(f"Failed to spawn: {data}")
-            ip = self._client.do_request("release_arena/active")["info"]["ip"]
+            ip = cast(dict, self._client.do_request("release_arena/active"))["info"]["ip"]
             server = self._client.get_current_vpn_server(release_arena=True)
         else:
-            data = self._client.do_request("vm/spawn", json_data={"machine_id": self.id})
-            if "Machine deployed" in data.get("message") or "You have been assigned" in data.get("message"):
-                ip = self._client.do_request(f"machine/profile/{self.id}")["info"]["ip"]
+            data = cast(dict, self._client.do_request("vm/spawn", json_data={"machine_id": self.id}))
+            if "Machine deployed" in cast(str, data.get("message")) or "You have been assigned" in cast(str, data.get("message")):
+                ip = cast(dict, self._client.do_request(f"machine/profile/{self.id}"))["info"]["ip"]
                 server = self._client.get_current_vpn_server()
             else:
                 raise Exception(f"Failed to spawn: {data}")
@@ -168,7 +170,7 @@ class Machine(htb.HTBObject):
 
     def __init__(self, data: dict, client: htb.HTBClient, summary: bool = False):
         self._client = client
-        self._detailed_func = client.get_machine
+        self._detailed_func = client.get_machine  # type: ignore
         self.id = data['id']
         self.name = data['name']
         self.os = data['os']
@@ -228,10 +230,10 @@ class MachineInstance:
         client: The passed-through API client
     """
 
-    ip: str = None
-    server: vpn.VPNServer = None
-    client: htb.HTBClient = None
-    machine: Machine = None
+    ip: str
+    server: vpn.VPNServer
+    client: htb.HTBClient
+    machine: Machine
 
     def __init__(self, ip: str, server: vpn.VPNServer, machine: Machine, client: htb.HTBClient):
         self.client = client

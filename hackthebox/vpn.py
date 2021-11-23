@@ -19,6 +19,10 @@ import os
 
 from . import htb
 
+from typing import TYPE_CHECKING, cast
+if TYPE_CHECKING:
+    from .htb import HTBClient
+
 
 class VPNServer(htb.HTBObject):
     """Class representing individual VPN servers provided by Hack The Box
@@ -35,14 +39,14 @@ class VPNServer(htb.HTBObject):
 
     """
 
-    friendly_name: str = None
-    current_clients: int = None
-    location: str = None
+    friendly_name: str
+    current_clients: int
+    location: str
+    _detailed_func = lambda x: None
 
     # noinspection PyUnresolvedReferences
     def __init__(self, data: dict, client: "HTBClient", summary=False):
         self._client = client
-        self._detailed_func = lambda x: None
         self.id = data["id"]
         self.friendly_name = data["friendly_name"]
         self.current_clients = data["current_clients"]
@@ -62,7 +66,7 @@ class VPNServer(htb.HTBObject):
         Returns: Whether the switch was completed successfully
         """
         # TODO: Throw exception on failure
-        return self._client.do_request(f"connections/servers/switch/{self.id}", post=True)["status"] is True
+        return cast(dict, self._client.do_request(f"connections/servers/switch/{self.id}", post=True))["status"] is True
 
     def download(self, path=None, tcp=False) -> str:
         """
@@ -84,7 +88,7 @@ class VPNServer(htb.HTBObject):
         # We can't download VPN packs for servers we're not assigned to
         if b'You are not assigned' in data:
             self.switch()
-        data = self._client.do_request(url, download=True)
+        data = cast(bytes, self._client.do_request(url, download=True))
         with open(path, 'wb') as f:
             f.write(data)
         return path

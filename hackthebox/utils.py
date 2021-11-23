@@ -20,11 +20,11 @@ def parse_delta(time: str) -> timedelta:
     parts = regex.match(time)
     if not parts or parts.group() == '':
         raise ValueError
-    parts = parts.groupdict()
+    parts_dict = parts.groupdict()
     time_params = {'years': 0, 'months': 0, 'weeks': 0,
                    'days': 0, 'hours': 0, 'minutes': 0,
                    'seconds': 0}
-    for (name, param) in parts.items():
+    for (name, param) in parts_dict.items():
         if param:
             time_params[name] = int(param)
     # Remove unsupported params for timedelta

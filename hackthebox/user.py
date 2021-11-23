@@ -1,7 +1,12 @@
-from typing import List
+from typing import List, Optional, TYPE_CHECKING
 
 from . import htb
 from .solve import MachineSolve, ChallengeSolve, EndgameSolve, FortressSolve, Solve
+
+
+if TYPE_CHECKING:
+    from .htb import HTBClient
+    from .team import Team
 
 
 class User(htb.HTBObject):
@@ -41,46 +46,46 @@ class User(htb.HTBObject):
         rank_requirement: The ownership required for the current Rank
 
     """
-    name: str = None
-    avatar: str = None
-    ranking: int = None
-    points: int = None
-    root_owns: int = None
-    user_owns: int = None
-    root_bloods: int = None
-    user_bloods: int = None
-    rank_name: str = None
+    name: str
+    avatar: str
+    ranking: int
+    points: int
+    root_owns: int
+    user_owns: int
+    root_bloods: int
+    user_bloods: int
+    rank_name: str
 
     _detailed_attributes = ('timezone', 'vip', 'vip_plus', 'respects', 'university', 'university_name', 'description',
                             'github', 'linkedin', 'twitter', 'website', 'respected', 'followed', 'rank_id',
                             'rank_progress', 'next_rank', 'next_rank_points', 'rank_ownership', 'rank_requirement',
                             'country_name', 'team', 'public')
-    timezone: str = None
-    vip: bool = None
-    vip_plus: bool = None
-    respects: int = None
+    timezone: str
+    vip: bool
+    vip_plus: bool
+    respects: int
     # TODO: University object
     university = None
-    university_name: str = None
-    description: str = None
-    github: str = None
-    linkedin: str = None
-    twitter: str = None
-    website: str = None
-    respected: bool = None
-    followed: bool = None
-    rank_id: int = None
-    rank_progress: int = None
-    next_rank: str = None
-    next_rank_points: int = None
-    rank_ownership: float = None
-    rank_requirement: int = None
-    country_name: str = None
+    university_name: str
+    description: str
+    github: str
+    linkedin: str
+    twitter: str
+    website: str
+    respected: bool
+    followed: bool
+    rank_id: int
+    rank_progress: int
+    next_rank: str
+    next_rank_points: int
+    rank_ownership: float
+    rank_requirement: int
+    country_name: str
     # noinspection PyUnresolvedReferences
-    team: "Team" = None
-    public: bool = None
+    team: "Team"
+    public: bool
 
-    _activity: List[Solve] = None
+    _activity: List[Solve]
 
     @property
     def activity(self):
@@ -107,7 +112,7 @@ class User(htb.HTBObject):
     def __init__(self, data: dict, client: "HTBClient", summary: bool = False):
         """Initialise a `User` using API data"""
         self._client = client
-        self._detailed_func = client.get_user
+        self._detailed_func = client.get_user  # type: ignore
         self.id = data['id']
         self.name = data['name']
         self.user_owns = data['user_owns']
@@ -117,9 +122,9 @@ class User(htb.HTBObject):
             self._is_summary = True
             self.ranking = data['rank']
             self.root_owns = data['root_owns']
-            self.user_bloods = data.get('user_bloods_count')
-            self.root_bloods = data.get('root_bloods_count')
-            self.rank_name = data.get('rank_text')
+            self.user_bloods = data.get('user_bloods_count') or 0
+            self.root_bloods = data.get('root_bloods_count') or 0
+            self.rank_name = data.get('rank_text') or ""
         else:
             self.ranking = data['ranking']
             self.root_owns = data['system_owns']

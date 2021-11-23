@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List
+from typing import List, cast
 
 from . import htb
 from .errors import IncorrectFlagException
@@ -22,9 +22,9 @@ class Fortress(htb.HTBObject):
 
     """
 
-    name: str = None
-    image: str = None
-    num_flags: int = None
+    name: str
+    image: str
+    num_flags: int
 
     _detailed_attributes = ('reset_votes', 'progress', 'flags', 'company', 'ip')
     reset_votes: int
@@ -40,9 +40,9 @@ class Fortress(htb.HTBObject):
             flag: The flag for the Fortress
 
         """
-        submission = self._client.do_request(f"fortress/{self.id}/flag", json_data={
+        submission = cast(dict, self._client.do_request(f"fortress/{self.id}/flag", json_data={
             "flag": flag,
-        })
+        }))
         if submission['message'] == "Wrong flag":
             raise IncorrectFlagException
         return True
@@ -52,7 +52,7 @@ class Fortress(htb.HTBObject):
 
     def __init__(self, data: dict, client: htb.HTBClient, summary=False):
         self._client = client
-        self._detailed_func = client.get_fortress
+        self._detailed_func = client.get_fortress  # type: ignore
         self.id = data['id']
         self.name = data['name']
         self.image = data['image']
@@ -79,11 +79,11 @@ class Company:
         image: The Company logo
 
     """
-    id: int = None
-    name: str = None
-    description: str = None
-    url: str = None
-    image: str = None
+    id: int
+    name: str
+    description: str
+    url: str
+    image: str
 
     def __init__(self, data: dict):
         self.id = data['id']

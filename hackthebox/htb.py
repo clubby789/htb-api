@@ -6,13 +6,24 @@ import getpass
 import json
 import os
 import time
-from typing import List, Callable, Union
+from typing import List, Callable, Union, Optional, Tuple, cast, Any, TYPE_CHECKING
 
 import requests
 
 from .constants import API_BASE, USER_AGENT
 from .errors import AuthenticationException, NotFoundException, \
     IncorrectOTPException, ApiError
+
+if TYPE_CHECKING:
+    from .user import User
+    from .search import Search
+    from .machine import Machine
+    from .challenge import Challenge
+    from .endgame import Endgame
+    from .fortress import Fortress
+    from .team import Team
+    from .leaderboard import Leaderboard
+    from .vpn import VPNServer
 
 
 def jwt_expired(token: str) -> bool:
@@ -45,10 +56,10 @@ class HTBClient:
 
     """
     # noinspection PyUnresolvedReferences
-    _user: "User" = None
-    _access_token: str = None
-    _refresh_token: str = None
-    _api_base: str = None
+    _user: Optional["User"] = None
+    _access_token: str
+    _refresh_token: str
+    _api_base: str
     challenge_cooldown: int = 0
 
     def _refresh_access_token(self):
@@ -112,8 +123,8 @@ class HTBClient:
         else:
             return r.json()
 
-    def __init__(self, email: str = None, password: str = None, otp: str | int = None,
-                 cache: str = None, api_base: str = API_BASE):
+    def __init__(self, email: Optional[str] = None, password: Optional[str] = None, otp: Optional[str | int] = None,
+                 cache: Optional[str] = None, api_base: str = API_BASE):
         """
         Authenticates to the API.
 
@@ -170,7 +181,7 @@ class HTBClient:
                 "refresh_token": self._refresh_token
             }, f)
 
-    def do_login(self, email: str = None, password: str = None, otp: str | int = None):
+    def do_login(self, email: Optional[str] = None, password: Optional[str] = None, otp: Optional[str | int] = None):
         """
         Authenticates against the API. If credentials are not provided, they will be prompted for.
         """
@@ -179,9 +190,9 @@ class HTBClient:
         if password is None:
             password = getpass.getpass()
 
-        data = self.do_request("login", json_data={
+        data = cast(dict, self.do_request("login", json_data={
             "email": email, "password": password
-        }, authorized=False)
+        }, authorized=False))
         msg = data['message']
 
         self._access_token = msg.get('access_token')
@@ -196,9 +207,9 @@ class HTBClient:
             if type(otp) == int:
                 # Optimistically try and create a string
                 otp = f"{otp:06d}"
-            resp = self.do_request("2fa/login", json_data={
+            resp = cast(dict, self.do_request("2fa/login", json_data={
                 "one_time_password": otp
-            })
+            }))
             if "correct" not in resp['message']:
                 raise IncorrectOTPException
 
@@ -226,7 +237,7 @@ class HTBClient:
 
         """
         from .machine import Machine
-        data = self.do_request(f"machine/profile/{machine_id}")['info']
+        data = cast(dict, self.do_request(f"machine/profile/{machine_id}"))['info']
         return Machine(data, self)
 
     # noinspection PyUnresolvedReferences
@@ -244,9 +255,9 @@ class HTBClient:
         """
         from .machine import Machine
         if not retired:
-            data = self.do_request("machine/list")['info'][:limit]
+            data = cast(dict, self.do_request("machine/list"))['info'][:limit]
         else:
-            data = self.do_request("machine/list/retired")['info'][:limit]
+            data = cast(dict, self.do_request("machine/list/retired"))['info'][:limit]
         return [Machine(m, self, summary=True) for m in data]
 
     # noinspection PyUnresolvedReferences
@@ -260,7 +271,7 @@ class HTBClient:
 
         """
         from .challenge import Challenge
-        data = self.do_request(f"challenge/info/{challenge_id}")['challenge']
+        data = cast(dict, self.do_request(f"challenge/info/{challenge_id}"))['challenge']
         return Challenge(data, self)
 
     # noinspection PyUnresolvedReferences
@@ -276,9 +287,9 @@ class HTBClient:
         """
         from .challenge import Challenge
         if retired:
-            data = self.do_request("challenge/list/retired")
+            data = cast(dict, self.do_request("challenge/list/retired"))
         else:
-            data = self.do_request("challenge/list")
+            data = cast(dict, self.do_request("challenge/list"))
         challenges = []
         for challenge in data['challenges'][:limit]:
             challenges.append(Challenge(challenge, self, summary=True))
@@ -295,7 +306,7 @@ class HTBClient:
 
         """
         from .endgame import Endgame
-        data = self.do_request(f"endgame/{endgame_id}")["data"]
+        data = cast(dict, self.do_request(f"endgame/{endgame_id}"))["data"]
         return Endgame(data, self)
 
     # noinspection PyUnresolvedReferences
@@ -309,7 +320,7 @@ class HTBClient:
 
         """
         from .endgame import Endgame
-        data = self.do_request(f"endgames")["data"][:limit]
+        data = cast(dict, self.do_request(f"endgames"))["data"][:limit]
         endgames = []
         for endgame in data:
             endgames.append(Endgame(endgame, self, summary=True))
@@ -326,7 +337,7 @@ class HTBClient:
 
         """
         from .fortress import Fortress
-        data = self.do_request(f"fortress/{fortress_id}")["data"]
+        data = cast(dict, self.do_request(f"fortress/{fortress_id}"))["data"]
         return Fortress(data, self)
 
     # noinspection PyUnresolvedReferences
@@ -340,7 +351,7 @@ class HTBClient:
 
         """
         from .fortress import Fortress
-        data = self.do_request(f"fortresses")["data"]
+        data = cast(dict, self.do_request(f"fortresses"))["data"]
         fortresses = []
         # For some  reason, the fortress list is in the format {"1": <fortress1>, "2": <fortress2>}
         # instead of [<fortress1>, <fortress2>], meaning we have to sort it ourselves
@@ -359,7 +370,7 @@ class HTBClient:
 
         """
         from .user import User
-        data = self.do_request(f"user/profile/basic/{user_id}")['profile']
+        data = cast(dict, self.do_request(f"user/profile/basic/{user_id}"))['profile']
         return User(data, self)
 
     # noinspection PyUnresolvedReferences
@@ -373,7 +384,7 @@ class HTBClient:
 
         """
         from .team import Team
-        data = self.do_request(f"team/info/{team_id}")
+        data = cast(dict, self.do_request(f"team/info/{team_id}"))
         return Team(data, self)
 
     # noinspection PyUnresolvedReferences
@@ -386,7 +397,7 @@ class HTBClient:
         endpoint = "rankings/users"
         if vip:
             endpoint += "?vip=1"
-        data = self.do_request(endpoint)['data']
+        data = cast(dict, self.do_request(endpoint))['data']
         return Leaderboard(data, self, User)
 
     # noinspection PyUnresolvedReferences
@@ -395,7 +406,7 @@ class HTBClient:
         Returns: A Leaderboard of the top 100 Countries
         """
         from .leaderboard import Leaderboard, Country
-        data = self.do_request("rankings/countries")['data']
+        data = cast(dict, self.do_request("rankings/countries"))['data']
         return Leaderboard(data, self, Country)
 
     # noinspection PyUnresolvedReferences
@@ -407,7 +418,7 @@ class HTBClient:
         """
         from .leaderboard import Leaderboard
         from .team import Team
-        data = self.do_request("rankings/teams")['data']
+        data = cast(dict, self.do_request("rankings/teams"))['data']
         return Leaderboard(data, self, Team)
 
     # noinspection PyUnresolvedReferences
@@ -417,7 +428,7 @@ class HTBClient:
 
         """
         from .leaderboard import Leaderboard, University
-        data = self.do_request("rankings/universities")['data']
+        data = cast(dict, self.do_request("rankings/universities"))['data']
         return Leaderboard(data, self, University)
 
     # noinspection PyUnresolvedReferences
@@ -429,7 +440,7 @@ class HTBClient:
             release_arena: Get the current release arena VPN server
         """
         from .vpn import VPNServer
-        connections = self.do_request('connections')['data']
+        connections = cast(dict, self.do_request('connections'))['data']
         if release_arena:
             data = connections['release_arena']['assigned_server']
         else:
@@ -447,9 +458,9 @@ class HTBClient:
         """
         from .vpn import VPNServer
         if release_arena:
-            data = self.do_request("connections/servers?product=release_arena")["data"]["options"]
+            data = cast(dict, self.do_request("connections/servers?product=release_arena"))["data"]["options"]
         else:
-            data = self.do_request("connections/servers?product=labs")["data"]["options"]
+            data = cast(dict, self.do_request("connections/servers?product=labs"))["data"]["options"]
         servers = []
         for location in data.keys():  # 'EU'
             for location_role in data[location].keys():  # 'EU - Free'
@@ -466,7 +477,7 @@ class HTBClient:
 
         """
         if not self._user:
-            uid = self.do_request("user/info")['info']['id']
+            uid = cast(dict, self.do_request("user/info"))['info']['id']
             self._user = self.get_user(uid)
         return self._user
 
@@ -479,8 +490,8 @@ class HTBObject:
     """
     _client: HTBClient
     # Attributes not fetched by a summary
-    _detailed_attributes: List[str]
-    _detailed_func: Callable
+    _detailed_attributes: Tuple[str, ...]
+    _detailed_func: Callable[..., Any]
     _is_summary: bool = False
     id: int
 

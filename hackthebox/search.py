@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, cast
 
 from .user import User
 from .machine import Machine
@@ -23,18 +23,18 @@ class Search:
         _tags: The list of tags to filter by
     """
 
-    _users: List[User] = None
-    _machines: List[Machine] = None
-    _teams: List[Team] = None
-    _challenges: List[Challenge] = None
+    _users: List[User]
+    _machines: List[Machine]
+    _teams: List[Team]
+    _challenges: List[Challenge]
 
-    _user_ids: List[int] = None
-    _machine_ids: List[int] = None
-    _team_ids: List[int] = None
-    _challenge_ids: List[int] = None
+    _user_ids: List[int]
+    _machine_ids: List[int]
+    _team_ids: List[int]
+    _challenge_ids: List[int]
 
     _is_resolved: bool = False
-    _term: str = None
+    _term: str
 
     # The search API can return non-existent items (i.e. deleted). This should be handled and
     # not passed back to the user.
@@ -109,7 +109,7 @@ class Search:
         self._term = search
         self._client = client
         # Ignoring tags - they seem to currently not work on the API level
-        search_data = self._client.do_request("search/fetch?query=" + search)
+        search_data = cast(dict, self._client.do_request("search/fetch?query=" + search))
         self._user_ids = [x['id'] for x in search_data.get("users", [])]
         self._machine_ids = [x['id'] for x in search_data.get("machines", [])]
         self._team_ids = [x['id'] for x in search_data.get("teams", [])]

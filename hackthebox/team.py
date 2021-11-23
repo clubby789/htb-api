@@ -1,5 +1,9 @@
 from . import htb
 
+from typing import TYPE_CHECKING, cast
+if TYPE_CHECKING:
+    from .user import User
+
 
 class Team(htb.HTBObject):
     """ The class representing Hack The Box teams
@@ -20,7 +24,7 @@ class Team(htb.HTBObject):
         join_request_sent: Whether the active User has sent a request to join the Team
 
     """
-    name: str = None
+    name: str
 
     _detailed_attributes = ('points', 'motto', 'description', 'country_name', 'avatar_url', 'cover_image_url',
                             'twitter', 'facebook', 'discord', 'public', 'can_delete_avatar', 'captain',
@@ -37,18 +41,18 @@ class Team(htb.HTBObject):
     public: bool
     can_delete_avatar: bool
     # noinspection PyUnresolvedReferences
-    _captain: "User" = None
+    _captain: "User"
     is_respected: bool
     join_request_sent: bool
-    _ranking: int = None
-    _captain_id: int = None
+    _ranking: int
+    _captain_id: int
 
     def __repr__(self):
         return f"<Team '{self.name}'>"
 
     def __init__(self, data: dict, client: htb.HTBClient, summary: bool = False):
         self._client = client
-        self._detailed_func = client.get_team
+        self._detailed_func = client.get_team  # type: ignore
         self.id = data['id']
         self.name = data['name']
         if not summary:
@@ -77,7 +81,7 @@ class Team(htb.HTBObject):
 
         """
         if not self._ranking:
-            data = self._client.do_request(f"team/stats/owns/{self.id}")
+            data = cast(dict, self._client.do_request(f"team/stats/owns/{self.id}"))
             self._ranking = data['rank']
         return self._ranking
 
