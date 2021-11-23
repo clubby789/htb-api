@@ -13,6 +13,8 @@ on:
     -  'examples/*'
     -  'hackthebox/*'
     -  'tests/*'
+  workflow_dispatch: {}
+
 
 jobs:
   test:
