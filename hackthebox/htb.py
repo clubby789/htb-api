@@ -74,7 +74,7 @@ class HTBClient:
             "refresh_token": self._refresh_token
         }, headers=headers)
         data = r.json()['message']
-        if data.startswith("Unauthenticated"):
+        if isinstance(data, str) and data.startswith("Unauthenticated"):
             raise AuthenticationException
         self._access_token = data['access_token']
         self._refresh_token = data['refresh_token']
@@ -124,7 +124,7 @@ class HTBClient:
             return r.json()
 
     def __init__(self, email: Optional[str] = None, password: Optional[str] = None, otp: Optional[str | int] = None,
-                 cache: Optional[str] = None, api_base: str = API_BASE):
+                 cache: Optional[str] = None, api_base: str = API_BASE, remember: Optional[bool] = False):
         """
         Authenticates to the API.
 
@@ -137,11 +137,12 @@ class HTBClient:
             password: The authenticating user's password
             otp: The current OTP of the user, if 2FA is enabled
             cache: The path to load/store access tokens from/to
+            remember: create long token
         """
         self._api_base = api_base
         if cache is not None:
             if self.load_from_cache(cache) is False:
-                self.do_login(email, password, otp)
+                self.do_login(email, password, otp, remember)
                 self.dump_to_cache(cache)
             # Make sure we dump our current tokens out when we exit
             atexit.register(self.dump_to_cache, cache)
@@ -181,7 +182,8 @@ class HTBClient:
                 "refresh_token": self._refresh_token
             }, f)
 
-    def do_login(self, email: Optional[str] = None, password: Optional[str] = None, otp: Optional[str | int] = None):
+    def do_login(self, email: Optional[str] = None, password: Optional[str] = None, otp: Optional[str | int] = None
+                 remember: Optional[bool] = False):
         """
         Authenticates against the API. If credentials are not provided, they will be prompted for.
         """
@@ -191,7 +193,7 @@ class HTBClient:
             password = getpass.getpass()
 
         data = cast(dict, self.do_request("login", json_data={
-            "email": email, "password": password
+            "email": email, "password": password, "remember": remember
         }, authorized=False))
         msg = data['message']
 
