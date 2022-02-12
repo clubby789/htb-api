@@ -74,7 +74,7 @@ class HTBClient:
             "refresh_token": self._refresh_token
         }, headers=headers)
         data = r.json()['message']
-        if data == "Unauthenticated":
+        if data.startswith("Unauthenticated"):
             raise AuthenticationException
         self._access_token = data['access_token']
         self._refresh_token = data['refresh_token']
