@@ -147,7 +147,7 @@ class HTBClient:
             # Make sure we dump our current tokens out when we exit
             atexit.register(self.dump_to_cache, cache)
         else:
-            self.do_login(email, password, otp)
+            self.do_login(email, password, otp, remember)
 
     def load_from_cache(self, cache: str) -> bool:
         """
