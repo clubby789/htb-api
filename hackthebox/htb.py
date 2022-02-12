@@ -182,7 +182,7 @@ class HTBClient:
                 "refresh_token": self._refresh_token
             }, f)
 
-    def do_login(self, email: Optional[str] = None, password: Optional[str] = None, otp: Optional[str | int] = None
+    def do_login(self, email: Optional[str] = None, password: Optional[str] = None, otp: Optional[str | int] = None,
                  remember: Optional[bool] = False):
         """
         Authenticates against the API. If credentials are not provided, they will be prompted for.
