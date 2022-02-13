@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.3] 13/02/2022
+### Added
+- Add the 'remember me' option for long-lasting refresh tokens
+### Fixed
+- Correctly handle a failure to refresh authentication
+
 ## [0.5.2] 22/11/2021
 ### Fixed
 - Use the correct API endpoint for retrieving the current VPN server

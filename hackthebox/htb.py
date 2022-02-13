@@ -137,7 +137,7 @@ class HTBClient:
             password: The authenticating user's password
             otp: The current OTP of the user, if 2FA is enabled
             cache: The path to load/store access tokens from/to
-            remember: create long token
+            remember: Whether to create a long-lasting 'remember me' token
         """
         self._api_base = api_base
         if cache is not None:
