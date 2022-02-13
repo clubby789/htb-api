@@ -549,10 +549,14 @@ def get_machine(num):
 @app.route("/api/v4/login", methods=["POST"])
 def login():
     otp = request.json['email'] == 'otpuser@example.com'
+    if request.json['remember']:
+        exp = time.time() + 30*24*60*60
+    else:
+        exp = time.time() + 100
     token = (
                 base64.b64encode(json.dumps({"typ": "JWT", "alg": "RS256"}).encode()).decode() + "." +
                 base64.b64encode(json.dumps({"aud": "0", "jti": "", "iat": 0, "nbf": 0,
-                                             "exp": time.time() + 100, "sub": "0", "scopes": []}).encode()).decode() + ".")
+                                             "exp": exp, "sub": "0", "scopes": []}).encode()).decode() + ".")
     return jsonify({"message": {
         "access_token": token,
         "refresh_token": "FakeToken",
