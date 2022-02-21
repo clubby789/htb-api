@@ -186,6 +186,8 @@ class Machine(htb.HTBObject):
         self.difficulty = data['difficultyText']
         self.free = data['free']
         self._author_ids = [data['maker']['id']]
+        if data.get('ip'):
+            self._ip = data['ip']
         if data['maker2']:
             self._author_ids.append(data['maker2']['id'])
         if not summary:
