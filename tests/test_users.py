@@ -1,5 +1,6 @@
 from pytest import raises
 
+from hackthebox import HTBClient
 from hackthebox.solve import *
 
 
