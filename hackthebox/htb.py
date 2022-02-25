@@ -448,6 +448,8 @@ class HTBClient:
         else:
             data = connections['lab']['assigned_server']
 
+        if not data:
+            return None
         return VPNServer(data, self)
 
     # noinspection PyUnresolvedReferences
