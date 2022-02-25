@@ -28,8 +28,11 @@ def test_interactive_login(monkeypatch):
     start_server(port)
     # Wait for server thread to start
     time.sleep(0.5)
-    inputs = StringIO("user@example.com\npassword\n")
-    monkeypatch.setattr('sys.stdin', inputs)
+    inp1 = StringIO("user@example.com\n")
+    inp2 = "password"
+    monkeypatch.setattr('sys.stdin', inp1)
+    monkeypatch.setattr('getpass.getpass', lambda: inp2)
+
     client = HTBClient(api_base=f"http://localhost:{port}/api/v4/")
     assert client._access_token is not None
 
