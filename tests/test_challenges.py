@@ -1,6 +1,7 @@
 import os
 
 from pytest import raises
+
 from hackthebox import HTBClient, NoDockerException, NoDownloadException, RateLimitException
 
 
@@ -10,7 +11,7 @@ def test_get_challenge(mock_htb_client: HTBClient):
     assert challenge.id == 1
     assert challenge.name == "Crack This!"
     assert challenge.retired
-    print(challenge)
+    repr(challenge)
 
 
 def test_get_non_existent_challenge(mock_htb_client: HTBClient):

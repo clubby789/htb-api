@@ -1,5 +1,6 @@
 from pytest import raises
-from hackthebox import HTBClient, HTBObject
+
+from hackthebox import HTBClient
 from hackthebox.solve import *
 
 
@@ -8,7 +9,7 @@ def test_get_user(mock_htb_client: HTBClient):
     user = mock_htb_client.get_user(83743)
     assert user.id == 83743
     assert user.name == "clubby789"
-    print(user)
+    repr(user)
 
 
 def test_get_non_existent_user(mock_htb_client: HTBClient):
@@ -32,7 +33,7 @@ def test_get_activity(mock_htb_client: HTBClient):
     activity = mock_htb_client.user.activity
     assert activity is not None
     if len(activity) > 0:
-        print(repr(activity[0]))
+        repr(activity[0])
 
 
 def test_get_activity_items(mock_htb_client: HTBClient):

@@ -1,4 +1,5 @@
 from pytest import raises
+
 from hackthebox import HTBClient
 
 
@@ -7,7 +8,7 @@ def test_get_team(mock_htb_client: HTBClient):
     team = mock_htb_client.get_team(2710)
     assert team.id == 2710
     assert team.name == "TheWINRaRs"
-    print(team)
+    repr(team)
 
 
 def test_get_non_existent_team(mock_htb_client: HTBClient):
