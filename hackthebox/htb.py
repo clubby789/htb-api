@@ -57,8 +57,9 @@ class HTBClient:
     """
     # noinspection PyUnresolvedReferences
     _user: Optional["User"] = None
-    _access_token: str
-    _refresh_token: str
+    _access_token: Optional[str]
+    _refresh_token: Optional[str]
+    _app_token: Optional[str]
     _api_base: str
     challenge_cooldown: int = 0
 
@@ -98,9 +99,14 @@ class HTBClient:
         if authorized:
             # Don't use authorization if the API base URL isn't the real one -
             # i.e. we're running a test
-            if jwt_expired(self._access_token):
-                self._refresh_access_token()
-            headers['Authorization'] = "Bearer " + self._access_token
+            if self._app_token is not None:
+                headers['Authorization'] = "Bearer " + self._app_token
+            elif self._access_token is not None and self._refresh_token is not None:
+                if jwt_expired(self._access_token):
+                    self._refresh_access_token()
+                headers['Authorization'] = "Bearer " + self._access_token
+            else:
+                raise AuthenticationException("No authentication tokens available")
         while True:
             if not json_data and not data:
                 if post:
@@ -124,7 +130,8 @@ class HTBClient:
             return r.json()
 
     def __init__(self, email: Optional[str] = None, password: Optional[str] = None, otp: Optional[str | int] = None,
-                 cache: Optional[str] = None, api_base: str = API_BASE, remember: Optional[bool] = False):
+                 cache: Optional[str] = None, api_base: str = API_BASE, remember: Optional[bool] = False,
+                 app_token: Optional[str] = None):
         """
         Authenticates to the API.
 
@@ -138,16 +145,17 @@ class HTBClient:
             otp: The current OTP of the user, if 2FA is enabled
             cache: The path to load/store access tokens from/to
             remember: Whether to create a long-lasting 'remember me' token
+            app_token: Authenticate using a provided App Token
         """
         self._api_base = api_base
         if cache is not None:
             if self.load_from_cache(cache) is False:
-                self.do_login(email, password, otp, remember)
+                self.do_login(email, password, otp, remember, app_token)
                 self.dump_to_cache(cache)
             # Make sure we dump our current tokens out when we exit
             atexit.register(self.dump_to_cache, cache)
         else:
-            self.do_login(email, password, otp, remember)
+            self.do_login(email, password, otp, remember, app_token)
 
     def load_from_cache(self, cache: str) -> bool:
         """
@@ -160,14 +168,16 @@ class HTBClient:
             return False
         with open(cache, 'r') as f:
             data = json.load(f)
-        self._access_token = data['access_token']
-        self._refresh_token = data['refresh_token']
-        if jwt_expired(self._access_token):
-            try:
-                self._refresh_access_token()
-            # Our refresh token is also invalid, we must log in again
-            except AuthenticationException:
-                return False
+        self._access_token = data.get('access_token')
+        self._refresh_token = data.get('refresh_token')
+        self._app_token = data.get('app_token')
+        if self._access_token is not None:
+            if jwt_expired(self._access_token):
+                try:
+                    self._refresh_access_token()
+                # Our refresh token is also invalid, we must log in again
+                except AuthenticationException:
+                    return False
         return True
 
     def dump_to_cache(self, cache):
@@ -179,41 +189,47 @@ class HTBClient:
         with open(cache, 'w') as f:
             json.dump({
                 "access_token": self._access_token,
-                "refresh_token": self._refresh_token
+                "refresh_token": self._refresh_token,
+                "app_token": self._app_token
             }, f)
 
     def do_login(self, email: Optional[str] = None, password: Optional[str] = None, otp: Optional[str | int] = None,
-                 remember: Optional[bool] = False):
+                 remember: Optional[bool] = False, app_token: Optional[str] = None):
         """
         Authenticates against the API. If credentials are not provided, they will be prompted for.
         """
-        if email is None:
-            email = input("Email: ")
-        if password is None:
-            password = getpass.getpass()
 
-        data = cast(dict, self.do_request("login", json_data={
-            "email": email, "password": password, "remember": remember
-        }, authorized=False))
-        msg = data['message']
+        self._app_token = app_token
+        if app_token is not None:
+            self._access_token = self._refresh_token = None
+        else:
+            if email is None:
+                email = input("Email: ")
+            if password is None:
+                password = getpass.getpass()
 
-        self._access_token = msg.get('access_token')
-        if self._access_token is None:
-            raise ApiError(f"Failed to get access token: {msg}")
-        self._refresh_token = msg.get('refresh_token')
-        if self._refresh_token is None:
-            raise ApiError(f"Failed to get refresh token: {msg}")
-        if data['message']['is2FAEnabled'] is True:
-            if otp is None:
-                otp = input("OTP: ")
-            if type(otp) == int:
-                # Optimistically try and create a string
-                otp = f"{otp:06d}"
-            resp = cast(dict, self.do_request("2fa/login", json_data={
-                "one_time_password": otp
-            }))
-            if "correct" not in resp['message']:
-                raise IncorrectOTPException
+            data = cast(dict, self.do_request("login", json_data={
+                "email": email, "password": password, "remember": remember
+            }, authorized=False))
+            msg = data['message']
+
+            self._access_token = msg.get('access_token')
+            if self._access_token is None:
+                raise ApiError(f"Failed to get access token: {msg}")
+            self._refresh_token = msg.get('refresh_token')
+            if self._refresh_token is None:
+                raise ApiError(f"Failed to get refresh token: {msg}")
+            if data['message']['is2FAEnabled'] is True:
+                if otp is None:
+                    otp = input("OTP: ")
+                if type(otp) == int:
+                    # Optimistically try and create a string
+                    otp = f"{otp:06d}"
+                resp = cast(dict, self.do_request("2fa/login", json_data={
+                    "one_time_password": otp
+                }))
+                if "correct" not in resp['message']:
+                    raise IncorrectOTPException
 
     # noinspection PyUnresolvedReferences
     def search(self, search_term: str) -> "Search":
