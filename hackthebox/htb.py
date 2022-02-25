@@ -268,8 +268,10 @@ class HTBClient:
 
         """
         from .machine import Machine
-        machine_id = cast(dict, self.do_request(f"machine/active"))['info']['id']
-        return self.get_machine(machine_id)
+        info = cast(dict, self.do_request(f"machine/active"))['info']
+        if info:
+            return self.get_machine(info['id'])
+        return None
 
     # noinspection PyUnresolvedReferences
     def get_machines(self, limit: int = None, retired: bool = False) -> List["Machine"]:
