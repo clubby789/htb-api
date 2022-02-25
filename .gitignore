@@ -142,3 +142,5 @@ cython_debug/
 docs/_build
 
 .vscode
+
+*.sw*

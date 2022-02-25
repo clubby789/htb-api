@@ -10,6 +10,14 @@ def test_get_machine(mock_htb_client: HTBClient):
     print(machine)
 
 
+def test_get_active_machine(mock_htb_client: HTBClient):
+    """Tests the ability to retrieve active machine"""
+    machine = mock_htb_client.get_active_machine()
+    assert machine.id == 387
+    assert machine.name == "Driver"
+    print(machine)
+
+
 def test_get_solves(mock_htb_client: HTBClient):
     """Tests the ability to retrieve a specific machine"""
     machine = mock_htb_client.get_machine(1)
