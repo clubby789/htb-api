@@ -1,4 +1,5 @@
 from pytest import raises
+
 from hackthebox import HTBClient
 
 
@@ -7,13 +8,13 @@ def test_get_machine(mock_htb_client: HTBClient):
     machine = mock_htb_client.get_machine(1)
     assert machine.id == 1
     assert machine.name == "Lame"
-    print(machine)
+    repr(machine)
 
 
 def test_get_solves(mock_htb_client: HTBClient):
     """Tests the ability to retrieve a specific machine"""
     machine = mock_htb_client.get_machine(1)
-    print(machine.root_blood)
+    repr(machine.root_blood)
     assert machine.root_blood.machine == machine
 
 

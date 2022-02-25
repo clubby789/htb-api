@@ -6,7 +6,7 @@ def test_get_endgame(mock_htb_client: HTBClient):
     endgame = mock_htb_client.get_endgame(1)
     assert endgame.id == 1
     assert endgame.name == "P.O.O."
-    print(endgame)
+    repr(endgame)
 
 
 def test_get_endgames(mock_htb_client: HTBClient):

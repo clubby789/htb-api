@@ -6,7 +6,7 @@ def test_get_fortress(mock_htb_client: HTBClient):
     fortress = mock_htb_client.get_fortress(1)
     assert fortress.id == 1
     assert fortress.name == "Jet"
-    print(fortress)
+    repr(fortress)
 
 
 def test_get_fortresses(mock_htb_client: HTBClient):

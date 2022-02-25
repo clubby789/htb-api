@@ -1,5 +1,6 @@
 import base64
 import json
+import os
 import time
 from threading import Thread
 
@@ -740,5 +741,6 @@ def ratelimit():
 
 
 def start_server(port: int):
+    os.environ['WERKZEUG_RUN_MAIN'] = 'true'
     thread = Thread(target=app.run, args=('0.0.0.0', port), daemon=True)
     thread.start()

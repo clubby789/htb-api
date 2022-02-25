@@ -1,7 +1,7 @@
 from pytest import raises
+
 from hackthebox import HTBClient, Machine, Challenge, Endgame, Fortress
 from hackthebox.errors import IncorrectFlagException, IncorrectArgumentException
-
 
 CORRECT_CHALLENGE = "HTB{a_challenge_flag}"
 CORRECT_HASH = "30ea86803e0d85be51599c3a4e422266"
@@ -66,7 +66,7 @@ def test_challenge_flags(mock_htb_client: HTBClient):
     try:
         challenge.submit(CORRECT_CHALLENGE, 5)
     except IncorrectArgumentException as e:
-        print(e)
+        str(e)
 
 
 def test_endgame_flags(mock_htb_client: HTBClient):
