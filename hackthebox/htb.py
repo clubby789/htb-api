@@ -259,6 +259,22 @@ class HTBClient:
         return Machine(data, self)
 
     # noinspection PyUnresolvedReferences
+    def get_todo_machines(self, limit: int = None) -> List["Machine"]:
+        """
+
+        Retrieve a list of `Machine` from the API based on the users todo list
+
+        Args:
+            limit: The maximum number to fetch
+
+        Returns: A list of `Machine`
+
+        """
+        from .machine import Machine
+        data = cast(dict, self.do_request("home/user/todo"))['data']['machines'][:limit]
+        return [Machine(m, self, summary=True) for m in data]
+
+    # noinspection PyUnresolvedReferences
     def get_machines(self, limit: int = None, retired: bool = False) -> List["Machine"]:
         """
 

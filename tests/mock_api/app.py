@@ -484,6 +484,50 @@ TEAM_ADMINS = {
     "join_request_sent": False
 }
 
+TODO_LIST = {
+    "machines": [
+	{
+	    "id": 109,
+	    "name": "Minion",
+	    "os": "Windows",
+	    "points": 0,
+	    "difficulty": "Insane",
+	    "avatar": "/storage/avatars/2ed1156a2aaaba7935ebb31d1ffd8ee0.png",
+	    "user_flag": True,
+	    "root_flag": True,
+	    "root_flag_only": False,
+	    "url": "/machines/Minion"
+	},
+	{
+	    "id": 113,
+	    "name": "Tally",
+	    "os": "Windows",
+	    "points": 0,
+	    "difficulty": "Hard",
+	    "avatar": "/storage/avatars/72c8ccb9247de82b107cd045528e45a8.png",
+	    "user_flag": True,
+	    "root_flag": True,
+	    "root_flag_only": False,
+	    "url": "/machines/Tally"
+	},
+	{
+	    "id": 114,
+	    "name": "Jeeves",
+	    "os": "Windows",
+	    "points": 0,
+	    "difficulty": "Medium",
+	    "avatar": "/storage/avatars/709059a710d3d6ff1ba32bf0729ecbb8.png",
+	    "user_flag": True,
+	    "root_flag": True,
+	    "root_flag_only": False,
+	    "url": "/machines/Jeeves"
+	},
+    ],
+    "challenges": [],
+    "tracks": [],
+    "prolabs": []
+}
+
 
 has_ratelimited: bool = False
 
@@ -545,6 +589,11 @@ def get_machine(num):
     num = int(num)
     if num == 1:
         return jsonify({"info": MACHINE_LAME})
+
+
+@app.route("/api/v4/home/user/todo")
+def get_todo():
+    return jsonify({"data": TODO_LIST})
 
 
 @app.route("/api/v4/login", methods=["POST"])
