@@ -274,6 +274,22 @@ class HTBClient:
         data = cast(dict, self.do_request("home/user/todo"))['data']['machines'][:limit]
         return [Machine(m, self, summary=True) for m in data]
 
+
+    # noinspection PyUnresolvedReferences
+    def get_active_machine(self) -> Optional[Machine]:
+        """
+
+        Retrieve `Machine` currently assigned to user
+
+        Returns: The `Machine` currently assigned (or active) to user
+
+        """
+        from .machine import Machine
+        info = cast(dict, self.do_request(f"machine/active"))['info']
+        if info:
+            return self.get_machine(info['id'])
+        return None
+
     # noinspection PyUnresolvedReferences
     def get_machines(self, limit: int = None, retired: bool = False) -> List["Machine"]:
         """
@@ -292,7 +308,10 @@ class HTBClient:
             data = cast(dict, self.do_request("machine/list"))['info'][:limit]
         else:
             data = cast(dict, self.do_request("machine/list/retired"))['info'][:limit]
-        return [Machine(m, self, summary=True) for m in data]
+        machines = [Machine(m, self, summary=True) for m in data]
+        for machine in machines:
+            machine.retired = retired
+        return machines
 
     # noinspection PyUnresolvedReferences
     def get_challenge(self, challenge_id: int | str) -> "Challenge":

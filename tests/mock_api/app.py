@@ -8,27 +8,28 @@ from flask import Flask, request, jsonify, Response
 
 CORRECT_CHALLENGE = "HTB{a_challenge_flag}"
 CORRECT_HASH = "30ea86803e0d85be51599c3a4e422266"
-CHALLENGE_CRACKTHIS = {"id": 1,
-                       "name": "Crack This!",
-                       "description": "Crack the program and get the flag!",
-                       "category_name": "Reversing",
-                       "creator_id": 1,
-                       "creator_name": "Nobody",
-                       "creator2_id": None,
-                       "creator2_name": None,
-                       "retired": True,
-                       "points": 0,
-                       "difficulty_chart": {},
-                       "difficulty": "Hard",
-                       "solves": 1,
-                       "authUserSolve": True,
-                       "likes": 1,
-                       "dislikes": 1,
-                       "release_date": "2017-06-29T19:00:00.000000Z",
-                       "docker": False,
-                       "docker_ip": None,
-                       "download": True
-                       }
+CHALLENGE_CRACKTHIS = {
+    "id": 1,
+    "name": "Crack This!",
+    "description": "Crack the program and get the flag!",
+    "category_name": "Reversing",
+    "creator_id": 1,
+    "creator_name": "Nobody",
+    "creator2_id": None,
+    "creator2_name": None,
+    "retired": True,
+    "points": 0,
+    "difficulty_chart": {},
+    "difficulty": "Hard",
+    "solves": 1,
+    "authUserSolve": True,
+    "likes": 1,
+    "dislikes": 1,
+    "release_date": "2017-06-29T19:00:00.000000Z",
+    "docker": False,
+    "docker_ip": None,
+    "download": True,
+}
 
 CHALLENGE_WEATHERAPP = {
     "id": 196,
@@ -128,7 +129,7 @@ USER_CH4P = {
     "rank_requirement": None,
     "country_name": None,
     "team": {},
-    "public": True
+    "public": True,
 }
 
 USER_MAKELARISJR = {
@@ -156,7 +157,7 @@ USER_MAKELARISJR = {
     "rank_requirement": None,
     "country_name": None,
     "team": {},
-    "public": True
+    "public": True,
 }
 
 USER_MAKELARIS = {
@@ -184,7 +185,7 @@ USER_MAKELARIS = {
     "rank_requirement": None,
     "country_name": None,
     "team": {},
-    "public": True
+    "public": True,
 }
 
 USER_HTBBOT = {
@@ -212,7 +213,7 @@ USER_HTBBOT = {
     "rank_requirement": None,
     "country_name": None,
     "team": {},
-    "public": True
+    "public": True,
 }
 
 USER_ISTARCHEATERS = {
@@ -240,7 +241,7 @@ USER_ISTARCHEATERS = {
     "rank_requirement": None,
     "country_name": None,
     "team": None,
-    "public": True
+    "public": True,
 }
 
 USER_CLUBBY = {
@@ -254,8 +255,8 @@ USER_CLUBBY = {
     "verified": True,
     "can_delete_avatar": True,
     "team": {
-      "id": 1709,
-      "name": "WinBARs",
+        "id": 1709,
+        "name": "WinBARs",
     },
     "university": None,
     "hasTeamInvitation": True,
@@ -282,7 +283,7 @@ USER_CLUBBY = {
     "rank_ownership": 0.0,
     "rank_requirement": None,
     "country_name": None,
-    "public": True
+    "public": True,
 }
 
 
@@ -319,7 +320,7 @@ USER_EKS = {
     "rank_ownership": 0.0,
     "rank_requirement": None,
     "country_name": None,
-    "public": True
+    "public": True,
 }
 
 MACHINE_LAME = {
@@ -345,19 +346,19 @@ MACHINE_LAME = {
     "isCompleted": True,
     "last_reset_time": None,
     "playInfo": {
-      "isSpawned": None,
-      "isSpawning": None,
-      "isActive": False,
-      "active_player_count": None,
-      "expires_at": None
+        "isSpawned": None,
+        "isSpawning": None,
+        "isActive": False,
+        "active_player_count": None,
+        "expires_at": None,
     },
     "maker": {
-      "id": 1,
-      "name": "ch4p",
+        "id": 1,
+        "name": "ch4p",
     },
     "maker2": {
-      "id": 1,
-      "name": "ch4p",
+        "id": 1,
+        "name": "ch4p",
     },
     "recommended": 0,
     "sp_flag": 0,
@@ -365,27 +366,108 @@ MACHINE_LAME = {
     "authUserFirstUserTime": "2Y 5M 17D",
     "authUserFirstRootTime": "2Y 5M 17D",
     "userBlood": {
-        "user": {
-            "name": "0x1Nj3cT0R",
-            "id": 22,
-            "avatar": None
-        },
+        "user": {"name": "0x1Nj3cT0R", "id": 22, "avatar": None},
         "created_at": "2017-04-02 23:50:16",
-        "blood_difference": "18D 22H 55M"
+        "blood_difference": "18D 22H 55M",
     },
     "userBloodAvatar": None,
     "rootBlood": {
-        "user": {
-            "name": "0x1Nj3cT0R",
-            "id": 22,
-            "avatar": None
-        },
+        "user": {"name": "0x1Nj3cT0R", "id": 22, "avatar": None},
         "created_at": "2017-04-02 23:49:27",
-        "blood_difference": "18D 22H 54M"
+        "blood_difference": "18D 22H 54M",
     },
     "rootBloodAvatar": None,
     "firstUserBloodTime": "18D 22H 55M",
     "firstRootBloodTime": "18D 22H 54M",
+}
+
+MACHINE_DRIVER_ACTIVE = {
+    "avatar": "/storage/avatars/ce42ce9fd28d117b8d6c045aefeb5cdb.png",
+    "expires_at": "2022-02-26 22:44:08",
+    "id": 387,
+    "isSpawning": None,
+    "lab_server": "vip_lab",
+    "name": "Driver",
+    "type": "Free",
+    "voted": False,
+    "voting": False,
+}
+
+MACHINE_DRIVER = {
+    "id": 387,
+    "name": "Driver",
+    "os": "Windows",
+    "active": 1,
+    "retired": 0,
+    "ip": "10.10.11.106",
+    "points": 20,
+    "static_points": 20,
+    "release": "2021-10-02T16:00:00.000000Z",
+    "user_owns_count": 9521,
+    "root_owns_count": 8313,
+    "free": True,
+    "authUserInUserOwns": True,
+    "authUserInRootOwns": True,
+    "authUserHasReviewed": False,
+    "stars": "4.7",
+    "difficulty": 42,
+    "avatar": "/storage/avatars/ce42ce9fd28d117b8d6c045aefeb5cdb.png",
+    "feedbackForChart": {
+        "counterCake": 470,
+        "counterVeryEasy": 731,
+        "counterEasy": 2186,
+        "counterTooEasy": 2549,
+        "counterMedium": 2570,
+        "counterBitHard": 847,
+        "counterHard": 494,
+        "counterTooHard": 161,
+        "counterExHard": 42,
+        "counterBrainFuck": 117,
+    },
+    "difficultyText": "Easy",
+    "isCompleted": True,
+    "last_reset_time": "2 weeks before",
+    "playInfo": {
+        "isSpawned": True,
+        "isSpawning": None,
+        "isActive": True,
+        "active_player_count": 2,
+        "expires_at": "2022-02-26 22:44:08",
+    },
+    "maker": {
+        "id": 13531,
+        "name": "MrR3boot",
+        "avatar": "/storage/avatars/35b0a38a649c5cf0537bf544451b95fb.png",
+        "isRespected": True,
+    },
+    "maker2": None,
+    "authUserFirstUserTime": "3M 16D 6H",
+    "authUserFirstRootTime": "3M 16D 6H",
+    "userBlood": {
+        "user": {
+            "name": "Wh04m1",
+            "id": 4483,
+            "avatar": "/storage/avatars/0fc6d83a6ab0b4f6ce8cd8c8dd5083fe.png",
+        },
+        "created_at": "2021-10-02 22:21:10",
+        "blood_difference": "0H 21M 10S",
+    },
+    "userBloodAvatar": "/storage/avatars/0fc6d83a6ab0b4f6ce8cd8c8dd5083fe.png",
+    "rootBlood": {
+        "user": {
+            "name": "RealEnox",
+            "id": 256488,
+            "avatar": "/storage/avatars/656c1c48ce65e2341f887e3c6d3e4436.png",
+        },
+        "created_at": "2021-10-02 22:29:13",
+        "blood_difference": "0H 29M 13S",
+    },
+    "rootBloodAvatar": "/storage/avatars/656c1c48ce65e2341f887e3c6d3e4436.png",
+    "firstUserBloodTime": "0H 21M 10S",
+    "firstRootBloodTime": "0H 29M 13S",
+    "recommended": 0,
+    "sp_flag": 0,
+    "lab_server": "vip_lab",
 }
 
 ENDGAME_POO = {
@@ -396,10 +478,10 @@ ENDGAME_POO = {
     "retired": True,
     "vip": True,
     "creators": [
-      {
-        "id": 302,
-        "name": "eks",
-      }
+        {
+            "id": 302,
+            "name": "eks",
+        }
     ],
     "points": 0,
     "players_completed": 944,
@@ -410,8 +492,8 @@ ENDGAME_POO = {
     "description": None,
     "completion_icon": "fa-chess",
     "completion_text": "Castling",
-    "has_user_finished": True
-  }
+    "has_user_finished": True,
+}
 
 FORTRESS_JET = {
     "id": 1,
@@ -420,22 +502,12 @@ FORTRESS_JET = {
     "cover_image_url": "",
     "new": False,
     "number_of_flags": 11,
-    "user_availability": {
-        "available": False,
-        "code": 0,
-        "message": None
-    },
+    "user_availability": {"available": False, "code": 0, "message": None},
     "flags": [],
-    "company": {
-        "id": 1,
-        "name": None,
-        "description": None,
-        "url": None,
-        "image": None
-    },
+    "company": {"id": 1, "name": None, "description": None, "url": None, "image": None},
     "reset_votes": 0,
     "progress_percent": 0,
-    "ip": None
+    "ip": None,
 }
 
 TEAM_WINRARS = {
@@ -458,7 +530,7 @@ TEAM_WINRARS = {
         "name": "lukevaxhacker",
     },
     "is_respected": False,
-    "join_request_sent": False
+    "join_request_sent": False,
 }
 
 TEAM_ADMINS = {
@@ -481,7 +553,7 @@ TEAM_ADMINS = {
         "name": "ch4p",
     },
     "is_respected": False,
-    "join_request_sent": False
+    "join_request_sent": False,
 }
 
 TODO_LIST = {
@@ -560,7 +632,7 @@ def get_challenge(num):
 
 @app.route("/api/v4/challenge/own", methods=["POST"])
 def own_challenge():
-    if request.json['flag'] == CORRECT_CHALLENGE:
+    if request.json["flag"] == CORRECT_CHALLENGE:
         return jsonify({"message": "Congratulations"})
     else:
         return jsonify({"message": "Incorrect flag"})
@@ -571,6 +643,15 @@ def list_machines():
     return jsonify({"info": [MACHINE_LAME for _ in range(20)]})
 
 
+@app.route("/api/v4/machine/active")
+def get_active_machine():
+    token = request.headers.get('Authorization').split(".")[1]
+    token_dict = json.loads(base64.b64decode(token).decode())
+    if "no_active" in token_dict:
+         return jsonify({"info": None})
+    return jsonify({"info": MACHINE_DRIVER_ACTIVE})
+
+
 @app.route("/api/v4/machine/list/retired")
 def list_retired_machines():
     return jsonify({"info": [MACHINE_LAME for _ in range(150)]})
@@ -578,7 +659,7 @@ def list_retired_machines():
 
 @app.route("/api/v4/machine/own", methods=["POST"])
 def own_machine():
-    if request.json['flag'] == CORRECT_HASH:
+    if request.json["flag"] == CORRECT_HASH:
         return jsonify({"message": "Congratulations"})
     else:
         return jsonify({"message": "Incorrect flag!"})
@@ -589,6 +670,8 @@ def get_machine(num):
     num = int(num)
     if num == 1:
         return jsonify({"info": MACHINE_LAME})
+    elif num == 387:
+        return jsonify({"info": MACHINE_DRIVER})
 
 
 @app.route("/api/v4/home/user/todo")
@@ -598,25 +681,43 @@ def get_todo():
 
 @app.route("/api/v4/login", methods=["POST"])
 def login():
-    otp = request.json['email'] == 'otpuser@example.com'
-    if request.json['remember']:
-        exp = time.time() + 30*24*60*60
+    otp = request.json["email"] == "otpuser@example.com"
+    if request.json["remember"]:
+        exp = time.time() + 30 * 24 * 60 * 60
     else:
         exp = time.time() + 100
     token = (
-                base64.b64encode(json.dumps({"typ": "JWT", "alg": "RS256"}).encode()).decode() + "." +
-                base64.b64encode(json.dumps({"aud": "0", "jti": "", "iat": 0, "nbf": 0,
-                                             "exp": exp, "sub": "0", "scopes": []}).encode()).decode() + ".")
-    return jsonify({"message": {
-        "access_token": token,
-        "refresh_token": "FakeToken",
-        "is2FAEnabled": otp
-    }})
+        base64.b64encode(json.dumps({"typ": "JWT", "alg": "RS256"}).encode()).decode()
+        + "."
+        + base64.b64encode(
+            json.dumps(
+                {
+                    "aud": "0",
+                    "jti": "",
+                    "iat": 0,
+                    "nbf": 0,
+                    "exp": exp,
+                    "sub": "0",
+                    "scopes": [],
+                }
+            ).encode()
+        ).decode()
+        + "."
+    )
+    return jsonify(
+        {
+            "message": {
+                "access_token": token,
+                "refresh_token": "FakeToken",
+                "is2FAEnabled": otp,
+            }
+        }
+    )
 
 
 @app.route("/api/v4/2fa/login", methods=["POST"])
 def otp_login():
-    if request.json['one_time_password'] == '111111':
+    if request.json["one_time_password"] == "111111":
         return jsonify({"message": "OTP correct"})
     else:
         return jsonify({"message": "OTP wrong"}), 400
@@ -625,20 +726,37 @@ def otp_login():
 @app.route("/api/v4/login/refresh", methods=["POST"])
 def refresh():
     token = (
-            base64.b64encode(json.dumps({"typ": "JWT", "alg": "RS256"}).encode()).decode() + "." +
-            base64.b64encode(json.dumps({"aud": "0", "jti": "", "iat": 0, "nbf": 0,
-                                         "exp": time.time() + 100, "sub": "0", "scopes": []}).encode()).decode() + ".")
-    return jsonify({"message": {
-        "access_token": token,
-        "refresh_token": "FakeToken"
-       }})
+        base64.b64encode(json.dumps({"typ": "JWT", "alg": "RS256"}).encode()).decode()
+        + "."
+        + base64.b64encode(
+            json.dumps(
+                {
+                    "aud": "0",
+                    "jti": "",
+                    "iat": 0,
+                    "nbf": 0,
+                    "exp": time.time() + 100,
+                    "sub": "0",
+                    "scopes": [],
+                }
+            ).encode()
+        ).decode()
+        + "."
+    )
+    return jsonify({"message": {"access_token": token, "refresh_token": "FakeToken"}})
 
 
 @app.route("/api/v4/challenge/start", methods=["POST"])
 def start_challenge():
-    if request.json['challenge_id'] == 143:
-        return jsonify({"message": "Instance Created!", "id": "webnginxatsu-83743",
-                        "port": 31475, "ip": "10.10.10.10"})
+    if request.json["challenge_id"] == 143:
+        return jsonify(
+            {
+                "message": "Instance Created!",
+                "id": "webnginxatsu-83743",
+                "port": 31475,
+                "ip": "10.10.10.10",
+            }
+        )
     else:
         return jsonify({"message": "Incorrect Parameters"})
 
@@ -650,7 +768,7 @@ def stop_challenge():
 
 @app.route("/api/v4/endgame/<_num>/flag", methods=["POST"])
 def submit_endgame_flag(_num):
-    if request.json['flag'] == CORRECT_HASH:
+    if request.json["flag"] == CORRECT_HASH:
         return jsonify({"message": "Congratulations"})
     else:
         return jsonify({"message": "Wrong flag"})
@@ -683,7 +801,7 @@ def get_fortress(num):
 
 @app.route("/api/v4/fortress/<_num>/flag", methods=["POST"])
 def submit_fortress_flag(_num):
-    if request.json['flag'] == CORRECT_HASH:
+    if request.json["flag"] == CORRECT_HASH:
         return jsonify({"message": "Congratulations"})
     else:
         return jsonify({"message": "Wrong flag"})
@@ -707,12 +825,20 @@ def get_team_list():
 @app.route("/api/v4/rankings/countries")
 def get_country_list():
     c = {
-        "id": 1, "country": "UK", "name": "United Kingdom",
-        "rank": 1, "points": 1, "members": 1,
-        "user_owns": 1, "root_owns": 1, "challenge_owns": 1,
-        "user_bloods": 1, "root_bloods": 1, "challenge_bloods": 1,
-        "fortress": 1, "endgame": 1
-
+        "id": 1,
+        "country": "UK",
+        "name": "United Kingdom",
+        "rank": 1,
+        "points": 1,
+        "members": 1,
+        "user_owns": 1,
+        "root_owns": 1,
+        "challenge_owns": 1,
+        "user_bloods": 1,
+        "root_bloods": 1,
+        "challenge_bloods": 1,
+        "fortress": 1,
+        "endgame": 1,
     }
     return jsonify({"data": [c for _ in range(100)]})
 
@@ -720,12 +846,19 @@ def get_country_list():
 @app.route("/api/v4/rankings/universities")
 def get_uni_list():
     u = {
-        "id": 1, "name": "Uni Uni",
-        "rank": 1, "points": 1, "students": 1,
-        "user_owns": 1, "root_owns": 1, "challenge_owns": 1,
-        "user_bloods": 1, "root_bloods": 1, "challenge_bloods": 1,
-        "fortress": 1, "endgame": 1
-
+        "id": 1,
+        "name": "Uni Uni",
+        "rank": 1,
+        "points": 1,
+        "students": 1,
+        "user_owns": 1,
+        "root_owns": 1,
+        "challenge_owns": 1,
+        "user_bloods": 1,
+        "root_bloods": 1,
+        "challenge_bloods": 1,
+        "fortress": 1,
+        "endgame": 1,
     }
     return jsonify({"data": [u for _ in range(100)]})
 
@@ -777,7 +910,9 @@ def get_own_user():
 
 @app.route("/api/v4/search/fetch")
 def search():
-    return jsonify({"challenges": [], "machines": [MACHINE_LAME], "teams": [], "users": []})
+    return jsonify(
+        {"challenges": [], "machines": [MACHINE_LAME], "teams": [], "users": []}
+    )
 
 
 @app.before_request
