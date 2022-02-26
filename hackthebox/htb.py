@@ -272,7 +272,7 @@ class HTBClient:
         """
         from .machine import Machine
         data = cast(dict, self.do_request("home/user/todo"))['data']['machines'][:limit]
-        return [Machine(m, self, summary=True) for m in data]
+        return [m['id'] for m in data]
 
 
     # noinspection PyUnresolvedReferences
