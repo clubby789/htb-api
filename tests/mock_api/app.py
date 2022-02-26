@@ -601,6 +601,11 @@ def list_machines():
 
 @app.route("/api/v4/machine/active")
 def get_active_machine():
+    token = request.headers.get('Authorization').split(".")[1]
+    token_dict = json.loads(base64.b64decode(token).decode())
+    print(token_dict)
+    if "no_active" in token_dict:
+         return jsonify({"info": None})
     return jsonify({"info": MACHINE_DRIVER_ACTIVE})
 
 
