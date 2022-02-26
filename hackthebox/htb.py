@@ -276,7 +276,10 @@ class HTBClient:
             data = cast(dict, self.do_request("machine/list"))['info'][:limit]
         else:
             data = cast(dict, self.do_request("machine/list/retired"))['info'][:limit]
-        return [Machine(m, self, summary=True) for m in data]
+        machines = [Machine(m, self, summary=True) for m in data]
+        for machine in machines:
+            machine.retired = retired
+        return machines
 
     # noinspection PyUnresolvedReferences
     def get_challenge(self, challenge_id: int | str) -> "Challenge":
