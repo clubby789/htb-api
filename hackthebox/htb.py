@@ -259,7 +259,7 @@ class HTBClient:
         return Machine(data, self)
 
     # noinspection PyUnresolvedReferences
-    def get_active_machine(self) -> "Machine":
+    def get_active_machine(self) -> Optional[Machine]:
         """
 
         Retrieve `Machine` currently assigned to user
