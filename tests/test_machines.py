@@ -76,3 +76,9 @@ def test_machine_author(mock_htb_client: HTBClient):
     machine = mock_htb_client.get_machine(1)
     author = machine.authors[0]
     assert author.name == "ch4p"
+
+
+def test_machine_todo_list(mock_htb_client: HTBClient):
+    """Tests retrieving machine list based on user's todo list"""
+    machines = mock_htb_client.get_todo_machines()
+    assert set(machines) == set([109, 113, 114])
