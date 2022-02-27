@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.5] 27/02/222
+### Added
+- App tokens, allowing use of the API without credentials/OTP
+- Retrieving your 'to-do list' of machines
+### Development
+- Improved test coverage
+
 ## [0.5.4] 21/02/222
 ### Fixed
 - Improved loading speed of machine IPs
