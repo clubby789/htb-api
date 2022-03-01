@@ -263,11 +263,18 @@ class MachineInstance:
     def reset(self):
         """Request the instance be reset."""
         if self.machine.is_release:
-            raise
-        msg = self.client.do_request("vm/reset", json_data={"machine_id": self.machine.id})["message"]
-        if msg.endswith(" will be reset in 1 minute."):
+            resp = self.client.do_request("release_arena/reset", json_data={"machine_id": self.machine.id})
+        else:
+            resp = self.client.do_request("vm/reset", json_data={"machine_id": self.machine.id})
+        # VM
+        if resp["message"].endswith(" will be reset in 1 minute."):
             return True
-        if msg == "Too many reset machine attempts. Try again later!":
+        elif resp["message"] == "Too many reset machine attempts. Try again later!":
+            raise TooManyResetAttempts
+        # RA
+        elif resp["success"]:
+            return True
+        elif resp["message"].startswith("You must wait"):
             raise TooManyResetAttempts
         raise MachineException
 

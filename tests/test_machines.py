@@ -106,6 +106,8 @@ def test_machine_reset(mock_htb_client: HTBClient):
 
     active_box = mock_htb_client.get_active_machine()
     assert active_box.reset()
+    active_box.machine._is_release = True
+    assert active_box.reset()
 
     # change access token to have mock send too many resets
     backup = mock_htb_client._access_token
@@ -130,6 +132,10 @@ def test_machine_reset(mock_htb_client: HTBClient):
         + "."
     )
 
+    with raises(TooManyResetAttempts):
+        active_box.reset()
+
+    active_box.machine._is_release = False
     with raises(TooManyResetAttempts):
         active_box.reset()
 

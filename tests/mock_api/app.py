@@ -1036,6 +1036,15 @@ def reset_box():
     box_id = request.json['machine_id']
     return jsonify({"message":"Hancliffe will be reset in 1 minute."})
 
+
+@app.route("/api/v4/release_arena/reset", methods=["POST"])
+def reset_ra():
+    token = request.headers.get("Authorization").split(".")[1]
+    token_dict = json.loads(base64.b64decode(token).decode())
+    if "too_many_resets" in token_dict:
+        return jsonify({"success":0,"message":"You must wait 1 minute between Machine actions."}), 400
+    return jsonify({"success":1,"message":"Machine reset!"})
+
 @app.before_request
 def ratelimit():
     global has_ratelimited
