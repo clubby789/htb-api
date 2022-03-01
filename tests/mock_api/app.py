@@ -601,6 +601,9 @@ TODO_LIST = {
 }
 
 
+CONNECTIONS = {'status': True, 'data': {'lab': {'can_access': True, 'location_type_friendly': 'EU - VIP', 'assigned_server': {'id': 61, 'friendly_name': 'EU VIP 20', 'current_clients': 3, 'location': 'EU'}}, 'starting_point': {'can_access': True, 'location_type_friendly': 'US - Starting Point VIP', 'assigned_server': {'id': 415, 'friendly_name': 'US StartingPoint VIP 1', 'current_clients': 33, 'location': 'US'}}, 'endgames': {'can_access': True, 'location_type_friendly': 'EU - Endgame', 'assigned_server': {'id': 37, 'friendly_name': 'EU Endgame 1', 'current_clients': 1, 'location': 'EU'}}, 'fortresses': {'can_access': True, 'location_type_friendly': 'US - Fortress', 'assigned_server': {'id': 19, 'friendly_name': 'US Fortress 1', 'current_clients': 10, 'location': 'US'}}, 'pro_labs': {'can_access': False, 'assigned_server': None}, 'release_arena': {'can_access': True, 'assigned_server': {'id': 267, 'friendly_name': 'EU Release Lab 1', 'current_clients': 72, 'location': 'EU'}, 'available': True, 'location_type_friendly': 'EU - Release Arena', 'machine': {'id': 444, 'name': 'RouterSpace', 'avatar_thumb_url': 'https://www.hackthebox.com/storage/avatars/4aee57cc02f0181b22f4ccd43775f7ac_thumb.png'}}}}
+
+
 has_ratelimited: bool = False
 
 app = Flask(__name__)
@@ -913,6 +916,11 @@ def search():
     return jsonify(
         {"challenges": [], "machines": [MACHINE_LAME], "teams": [], "users": []}
     )
+
+
+@app.route("/api/v4/connections")
+def connections():
+
 
 
 @app.before_request

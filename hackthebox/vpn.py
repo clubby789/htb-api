@@ -18,6 +18,7 @@ from __future__ import annotations
 import os
 
 from . import htb
+from .errors import VpnException, CannotSwitchWithActive
 
 from typing import TYPE_CHECKING, cast
 if TYPE_CHECKING:
@@ -66,7 +67,12 @@ class VPNServer(htb.HTBObject):
         Returns: Whether the switch was completed successfully
         """
         # TODO: Throw exception on failure
-        return cast(dict, self._client.do_request(f"connections/servers/switch/{self.id}", post=True))["status"] is True
+        result = cast(dict, self._client.do_request(f"connections/servers/switch/{self.id}", post=True))
+        if result["status"] is True:
+            return True
+        if result["message"] == "You must stop your active machine before switching VPN":
+            raise CannotSwitchWithActive
+        raise VpnException
 
     def download(self, path=None, tcp=False) -> str:
         """
