@@ -17,7 +17,7 @@ from .errors import AuthenticationException, NotFoundException, \
 if TYPE_CHECKING:
     from .user import User
     from .search import Search
-    from .machine import Machine
+    from .machine import Machine, MachineInstance
     from .challenge import Challenge
     from .endgame import Endgame
     from .fortress import Fortress
@@ -275,7 +275,7 @@ class HTBClient:
 
 
     # noinspection PyUnresolvedReferences
-    def get_active_machine(self, release_arena: bool=False) -> Optional[MachineInstance]:
+    def get_active_machine(self, release_arena: bool=False) -> Optional["MachineInstance"]:
         """
 
         Retrieve `Machine` currently assigned to user
@@ -293,6 +293,7 @@ class HTBClient:
             box = self.get_machine(info['id'])
             server = box._client.get_current_vpn_server(release_arena)
             return MachineInstance(box.ip, server, box, box._client)
+        return None
         
 
     # noinspection PyUnresolvedReferences
