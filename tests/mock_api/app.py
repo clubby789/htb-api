@@ -6,6 +6,8 @@ from threading import Thread
 
 from flask import Flask, request, jsonify, Response
 
+from . import static
+
 CORRECT_CHALLENGE = "HTB{a_challenge_flag}"
 CORRECT_HASH = "30ea86803e0d85be51599c3a4e422266"
 CHALLENGE_CRACKTHIS = {
@@ -381,6 +383,20 @@ MACHINE_LAME = {
     "firstRootBloodTime": "18D 22H 54M",
 }
 
+MACHINE_DRIVER_RA = {
+    "avatar": "/storage/avatars/4aee57cc02f0181b22f4ccd43775f7ac.png",
+    "expires_at": None,
+    "id": 387,
+    "isSpawning": None,
+    "name": "Driver",
+    "voted": None,
+    "voting": None,
+    "ip": "10.129.145.8",
+    "lifespan": 1440,
+    "type": "Release Arena",
+    "lab_server": "ra_lab",
+}
+
 MACHINE_DRIVER_ACTIVE = {
     "avatar": "/storage/avatars/ce42ce9fd28d117b8d6c045aefeb5cdb.png",
     "expires_at": "2022-02-26 22:44:08",
@@ -558,50 +574,112 @@ TEAM_ADMINS = {
 
 TODO_LIST = {
     "machines": [
-	{
-	    "id": 109,
-	    "name": "Minion",
-	    "os": "Windows",
-	    "points": 0,
-	    "difficulty": "Insane",
-	    "avatar": "/storage/avatars/2ed1156a2aaaba7935ebb31d1ffd8ee0.png",
-	    "user_flag": True,
-	    "root_flag": True,
-	    "root_flag_only": False,
-	    "url": "/machines/Minion"
-	},
-	{
-	    "id": 113,
-	    "name": "Tally",
-	    "os": "Windows",
-	    "points": 0,
-	    "difficulty": "Hard",
-	    "avatar": "/storage/avatars/72c8ccb9247de82b107cd045528e45a8.png",
-	    "user_flag": True,
-	    "root_flag": True,
-	    "root_flag_only": False,
-	    "url": "/machines/Tally"
-	},
-	{
-	    "id": 114,
-	    "name": "Jeeves",
-	    "os": "Windows",
-	    "points": 0,
-	    "difficulty": "Medium",
-	    "avatar": "/storage/avatars/709059a710d3d6ff1ba32bf0729ecbb8.png",
-	    "user_flag": True,
-	    "root_flag": True,
-	    "root_flag_only": False,
-	    "url": "/machines/Jeeves"
-	},
+        {
+            "id": 109,
+            "name": "Minion",
+            "os": "Windows",
+            "points": 0,
+            "difficulty": "Insane",
+            "avatar": "/storage/avatars/2ed1156a2aaaba7935ebb31d1ffd8ee0.png",
+            "user_flag": True,
+            "root_flag": True,
+            "root_flag_only": False,
+            "url": "/machines/Minion",
+        },
+        {
+            "id": 113,
+            "name": "Tally",
+            "os": "Windows",
+            "points": 0,
+            "difficulty": "Hard",
+            "avatar": "/storage/avatars/72c8ccb9247de82b107cd045528e45a8.png",
+            "user_flag": True,
+            "root_flag": True,
+            "root_flag_only": False,
+            "url": "/machines/Tally",
+        },
+        {
+            "id": 114,
+            "name": "Jeeves",
+            "os": "Windows",
+            "points": 0,
+            "difficulty": "Medium",
+            "avatar": "/storage/avatars/709059a710d3d6ff1ba32bf0729ecbb8.png",
+            "user_flag": True,
+            "root_flag": True,
+            "root_flag_only": False,
+            "url": "/machines/Jeeves",
+        },
     ],
     "challenges": [],
     "tracks": [],
-    "prolabs": []
+    "prolabs": [],
 }
 
 
-CONNECTIONS = {'status': True, 'data': {'lab': {'can_access': True, 'location_type_friendly': 'EU - VIP', 'assigned_server': {'id': 61, 'friendly_name': 'EU VIP 20', 'current_clients': 3, 'location': 'EU'}}, 'starting_point': {'can_access': True, 'location_type_friendly': 'US - Starting Point VIP', 'assigned_server': {'id': 415, 'friendly_name': 'US StartingPoint VIP 1', 'current_clients': 33, 'location': 'US'}}, 'endgames': {'can_access': True, 'location_type_friendly': 'EU - Endgame', 'assigned_server': {'id': 37, 'friendly_name': 'EU Endgame 1', 'current_clients': 1, 'location': 'EU'}}, 'fortresses': {'can_access': True, 'location_type_friendly': 'US - Fortress', 'assigned_server': {'id': 19, 'friendly_name': 'US Fortress 1', 'current_clients': 10, 'location': 'US'}}, 'pro_labs': {'can_access': False, 'assigned_server': None}, 'release_arena': {'can_access': True, 'assigned_server': {'id': 267, 'friendly_name': 'EU Release Lab 1', 'current_clients': 72, 'location': 'EU'}, 'available': True, 'location_type_friendly': 'EU - Release Arena', 'machine': {'id': 444, 'name': 'RouterSpace', 'avatar_thumb_url': 'https://www.hackthebox.com/storage/avatars/4aee57cc02f0181b22f4ccd43775f7ac_thumb.png'}}}}
+CONNECTIONS = {
+    "status": True,
+    "data": {
+        "lab": {
+            "can_access": True,
+            "location_type_friendly": "EU - VIP",
+            "assigned_server": {
+                "id": 61,
+                "friendly_name": "EU VIP 20",
+                "current_clients": 3,
+                "location": "EU",
+            },
+        },
+        "starting_point": {
+            "can_access": True,
+            "location_type_friendly": "US - Starting Point VIP",
+            "assigned_server": {
+                "id": 415,
+                "friendly_name": "US StartingPoint VIP 1",
+                "current_clients": 40,
+                "location": "US",
+            },
+        },
+        "endgames": {
+            "can_access": True,
+            "location_type_friendly": "EU - Endgame",
+            "assigned_server": {
+                "id": 37,
+                "friendly_name": "EU Endgame 1",
+                "current_clients": 1,
+                "location": "EU",
+            },
+        },
+        "fortresses": {
+            "can_access": True,
+            "location_type_friendly": "US - Fortress",
+            "assigned_server": {
+                "id": 19,
+                "friendly_name": "US Fortress 1",
+                "current_clients": 6,
+                "location": "US",
+            },
+        },
+        "pro_labs": {"can_access": False, "assigned_server": None},
+        "release_arena": {
+            "can_access": True,
+            "assigned_server": {
+                "id": 268,
+                "friendly_name": "US Release Lab 1",
+                "current_clients": 55,
+                "location": "US",
+            },
+            "available": True,
+            "location_type_friendly": "US - Release Arena",
+            "machine": {
+                "id": 444,
+                "name": "RouterSpace",
+                "avatar_thumb_url": "https://www.hackthebox.com/storage/avatars/4aee57cc02f0181b22f4ccd43775f7ac_thumb.png",
+            },
+        },
+    },
+}
+
 
 
 has_ratelimited: bool = False
@@ -648,11 +726,20 @@ def list_machines():
 
 @app.route("/api/v4/machine/active")
 def get_active_machine():
-    token = request.headers.get('Authorization').split(".")[1]
+    token = request.headers.get("Authorization").split(".")[1]
     token_dict = json.loads(base64.b64decode(token).decode())
     if "no_active" in token_dict:
-         return jsonify({"info": None})
+        return jsonify({"info": None})
     return jsonify({"info": MACHINE_DRIVER_ACTIVE})
+
+@app.route("/api/v4/release_arena/active")
+def get_active_ra():
+    token = request.headers.get("Authorization").split(".")[1]
+    token_dict = json.loads(base64.b64decode(token).decode())
+    if "no_active" in token_dict:
+        return jsonify({"info": None})
+    return jsonify({"info": MACHINE_DRIVER_RA})
+
 
 
 @app.route("/api/v4/machine/list/retired")
@@ -920,7 +1007,24 @@ def search():
 
 @app.route("/api/v4/connections")
 def connections():
+    return jsonify(CONNECTIONS)
 
+
+@app.route("/api/v4/connections/servers")
+def get_vpn_servers():
+    product = request.args.get('product')
+    if product == "labs":
+        return jsonify(static.ALL_LABS)
+    raise
+
+
+@app.route("/api/v4/connections/servers/switch/<sid>", methods=["POST"])
+def switch_vpn(sid):
+    token = request.headers.get("Authorization").split(".")[1]
+    token_dict = json.loads(base64.b64decode(token).decode())
+    if "has_active_machine" in token_dict:
+        return jsonify({'status': False, 'message': 'You must stop your active machine before switching VPN'})
+    return jsonify({'status': True, 'message': 'VPN Server switched', 'data': {'id': sid, 'friendly_name': 'EU Free 2', 'current_clients': 64, 'location': 'EU'}})
 
 
 @app.before_request
@@ -933,6 +1037,6 @@ def ratelimit():
 
 
 def start_server(port: int):
-    os.environ['WERKZEUG_RUN_MAIN'] = 'true'
-    thread = Thread(target=app.run, args=('0.0.0.0', port), daemon=True)
+    os.environ["WERKZEUG_RUN_MAIN"] = "true"
+    thread = Thread(target=app.run, args=("0.0.0.0", port), daemon=True)
     thread.start()
