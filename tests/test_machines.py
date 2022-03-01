@@ -19,12 +19,15 @@ def test_get_active_machine(mock_htb_client: HTBClient):
 
     # by default there is an active machine
     machine = mock_htb_client.get_active_machine()
-    assert machine.id == 387
-    assert machine.name == "Driver"
+    assert machine.machine.id == 387
+    assert machine.machine.name == "Driver"
+
+    ra_machine = mock_htb_client.get_active_machine(release_arena=True)
+    assert ra_machine.machine.id == 387
 
     # change access token to have mock send no active machine
     backup = mock_htb_client._access_token
-#    mock_htb_client._access_token = "eyJ0eXAiOiAiSldUIiwgImFsZyI6ICJSUzI1NiJ9.eyJhdWQiOiAiMCIsICJqdGkiOiAiIiwgImlhdCI6IDAsICJuYmYiOiAwLCAiZXhwIjogMTk0NTg3NTEyNC45MjY5NTEyLCAic3ViIjogIjAiLCAic2NvcGVzIjogWyBdfSIK."
+    # mock_htb_client._access_token = "eyJ0eXAiOiAiSldUIiwgImFsZyI6ICJSUzI1NiJ9.eyJhdWQiOiAiMCIsICJqdGkiOiAiIiwgImlhdCI6IDAsICJuYmYiOiAwLCAiZXhwIjogMTk0NTg3NTEyNC45MjY5NTEyLCAic3ViIjogIjAiLCAic2NvcGVzIjogWyBdfSIK."
     mock_htb_client._access_token = (
         base64.b64encode(json.dumps({"typ": "JWT", "alg": "RS256"}).encode()).decode()
         + "."
@@ -46,6 +49,9 @@ def test_get_active_machine(mock_htb_client: HTBClient):
     )
  
     machine = mock_htb_client.get_active_machine()
+    assert machine is None
+
+    ra_machine = mock_htb_client.get_active_machine(True)
     assert machine is None
     mock_htb_client._access_token = backup
 

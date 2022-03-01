@@ -37,6 +37,15 @@ class IncorrectOTPException(AuthenticationException):
     pass
 
 
+class VpnException(HtbException):
+    """An error associated with the VPN"""
+    pass
+
+
+class CannotSwitchWithActive(VpnException):
+    """Failed to switch VPN because the user has an active machine"""
+    pass
+
 class UnknownSolveException(HtbException):
     """An unknown solve type was passed"""
     pass
