@@ -289,7 +289,6 @@ class HTBClient:
         else:
             info = cast(dict, self.do_request(f"machine/active"))['info']
         if info:
-            print(f'{info=}')
             box = self.get_machine(info['id'])
             server = box._client.get_current_vpn_server(release_arena)
             return MachineInstance(box.ip, server, box, box._client)
