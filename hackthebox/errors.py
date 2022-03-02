@@ -46,6 +46,17 @@ class CannotSwitchWithActive(VpnException):
     """Failed to switch VPN because the user has an active machine"""
     pass
 
+
+class MachineException(HtbException):
+    """An error associated with a machine"""
+    pass
+
+
+class TooManyResetAttempts(MachineException):
+    """Error for too many reset attempts"""
+    pass
+
+
 class UnknownSolveException(HtbException):
     """An unknown solve type was passed"""
     pass

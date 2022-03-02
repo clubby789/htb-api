@@ -4,6 +4,7 @@ import json
 import time
 
 from hackthebox import HTBClient
+from hackthebox.errors import TooManyResetAttempts
 
 
 def test_get_machine(mock_htb_client: HTBClient):
@@ -88,3 +89,55 @@ def test_machine_todo_list(mock_htb_client: HTBClient):
     """Tests retrieving machine list based on user's todo list"""
     machines = mock_htb_client.get_todo_machines()
     assert set(machines) == set([109, 113, 114])
+
+
+def test_machine_on(mock_htb_client: HTBClient):
+    """Tests powering on a machine"""
+    pass
+
+
+def test_machine_off(mock_htb_client: HTBClient):
+    """Tests powering off active machine"""
+    pass
+
+
+def test_machine_reset(mock_htb_client: HTBClient):
+    """Tests resetting active machine"""
+
+    active_box = mock_htb_client.get_active_machine()
+    assert active_box.reset()
+    active_box.machine._is_release = True
+    assert active_box.reset()
+
+    # change access token to have mock send too many resets
+    backup = mock_htb_client._access_token
+    # mock_htb_client._access_token = "eyJ0eXAiOiAiSldUIiwgImFsZyI6ICJSUzI1NiJ9.eyJhdWQiOiAiMCIsICJqdGkiOiAiIiwgImlhdCI6IDAsICJuYmYiOiAwLCAiZXhwIjogMTk0NTg3NTEyNC45MjY5NTEyLCAic3ViIjogIjAiLCAic2NvcGVzIjogWyBdfSIK."
+    mock_htb_client._access_token = (
+        base64.b64encode(json.dumps({"typ": "JWT", "alg": "RS256"}).encode()).decode()
+        + "."
+        + base64.b64encode(
+            json.dumps(
+                {
+                    "aud": "0",
+                    "jti": "",
+                    "iat": 0,
+                    "nbf": 0,
+                    "exp": time.time() + 100,
+                    "sub": "0",
+                    "too_many_resets": "1",
+                    "scopes": [],
+                }
+            ).encode()
+        ).decode()
+        + "."
+    )
+
+    with raises(TooManyResetAttempts):
+        active_box.reset()
+
+    active_box.machine._is_release = False
+    with raises(TooManyResetAttempts):
+        active_box.reset()
+
+    mock_htb_client._access_token = backup
+

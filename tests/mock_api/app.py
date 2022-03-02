@@ -1027,6 +1027,24 @@ def switch_vpn(sid):
     return jsonify({'status': True, 'message': 'VPN Server switched', 'data': {'id': sid, 'friendly_name': 'EU Free 2', 'current_clients': 64, 'location': 'EU'}})
 
 
+@app.route("/api/v4/vm/reset", methods=["POST"])
+def reset_box():
+    token = request.headers.get("Authorization").split(".")[1]
+    token_dict = json.loads(base64.b64decode(token).decode())
+    if "too_many_resets" in token_dict:
+        return jsonify({"message":"Too many reset machine attempts. Try again later!"}), 400
+    box_id = request.json['machine_id']
+    return jsonify({"message":"Hancliffe will be reset in 1 minute."})
+
+
+@app.route("/api/v4/release_arena/reset", methods=["POST"])
+def reset_ra():
+    token = request.headers.get("Authorization").split(".")[1]
+    token_dict = json.loads(base64.b64decode(token).decode())
+    if "too_many_resets" in token_dict:
+        return jsonify({"success":0,"message":"You must wait 1 minute between Machine actions."}), 400
+    return jsonify({"success":1,"message":"Machine reset!"})
+
 @app.before_request
 def ratelimit():
     global has_ratelimited

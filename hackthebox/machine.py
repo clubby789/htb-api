@@ -4,7 +4,7 @@ from typing import List, Union, cast, Optional, TYPE_CHECKING
 import dateutil.parser
 
 from . import htb, vpn
-from .errors import IncorrectArgumentException, IncorrectFlagException
+from .errors import IncorrectArgumentException, IncorrectFlagException, TooManyResetAttempts, MachineException
 from .solve import MachineSolve
 from .utils import parse_delta
 
@@ -259,3 +259,22 @@ class MachineInstance:
         self.ip = None
         self.client = None
         self.machine = None
+
+    def reset(self):
+        """Request the instance be reset."""
+        if self.machine.is_release:
+            resp = self.client.do_request("release_arena/reset", json_data={"machine_id": self.machine.id})
+        else:
+            resp = self.client.do_request("vm/reset", json_data={"machine_id": self.machine.id})
+        # VM
+        if resp["message"].endswith(" will be reset in 1 minute."):
+            return True
+        elif resp["message"] == "Too many reset machine attempts. Try again later!":
+            raise TooManyResetAttempts
+        # RA
+        elif resp["success"]:
+            return True
+        elif resp["message"].startswith("You must wait"):
+            raise TooManyResetAttempts
+        raise MachineException
+
