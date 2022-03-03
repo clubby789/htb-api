@@ -79,6 +79,20 @@ class Challenge(htb.HTBObject):
     has_download: bool
     has_docker: bool
     instance: Optional[DockerInstance]
+    attr_map = {
+        ("id", "name", "retired", "points", "difficulty",
+         ("difficulty_ratings", lambda r, **a: r['difficulty_chart']),
+         "solves", "solved", "likes", "dislikes",
+         ("release_date", lambda r, **a: dateutil.parser.parse(r['release_date'])),
+         "description",
+         ("category", lambda r, **a: r['category_name']),
+         ("_author_ids", lambda r, **a: [r[prop] for prop in ('creator_id', 'creator2_id') if r.get(prop) is not None]),
+         ('has_download', lambda r, **a: r['download']),
+         ('has_docker', lambda r, **a: r['docker']),
+         ('instance', lambda r, **a: DockerInstance(r['docker_ip'], r['docker_port'], r['id'], a['client']) if r.get(
+             'docker_ip') is not None else None)
+         ): "/challenge/info/{id}:challenge"
+    }
 
     def submit(self, flag: str, difficulty: int):
         """ Submits a flag for a Challenge
@@ -204,7 +218,7 @@ class DockerInstance:
     chall_id: int
     client: htb.HTBClient
 
-    def __init__(self, ip: str, port: int,  chall_id: int, client: htb.HTBClient, container_id: str = None):
+    def __init__(self, ip: str, port: int, chall_id: int, client: htb.HTBClient, container_id: str = None):
         self.client = client
         self.id = container_id or ""
         self.port = port

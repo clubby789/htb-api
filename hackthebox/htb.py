@@ -552,6 +552,9 @@ class HTBObject:
     _detailed_func: Callable[..., Any]
     _is_summary: bool = False
     id: int
+    complex_prop = tuple[str, Callable[..., Any]]
+    lhs = tuple[Union[str, complex_prop], ...]
+    attr_map: Optional[dict[lhs, str]] = None
 
     def __getattr__(self, item):
         """Retrieve attributes not given when initialised from a summary
@@ -564,6 +567,38 @@ class HTBObject:
             item: The name of the property to retrieve
 
         """
+        if self.attr_map is not None:
+            for props, url in self.attr_map.items():
+                found = None
+                for prop_name in props:
+                    if isinstance(prop_name, tuple):
+                        if prop_name[0] == item:
+                            found = prop_name
+                    else:
+                        if prop_name == item:
+                            found = prop_name
+                if found is None:
+                    continue
+                # We've found the API url that allows us to retrieve the property! Fill things in
+                url, attr = url.format(id=self.id).split(':')
+                resp = cast(dict, self._client.do_request(url)[attr])
+                for prop_name in props:
+                    try:
+                        # Bypass getattr
+                        object.__getattribute__(self, prop_name)
+                    except AttributeError:
+                        continue
+                        # Attribute set already
+
+                    if isinstance(prop_name, str):
+                        # Same-named property, just copy it out
+                        setattr(self, prop_name, resp[prop_name])
+                    elif isinstance(prop_name, tuple):
+                        # More complex. tuple[0] is the final name to be assigned to
+                        our_name, func = prop_name
+                        setattr(self, our_name, func(resp, client=self._client))
+                return object.__getattribute__(self, item)
+
         if item in self._detailed_attributes and self._is_summary:
             new_obj = self._detailed_func(self.id)
             for attr in self._detailed_attributes:
@@ -574,4 +609,4 @@ class HTBObject:
             raise AttributeError
 
     def __eq__(self, other):
-        return self.id == other.id and type(self) == type(other)
+        return type(self) == type(other) == self.id == other.id
