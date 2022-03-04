@@ -49,5 +49,7 @@ def test_vpn_get_current(mock_htb_client: HTBClient):
     """Test getting the current vpn server"""
     cur_vpn = mock_htb_client.get_current_vpn_server()
     assert cur_vpn.friendly_name == 'EU VIP 20'
+
+    cur_ra_vpn = mock_htb_client.get_current_vpn_server(release_arena=True)
+    assert cur_ra_vpn.friendly_name == "EU Release Lab 1"
    
-    # TODO add release arena tests
