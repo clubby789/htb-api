@@ -1015,6 +1015,8 @@ def get_vpn_servers():
     product = request.args.get('product')
     if product == "labs":
         return jsonify(static.ALL_LABS)
+    elif product == "release_arena":
+        return jsonify(static.ALL_RA)
     raise
 
 

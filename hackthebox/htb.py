@@ -502,8 +502,8 @@ class HTBClient:
             connections = cast(dict, self.do_request('connections/servers?product=release_arena'))['data']
             data = connections['assigned']
         else:
-            connections = cast(dict, self.do_request('connections/servers?product=labs'))['data']
-            data = connections['assigned']
+            connections = cast(dict, self.do_request('connections'))['data']
+            data = connections['lab']['assigned_server']
 
         if not data:
             return None
@@ -522,7 +522,6 @@ class HTBClient:
             data = cast(dict, self.do_request("connections/servers?product=release_arena"))["data"]["options"]
         else:
             data = cast(dict, self.do_request("connections/servers?product=labs"))["data"]["options"]
-        import pdb;pdb.set_trace()
         servers = []
         for location in data.keys():  # 'EU'
             for location_role in data[location].keys():  # 'EU - Free'
