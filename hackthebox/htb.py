@@ -490,7 +490,7 @@ class HTBClient:
         return Leaderboard(data, self, University)
 
     # noinspection PyUnresolvedReferences
-    def get_current_vpn_server(self, release_arena=False) -> "VPNServer":
+    def get_current_vpn_server(self, release_arena=False) -> VPNServer:
         """
         Returns: The currently assigned `VPNServer`
 
@@ -498,10 +498,11 @@ class HTBClient:
             release_arena: Get the current release arena VPN server
         """
         from .vpn import VPNServer
-        connections = cast(dict, self.do_request('connections'))['data']
         if release_arena:
-            data = connections['release_arena']['assigned_server']
+            connections = cast(dict, self.do_request('connections/servers?product=release_arena'))['data']
+            data = connections['assigned']
         else:
+            connections = cast(dict, self.do_request('connections'))['data']
             data = connections['lab']['assigned_server']
 
         return VPNServer(data, self)
