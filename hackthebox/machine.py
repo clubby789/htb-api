@@ -4,7 +4,15 @@ from typing import List, Union, cast, Optional, TYPE_CHECKING
 import dateutil.parser
 
 from . import htb, vpn
-from .errors import IncorrectArgumentException, IncorrectFlagException, TooManyResetAttempts, MachineException
+from .errors import (
+    IncorrectArgumentException,
+    IncorrectFlagException,
+    TooManyResetAttempts,
+    MachineException,
+    UserAlreadySubmitted,
+    RootAlreadySubmitted,
+    SolveError,
+)
 from .solve import MachineSolve
 from .utils import parse_delta
 
@@ -13,7 +21,7 @@ if TYPE_CHECKING:
 
 
 class Machine(htb.HTBObject):
-    """ The class representing Hack The Box machines
+    """The class representing Hack The Box machines
 
     Attributes:
         name: The Machine name
@@ -43,6 +51,7 @@ class Machine(htb.HTBObject):
         root_own_time: How long the first User took to own root
         difficulty_ratings: A dict of difficulty ratings given
     """
+
     name: str
     os: str
     points: int
@@ -56,8 +65,17 @@ class Machine(htb.HTBObject):
     avatar: str
     difficulty: str
 
-    _detailed_attributes = ('active', 'retired', 'user_own_time', 'root_own_time', 'user_blood',
-                            'root_blood', 'user_blood_time', 'root_blood_time', 'difficulty_ratings')
+    _detailed_attributes = (
+        "active",
+        "retired",
+        "user_own_time",
+        "root_own_time",
+        "user_blood",
+        "root_blood",
+        "user_blood_time",
+        "root_blood_time",
+        "difficulty_ratings",
+    )
     active: bool
     retired: bool
     avg_difficulty: int
@@ -76,8 +94,8 @@ class Machine(htb.HTBObject):
     _is_release: Optional[bool] = None
     _ip: Optional[str] = None
 
-    def submit(self, flag: str, difficulty: int):
-        """ Submits a flag for a Machine
+    def submit(self, flag: str, difficulty: int) -> str:
+        """Submits a flag for a Machine
 
         Args:
             flag: The flag for the Machine
@@ -85,16 +103,27 @@ class Machine(htb.HTBObject):
                         Must be a multiple of 10.
         """
         if difficulty < 10 or difficulty > 100 or difficulty % 10 != 0:
-            raise IncorrectArgumentException(reason="Difficulty must be a multiple of 10, between 10 and 100")
+            raise IncorrectArgumentException(
+                reason="Difficulty must be a multiple of 10, between 10 and 100"
+            )
 
-        submission = cast(dict, self._client.do_request("machine/own", json_data={
-            "flag": flag,
-            "id": self.id,
-            "difficulty": difficulty
-        }))
-        if submission['message'] == "Incorrect flag!":
-            raise IncorrectFlagException
-        return True
+        submission = cast(
+            dict,
+            self._client.do_request(
+                "machine/own",
+                json_data={"flag": flag, "id": self.id, "difficulty": difficulty},
+            ),
+        )
+        if submission["status"] == 400:
+            if submission["message"] == "Incorrect flag!":
+                raise IncorrectFlagException
+            elif submission["message"] == f"{self.name} user is already owned.":
+                raise UserAlreadySubmitted
+            elif submission["message"] == f"{self.name} root is already owned.":
+                raise RootAlreadySubmitted
+            else:
+                raise SolveError
+        return submission["message"]
 
     # noinspection PyUnresolvedReferences
     @property
@@ -118,7 +147,7 @@ class Machine(htb.HTBObject):
 
         data = self._client.do_request("connections")["data"]
         try:
-            if data['release_arena']['machine']['id'] == self.id:
+            if data["release_arena"]["machine"]["id"] == self.id:
                 self._is_release = True
         except AttributeError:
             pass
@@ -154,12 +183,21 @@ class Machine(htb.HTBObject):
             data = cast(dict, self._client.do_request("release_arena/spawn", post=True))
             if data.get("success") != 1:
                 raise Exception(f"Failed to spawn: {data}")
-            ip = cast(dict, self._client.do_request("release_arena/active"))["info"]["ip"]
+            ip = cast(dict, self._client.do_request("release_arena/active"))["info"][
+                "ip"
+            ]
             server = self._client.get_current_vpn_server(release_arena=True)
         else:
-            data = cast(dict, self._client.do_request("vm/spawn", json_data={"machine_id": self.id}))
-            if "Machine deployed" in cast(str, data.get("message")) or "You have been assigned" in cast(str, data.get("message")):
-                ip = cast(dict, self._client.do_request(f"machine/profile/{self.id}"))["info"]["ip"]
+            data = cast(
+                dict,
+                self._client.do_request("vm/spawn", json_data={"machine_id": self.id}),
+            )
+            if "Machine deployed" in cast(
+                str, data.get("message")
+            ) or "You have been assigned" in cast(str, data.get("message")):
+                ip = cast(dict, self._client.do_request(f"machine/profile/{self.id}"))[
+                    "info"
+                ]["ip"]
                 server = self._client.get_current_vpn_server()
             else:
                 raise Exception(f"Failed to spawn: {data}")
@@ -171,53 +209,57 @@ class Machine(htb.HTBObject):
     def __init__(self, data: dict, client: htb.HTBClient, summary: bool = False):
         self._client = client
         self._detailed_func = client.get_machine  # type: ignore
-        self.id = data['id']
-        self.name = data['name']
-        self.os = data['os']
-        self.points = data['points']
-        self.release_date = dateutil.parser.parse(data['release'])
-        self.user_owns = data['user_owns_count']
-        self.root_owns = data['root_owns_count']
-        self.user_owned = data['authUserInUserOwns']
-        self.root_owned = data['authUserInRootOwns']
-        self.reviewed = data['authUserHasReviewed']
-        self.stars = float(data['stars'])
-        self.avatar = data['avatar']
-        self.difficulty = data['difficultyText']
-        self.free = data['free']
-        self._author_ids = [data['maker']['id']]
-        if data.get('ip'):
-            self._ip = data['ip']
-        if data['maker2']:
-            self._author_ids.append(data['maker2']['id'])
+        self.id = data["id"]
+        self.name = data["name"]
+        self.os = data["os"]
+        self.points = data["points"]
+        self.release_date = dateutil.parser.parse(data["release"])
+        self.user_owns = data["user_owns_count"]
+        self.root_owns = data["root_owns_count"]
+        self.user_owned = data["authUserInUserOwns"]
+        self.root_owned = data["authUserInRootOwns"]
+        self.reviewed = data["authUserHasReviewed"]
+        self.stars = float(data["stars"])
+        self.avatar = data["avatar"]
+        self.difficulty = data["difficultyText"]
+        self.free = data["free"]
+        self._author_ids = [data["maker"]["id"]]
+        if data.get("ip"):
+            self._ip = data["ip"]
+        if data["maker2"]:
+            self._author_ids.append(data["maker2"]["id"])
         if not summary:
-            self.active = bool(data['active'])
-            self.retired = bool(data['retired'])
-            if data['authUserInUserOwns']:
-                self.user_own_time = parse_delta(data['authUserFirstUserTime'])
-            if data['authUserInRootOwns']:
-                self.root_own_time = parse_delta(data['authUserFirstRootTime'])
-            self.difficulty_ratings = data['feedbackForChart']
-            if data['userBlood']:
+            self.active = bool(data["active"])
+            self.retired = bool(data["retired"])
+            if data["authUserInUserOwns"]:
+                self.user_own_time = parse_delta(data["authUserFirstUserTime"])
+            if data["authUserInRootOwns"]:
+                self.root_own_time = parse_delta(data["authUserFirstRootTime"])
+            self.difficulty_ratings = data["feedbackForChart"]
+            if data["userBlood"]:
                 user_blood_data = {
-                    "date": dateutil.parser.parse(data['userBlood']['created_at']),
+                    "date": dateutil.parser.parse(data["userBlood"]["created_at"]),
                     "first_blood": True,
-                    "id": data['id'],
-                    "name": data['name'],
-                    "type": "user"
+                    "id": data["id"],
+                    "name": data["name"],
+                    "type": "user",
                 }
                 self.user_blood = MachineSolve(user_blood_data, self._client)
-                self.user_blood_time = parse_delta(data['userBlood']['blood_difference'])
-            if data['rootBlood']:
+                self.user_blood_time = parse_delta(
+                    data["userBlood"]["blood_difference"]
+                )
+            if data["rootBlood"]:
                 user_blood_data = {
-                    "date": dateutil.parser.parse(data['rootBlood']['created_at']),
+                    "date": dateutil.parser.parse(data["rootBlood"]["created_at"]),
                     "first_blood": True,
-                    "id": data['id'],
-                    "name": data['name'],
-                    "type": "root"
+                    "id": data["id"],
+                    "name": data["name"],
+                    "type": "root",
                 }
                 self.root_blood = MachineSolve(user_blood_data, self._client)
-                self.root_blood_time = parse_delta(data['rootBlood']['blood_difference'])
+                self.root_blood_time = parse_delta(
+                    data["rootBlood"]["blood_difference"]
+                )
         else:
             self._is_summary = True
 
@@ -237,7 +279,9 @@ class MachineInstance:
     client: htb.HTBClient
     machine: Machine
 
-    def __init__(self, ip: str, server: vpn.VPNServer, machine: Machine, client: htb.HTBClient):
+    def __init__(
+        self, ip: str, server: vpn.VPNServer, machine: Machine, client: htb.HTBClient
+    ):
         self.client = client
         self.ip = ip
         self.server = server
@@ -251,7 +295,9 @@ class MachineInstance:
         if self.machine.is_release:
             self.client.do_request("release_arena/terminate", post=True)
         else:
-            self.client.do_request("vm/terminate", json_data={"machine_id": self.machine.id})
+            self.client.do_request(
+                "vm/terminate", json_data={"machine_id": self.machine.id}
+            )
 
         # Can't delete references to the object from here so we just have
         # to set everything to None and prevent further usage
@@ -263,9 +309,13 @@ class MachineInstance:
     def reset(self):
         """Request the instance be reset."""
         if self.machine.is_release:
-            resp = self.client.do_request("release_arena/reset", json_data={"machine_id": self.machine.id})
+            resp = self.client.do_request(
+                "release_arena/reset", json_data={"machine_id": self.machine.id}
+            )
         else:
-            resp = self.client.do_request("vm/reset", json_data={"machine_id": self.machine.id})
+            resp = self.client.do_request(
+                "vm/reset", json_data={"machine_id": self.machine.id}
+            )
         # VM
         if resp["message"].endswith(" will be reset in 1 minute."):
             return True
@@ -277,4 +327,3 @@ class MachineInstance:
         elif resp["message"].startswith("You must wait"):
             raise TooManyResetAttempts
         raise MachineException
-

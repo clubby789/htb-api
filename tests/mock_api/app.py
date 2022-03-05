@@ -6,10 +6,14 @@ from threading import Thread
 
 from flask import Flask, request, jsonify, Response
 
+from hackthebox.errors import RootAlreadySubmitted, UserAlreadySubmitted
+
 from . import static
 
 CORRECT_CHALLENGE = "HTB{a_challenge_flag}"
 CORRECT_HASH = "30ea86803e0d85be51599c3a4e422266"
+CORRECT_USER_HASH = "30ea86803e0d85be51599c3a4e422266"
+CORRECT_ROOT_HASH = "179c07f9513e8f5474974fb7c96f3081"
 CHALLENGE_CRACKTHIS = {
     "id": 1,
     "name": "Crack This!",
@@ -681,7 +685,6 @@ CONNECTIONS = {
 }
 
 
-
 has_ratelimited: bool = False
 
 app = Flask(__name__)
@@ -732,6 +735,7 @@ def get_active_machine():
         return jsonify({"info": None})
     return jsonify({"info": MACHINE_DRIVER_ACTIVE})
 
+
 @app.route("/api/v4/release_arena/active")
 def get_active_ra():
     token = request.headers.get("Authorization").split(".")[1]
@@ -741,7 +745,6 @@ def get_active_ra():
     return jsonify({"info": MACHINE_DRIVER_RA})
 
 
-
 @app.route("/api/v4/machine/list/retired")
 def list_retired_machines():
     return jsonify({"info": [MACHINE_LAME for _ in range(150)]})
@@ -749,10 +752,35 @@ def list_retired_machines():
 
 @app.route("/api/v4/machine/own", methods=["POST"])
 def own_machine():
-    if request.json["flag"] == CORRECT_HASH:
-        return jsonify({"message": "Congratulations"})
+    data = {
+        "is_starting_point": False,
+        "message": "Lame user is now owned.",
+        "id": request.json["id"],
+        "own_type": "user",
+        "user_rank": {"changed": False, "newRank": {"id": 7, "text": "Omniscient"}},
+        "machine_completed": None,
+        "machine_pwned": False,
+        "success": True,
+        "status": 200,
+    }
+
+    token = request.headers.get("Authorization").split(".")[1]
+    token_dict = json.loads(base64.b64decode(token).decode())
+    already_owned = "solved_this_machine" in token_dict
+
+    if request.json["flag"] == CORRECT_USER_HASH:
+        if already_owned:
+            return jsonify({"message": "Lame user is already owned.", "status": 400})
+        return jsonify(data)
+    elif request.json["flag"] == CORRECT_ROOT_HASH:
+        if already_owned:
+            return jsonify({"message": "Lame root is already owned.", "status": 400})
+        data["message"] = "Lame root is now owned."
+        data["own_type"] = "root"
+        data["machine_pwned"] = True
+        return jsonify(data)
     else:
-        return jsonify({"message": "Incorrect flag!"})
+        return jsonify({"message": "Incorrect flag!", "status": 400})
 
 
 @app.route("/api/v4/machine/profile/<num>")
@@ -1012,7 +1040,7 @@ def connections():
 
 @app.route("/api/v4/connections/servers")
 def get_vpn_servers():
-    product = request.args.get('product')
+    product = request.args.get("product")
     if product == "labs":
         return jsonify(static.ALL_LABS)
     elif product == "release_arena":
@@ -1025,8 +1053,24 @@ def switch_vpn(sid):
     token = request.headers.get("Authorization").split(".")[1]
     token_dict = json.loads(base64.b64decode(token).decode())
     if "has_active_machine" in token_dict:
-        return jsonify({'status': False, 'message': 'You must stop your active machine before switching VPN'})
-    return jsonify({'status': True, 'message': 'VPN Server switched', 'data': {'id': sid, 'friendly_name': 'EU Free 2', 'current_clients': 64, 'location': 'EU'}})
+        return jsonify(
+            {
+                "status": False,
+                "message": "You must stop your active machine before switching VPN",
+            }
+        )
+    return jsonify(
+        {
+            "status": True,
+            "message": "VPN Server switched",
+            "data": {
+                "id": sid,
+                "friendly_name": "EU Free 2",
+                "current_clients": 64,
+                "location": "EU",
+            },
+        }
+    )
 
 
 @app.route("/api/v4/vm/reset", methods=["POST"])
@@ -1034,9 +1078,12 @@ def reset_box():
     token = request.headers.get("Authorization").split(".")[1]
     token_dict = json.loads(base64.b64decode(token).decode())
     if "too_many_resets" in token_dict:
-        return jsonify({"message":"Too many reset machine attempts. Try again later!"}), 400
-    box_id = request.json['machine_id']
-    return jsonify({"message":"Hancliffe will be reset in 1 minute."})
+        return (
+            jsonify({"message": "Too many reset machine attempts. Try again later!"}),
+            400,
+        )
+    box_id = request.json["machine_id"]
+    return jsonify({"message": "Hancliffe will be reset in 1 minute."})
 
 
 @app.route("/api/v4/release_arena/reset", methods=["POST"])
@@ -1044,8 +1091,17 @@ def reset_ra():
     token = request.headers.get("Authorization").split(".")[1]
     token_dict = json.loads(base64.b64decode(token).decode())
     if "too_many_resets" in token_dict:
-        return jsonify({"success":0,"message":"You must wait 1 minute between Machine actions."}), 400
-    return jsonify({"success":1,"message":"Machine reset!"})
+        return (
+            jsonify(
+                {
+                    "success": 0,
+                    "message": "You must wait 1 minute between Machine actions.",
+                }
+            ),
+            400,
+        )
+    return jsonify({"success": 1, "message": "Machine reset!"})
+
 
 @app.before_request
 def ratelimit():

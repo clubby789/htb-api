@@ -62,9 +62,21 @@ class UnknownSolveException(HtbException):
     pass
 
 
-class IncorrectFlagException(HtbException):
+class SolveError(HtbException):
+    """Exceptions for solving"""
+
+
+class IncorrectFlagException(SolveError):
     """An incorrect flag was submitted"""
     pass
+
+class UserAlreadySubmitted(SolveError):
+    """Player has already completed the user flag for this box"""
+    pass
+
+
+class RootAlreadySubmitted(SolveError):
+    """Player has already completed the root flag for this box"""
 
 
 class IncorrectArgumentException(HtbException):
