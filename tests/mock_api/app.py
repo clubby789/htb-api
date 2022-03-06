@@ -288,6 +288,58 @@ USER_CLUBBY = {
     "public": True,
 }
 
+USER_CONTENT_CLUBBY = {
+    "content": {
+        "machines": [
+            {
+                "id": 219,
+                "name": "Obscurity",
+                "os": "Linux",
+                "machine_avatar": "/storage/avatars/8c606d79541774c87ab0ee5705821323.png",
+                "difficulty": "Medium",
+                "rating": "4.0",
+                "user_owns": 8559,
+                "system_owns": 8351,
+            },
+        ],
+        "challenges": [
+            {
+                "id": 1,
+                "name": "QuickR",
+                "category": "Misc",
+                "likes": 223,
+                "dislikes": 7,
+            },
+            {
+                "id": 196,
+                "name": "Weather App",
+                "category": "Web",
+                "likes": 2566,
+                "dislikes": 38,
+            },
+            {
+                "id": 1,
+                "name": "Crack This!",
+                "category": "Reversing",
+                "likes": 7,
+                "dislikes": 0,
+            },
+        ],
+        "writeups": [
+            {
+                "id": 779,
+                "machine_id": 194,
+                "machine_avatar": "/storage/avatars/fd39597e558b1b53e91b9ad9dd9619a5.png",
+                "machine_name": "Jarvis",
+                "url": "https://clubby789.github.io/hackthebox/jarvis/",
+                "likes": 0,
+                "dislikes": 0,
+                "type": "machine",
+            },
+        ],
+    }
+}
+
 
 USER_EKS = {
     "id": 302,
@@ -381,6 +433,82 @@ MACHINE_LAME = {
     "rootBloodAvatar": None,
     "firstUserBloodTime": "18D 22H 55M",
     "firstRootBloodTime": "18D 22H 54M",
+}
+
+MACHINE_OBSCURITY = {
+    "id": 219,
+    "name": "Obscurity",
+    "os": "Linux",
+    "active": 0,
+    "retired": 1,
+    "points": 0,
+    "static_points": 30,
+    "release": "2019-11-30T17:00:00.000000Z",
+    "user_owns_count": 8559,
+    "root_owns_count": 8351,
+    "free": False,
+    "authUserInUserOwns": True,
+    "authUserInRootOwns": True,
+    "authUserHasReviewed": False,
+    "stars": "4.0",
+    "difficulty": 48,
+    "avatar": "/storage/avatars/8c606d79541774c87ab0ee5705821323.png",
+    "feedbackForChart": {
+        "counterCake": 629,
+        "counterVeryEasy": 1089,
+        "counterEasy": 2220,
+        "counterTooEasy": 2490,
+        "counterMedium": 5843,
+        "counterBitHard": 1689,
+        "counterHard": 1419,
+        "counterTooHard": 840,
+        "counterExHard": 318,
+        "counterBrainFuck": 350,
+    },
+    "difficultyText": "Medium",
+    "isCompleted": True,
+    "last_reset_time": "1 year before",
+    "playInfo": {
+        "isSpawned": False,
+        "isSpawning": None,
+        "isActive": None,
+        "active_player_count": None,
+        "expires_at": None,
+    },
+    "maker": {
+        "id": 83743,
+        "name": "clubby789",
+        "avatar": "/storage/avatars/571a1cebb38673df9a38f5fd5ede9276.png",
+        "isRespected": False,
+    },
+    "maker2": None,
+    "authUserFirstUserTime": "1D 0H 35M",
+    "authUserFirstRootTime": "1D 1H 56M",
+    "userBlood": {
+        "user": {
+            "name": "sampriti",
+            "id": 836,
+            "avatar": "/storage/avatars/03d6176149e9fe81c83590dd4e7a5225.png",
+        },
+        "created_at": "2019-11-30 21:24:12",
+        "blood_difference": "0H 24M 12S",
+    },
+    "userBloodAvatar": "/storage/avatars/03d6176149e9fe81c83590dd4e7a5225.png",
+    "rootBlood": {
+        "user": {
+            "name": "sampriti",
+            "id": 836,
+            "avatar": "/storage/avatars/03d6176149e9fe81c83590dd4e7a5225.png",
+        },
+        "created_at": "2019-11-30 21:36:36",
+        "blood_difference": "0H 36M 36S",
+    },
+    "rootBloodAvatar": "/storage/avatars/03d6176149e9fe81c83590dd4e7a5225.png",
+    "firstUserBloodTime": "0H 24M 12S",
+    "firstRootBloodTime": "0H 36M 36S",
+    "recommended": 0,
+    "sp_flag": 0,
+    "lab_server": None,
 }
 
 MACHINE_DRIVER_RA = {
@@ -681,7 +809,6 @@ CONNECTIONS = {
 }
 
 
-
 has_ratelimited: bool = False
 
 app = Flask(__name__)
@@ -732,6 +859,7 @@ def get_active_machine():
         return jsonify({"info": None})
     return jsonify({"info": MACHINE_DRIVER_ACTIVE})
 
+
 @app.route("/api/v4/release_arena/active")
 def get_active_ra():
     token = request.headers.get("Authorization").split(".")[1]
@@ -739,7 +867,6 @@ def get_active_ra():
     if "no_active" in token_dict:
         return jsonify({"info": None})
     return jsonify({"info": MACHINE_DRIVER_RA})
-
 
 
 @app.route("/api/v4/machine/list/retired")
@@ -762,6 +889,8 @@ def get_machine(num):
         return jsonify({"info": MACHINE_LAME})
     elif num == 387:
         return jsonify({"info": MACHINE_DRIVER})
+    elif num == 219:
+        return jsonify({"info": MACHINE_OBSCURITY})
 
 
 @app.route("/api/v4/home/user/todo")
@@ -993,6 +1122,13 @@ def get_user_activity(_uid):
     return jsonify({"profile": {"activity": []}})
 
 
+@app.route("/api/v4/user/profile/content/<uid>")
+def get_content(uid):
+    uid = int(uid)
+    if uid == 83743:
+        return jsonify({"profile": USER_CONTENT_CLUBBY})
+
+
 @app.route("/api/v4/user/info")
 def get_own_user():
     return jsonify({"info": USER_CLUBBY})
@@ -1012,7 +1148,7 @@ def connections():
 
 @app.route("/api/v4/connections/servers")
 def get_vpn_servers():
-    product = request.args.get('product')
+    product = request.args.get("product")
     if product == "labs":
         return jsonify(static.ALL_LABS)
     elif product == "release_arena":
@@ -1025,8 +1161,24 @@ def switch_vpn(sid):
     token = request.headers.get("Authorization").split(".")[1]
     token_dict = json.loads(base64.b64decode(token).decode())
     if "has_active_machine" in token_dict:
-        return jsonify({'status': False, 'message': 'You must stop your active machine before switching VPN'})
-    return jsonify({'status': True, 'message': 'VPN Server switched', 'data': {'id': sid, 'friendly_name': 'EU Free 2', 'current_clients': 64, 'location': 'EU'}})
+        return jsonify(
+            {
+                "status": False,
+                "message": "You must stop your active machine before switching VPN",
+            }
+        )
+    return jsonify(
+        {
+            "status": True,
+            "message": "VPN Server switched",
+            "data": {
+                "id": sid,
+                "friendly_name": "EU Free 2",
+                "current_clients": 64,
+                "location": "EU",
+            },
+        }
+    )
 
 
 @app.route("/api/v4/vm/reset", methods=["POST"])
@@ -1034,9 +1186,12 @@ def reset_box():
     token = request.headers.get("Authorization").split(".")[1]
     token_dict = json.loads(base64.b64decode(token).decode())
     if "too_many_resets" in token_dict:
-        return jsonify({"message":"Too many reset machine attempts. Try again later!"}), 400
-    box_id = request.json['machine_id']
-    return jsonify({"message":"Hancliffe will be reset in 1 minute."})
+        return (
+            jsonify({"message": "Too many reset machine attempts. Try again later!"}),
+            400,
+        )
+    box_id = request.json["machine_id"]
+    return jsonify({"message": "Hancliffe will be reset in 1 minute."})
 
 
 @app.route("/api/v4/release_arena/reset", methods=["POST"])
@@ -1044,8 +1199,17 @@ def reset_ra():
     token = request.headers.get("Authorization").split(".")[1]
     token_dict = json.loads(base64.b64decode(token).decode())
     if "too_many_resets" in token_dict:
-        return jsonify({"success":0,"message":"You must wait 1 minute between Machine actions."}), 400
-    return jsonify({"success":1,"message":"Machine reset!"})
+        return (
+            jsonify(
+                {
+                    "success": 0,
+                    "message": "You must wait 1 minute between Machine actions.",
+                }
+            ),
+            400,
+        )
+    return jsonify({"success": 1, "message": "Machine reset!"})
+
 
 @app.before_request
 def ratelimit():

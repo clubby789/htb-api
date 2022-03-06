@@ -1,5 +1,7 @@
 from typing import List, Optional, TYPE_CHECKING
 
+from hackthebox.content import Content
+
 from . import htb
 from .solve import MachineSolve, ChallengeSolve, EndgameSolve, FortressSolve, Solve
 
@@ -10,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class User(htb.HTBObject):
-    """ The class representing Hack The Box Users
+    """The class representing Hack The Box Users
 
     Attributes:
         name: The username of the User
@@ -46,6 +48,7 @@ class User(htb.HTBObject):
         rank_requirement: The ownership required for the current Rank
 
     """
+
     name: str
     avatar: str
     ranking: int
@@ -56,10 +59,30 @@ class User(htb.HTBObject):
     user_bloods: int
     rank_name: str
 
-    _detailed_attributes = ('timezone', 'vip', 'vip_plus', 'respects', 'university', 'university_name', 'description',
-                            'github', 'linkedin', 'twitter', 'website', 'respected', 'followed', 'rank_id',
-                            'rank_progress', 'next_rank', 'next_rank_points', 'rank_ownership', 'rank_requirement',
-                            'country_name', 'team', 'public')
+    _detailed_attributes = (
+        "timezone",
+        "vip",
+        "vip_plus",
+        "respects",
+        "university",
+        "university_name",
+        "description",
+        "github",
+        "linkedin",
+        "twitter",
+        "website",
+        "respected",
+        "followed",
+        "rank_id",
+        "rank_progress",
+        "next_rank",
+        "next_rank_points",
+        "rank_ownership",
+        "rank_requirement",
+        "country_name",
+        "team",
+        "public",
+    )
     timezone: str
     vip: bool
     vip_plus: bool
@@ -91,16 +114,18 @@ class User(htb.HTBObject):
     def activity(self):
         if not self._activity:
             self._activity = []
-            solve_list = (self._client.do_request(f"user/profile/activity/{self.id}"))['profile']['activity']
+            solve_list = (self._client.do_request(f"user/profile/activity/{self.id}"))[
+                "profile"
+            ]["activity"]
             for solve_item in solve_list:
-                solve_type = solve_item['object_type']
-                if solve_type == 'machine':
+                solve_type = solve_item["object_type"]
+                if solve_type == "machine":
                     self._activity.append(MachineSolve(solve_item, self._client))
-                elif solve_type == 'challenge':
+                elif solve_type == "challenge":
                     self._activity.append(ChallengeSolve(solve_item, self._client))
-                elif solve_type == 'endgame':
+                elif solve_type == "endgame":
                     self._activity.append(EndgameSolve(solve_item, self._client))
-                elif solve_type == 'fortress':
+                elif solve_type == "fortress":
                     self._activity.append(FortressSolve(solve_item, self._client))
 
         return self._activity
@@ -113,40 +138,52 @@ class User(htb.HTBObject):
         """Initialise a `User` using API data"""
         self._client = client
         self._detailed_func = client.get_user  # type: ignore
-        self.id = data['id']
-        self.name = data['name']
-        self.user_owns = data['user_owns']
-        self.points = data['points']
+        self.id = data["id"]
+        self.name = data["name"]
+        self.user_owns = data["user_owns"]
+        self.points = data["points"]
 
         if summary:
             self._is_summary = True
-            self.ranking = data['rank']
-            self.root_owns = data['root_owns']
-            self.user_bloods = data.get('user_bloods_count') or 0
-            self.root_bloods = data.get('root_bloods_count') or 0
-            self.rank_name = data.get('rank_text') or ""
+            self.ranking = data["rank"]
+            self.root_owns = data["root_owns"]
+            self.user_bloods = data.get("user_bloods_count") or 0
+            self.root_bloods = data.get("root_bloods_count") or 0
+            self.rank_name = data.get("rank_text") or ""
         else:
-            self.ranking = data['ranking']
-            self.root_owns = data['system_owns']
-            self.user_bloods = data['user_bloods']
-            self.root_bloods = data['system_bloods']
-            self.rank_name = data['rank']
+            self.ranking = data["ranking"]
+            self.root_owns = data["system_owns"]
+            self.user_bloods = data["user_bloods"]
+            self.root_bloods = data["system_bloods"]
+            self.rank_name = data["rank"]
 
-            self.respects = data['respects']
-            self.university = data['university']
-            self.university_name = data['university_name']
-            self.description = data['description']
-            self.github = data['github']
-            self.linkedin = data['linkedin']
-            self.twitter = data['twitter']
-            self.website = data['website']
-            self.respected = data.get('isRespected', False)
-            self.followed = data.get('isFollowed', False)
-            self.rank_progress = data['current_rank_progress']
-            self.next_rank = data['next_rank']
-            self.next_rank_points = data['next_rank_points']
-            self.rank_ownership = float(data['rank_ownership'])
-            self.rank_requirement = data['rank_requirement']
-            self.country_name = data['country_name']
-            self.team = data['team']
-            self.public = bool(data['public'])
+            self.respects = data["respects"]
+            self.university = data["university"]
+            self.university_name = data["university_name"]
+            self.description = data["description"]
+            self.github = data["github"]
+            self.linkedin = data["linkedin"]
+            self.twitter = data["twitter"]
+            self.website = data["website"]
+            self.respected = data.get("isRespected", False)
+            self.followed = data.get("isFollowed", False)
+            self.rank_progress = data["current_rank_progress"]
+            self.next_rank = data["next_rank"]
+            self.next_rank_points = data["next_rank_points"]
+            self.rank_ownership = float(data["rank_ownership"])
+            self.rank_requirement = data["rank_requirement"]
+            self.country_name = data["country_name"]
+            self.team = data["team"]
+            self.public = bool(data["public"])
+
+    # noinspection PyUnresolvedReferences
+    def get_content(self):
+        return Content(self.id, self._client)
+
+    # noinspection PyUnresolvedReferences
+    def get_machines(self):
+        return self.get_content().machines
+
+    # noinspection PyUnresolvedReferences
+    def get_challenges(self):
+        return self.get_content().challenges
