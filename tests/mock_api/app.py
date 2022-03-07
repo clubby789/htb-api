@@ -6,10 +6,14 @@ from threading import Thread
 
 from flask import Flask, request, jsonify, Response
 
+from hackthebox.errors import RootAlreadySubmitted, UserAlreadySubmitted
+
 from . import static
 
 CORRECT_CHALLENGE = "HTB{a_challenge_flag}"
 CORRECT_HASH = "30ea86803e0d85be51599c3a4e422266"
+CORRECT_USER_HASH = "30ea86803e0d85be51599c3a4e422266"
+CORRECT_ROOT_HASH = "179c07f9513e8f5474974fb7c96f3081"
 CHALLENGE_CRACKTHIS = {
     "id": 1,
     "name": "Crack This!",
@@ -876,10 +880,35 @@ def list_retired_machines():
 
 @app.route("/api/v4/machine/own", methods=["POST"])
 def own_machine():
-    if request.json["flag"] == CORRECT_HASH:
-        return jsonify({"message": "Congratulations"})
+    data = {
+        "is_starting_point": False,
+        "message": "Lame user is now owned.",
+        "id": request.json["id"],
+        "own_type": "user",
+        "user_rank": {"changed": False, "newRank": {"id": 7, "text": "Omniscient"}},
+        "machine_completed": None,
+        "machine_pwned": False,
+        "success": True,
+        "status": 200,
+    }
+
+    token = request.headers.get("Authorization").split(".")[1]
+    token_dict = json.loads(base64.b64decode(token).decode())
+    already_owned = "solved_this_machine" in token_dict
+
+    if request.json["flag"] == CORRECT_USER_HASH:
+        if already_owned:
+            return jsonify({"message": "Lame user is already owned.", "status": 400})
+        return jsonify(data)
+    elif request.json["flag"] == CORRECT_ROOT_HASH:
+        if already_owned:
+            return jsonify({"message": "Lame root is already owned.", "status": 400})
+        data["message"] = "Lame root is now owned."
+        data["own_type"] = "root"
+        data["machine_pwned"] = True
+        return jsonify(data)
     else:
-        return jsonify({"message": "Incorrect flag!"})
+        return jsonify({"message": "Incorrect flag!", "status": 400})
 
 
 @app.route("/api/v4/machine/profile/<num>")
