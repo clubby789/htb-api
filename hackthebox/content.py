@@ -1,12 +1,9 @@
 from typing import List, cast, Optional
 
-# from .user import User
-from .machine import Machine
-
-# from .team import Team
+from . import htb
 from .challenge import Challenge
 from .errors import NotFoundException
-from . import htb
+from .machine import Machine
 
 
 class Content:
@@ -19,7 +16,7 @@ class Content:
         items: A dict of all content items
 
     Args:
-        user_id: The user id
+        userid: The user id
     """
 
     _machines: Optional[List[Machine]] = None
@@ -58,7 +55,6 @@ class Content:
         self._is_resolved = True
         return {"machines": self.machines, "challenges": self.challenges}
 
-    # noinspection PyStatementEffect
     def __len__(self):
         return len(self._machine_ids) + len(self._challenge_ids)
 
