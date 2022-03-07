@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.6] 07/03/222
+### Added
+- A more comprehensive `Content` object to retrieve a user's created content
+- The ability to reset machines
+- Exceptions to handle problems during VPN switches
+### Fixed
+- Made the return value more consistent with Release Arena
+
 ## [0.5.5] 27/02/222
 ### Added
 - App tokens, allowing use of the API without credentials/OTP
