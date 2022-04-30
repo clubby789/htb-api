@@ -21,6 +21,7 @@ from . import htb
 from .errors import VpnException, CannotSwitchWithActive
 
 from typing import TYPE_CHECKING, cast
+
 if TYPE_CHECKING:
     from .htb import HTBClient
 
@@ -67,10 +68,16 @@ class VPNServer(htb.HTBObject):
         Returns: Whether the switch was completed successfully
         """
         # TODO: Throw exception on failure
-        result = cast(dict, self._client.do_request(f"connections/servers/switch/{self.id}", post=True))
+        result = cast(
+            dict,
+            self._client.do_request(f"connections/servers/switch/{self.id}", post=True),
+        )
         if result["status"] is True:
             return True
-        if result["message"] == "You must stop your active machine before switching VPN":
+        if (
+            result["message"]
+            == "You must stop your active machine before switching VPN"
+        ):
             raise CannotSwitchWithActive
         raise VpnException
 
@@ -92,9 +99,9 @@ class VPNServer(htb.HTBObject):
             url += "/1"
         data = self._client.do_request(url, download=True)
         # We can't download VPN packs for servers we're not assigned to
-        if b'You are not assigned' in data:
+        if b"You are not assigned" in data:
             self.switch()
         data = cast(bytes, self._client.do_request(url, download=True))
-        with open(path, 'wb') as f:
+        with open(path, "wb") as f:
             f.write(data)
         return path

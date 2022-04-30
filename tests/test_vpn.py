@@ -9,13 +9,12 @@ from hackthebox.errors import VpnException, CannotSwitchWithActive
 
 def test_vpn_switch(mock_htb_client: HTBClient):
     """Tests the ability to switch vpn servers"""
-    
+
     cur_vpn = mock_htb_client.get_current_vpn_server()
     all_vpns = mock_htb_client.get_all_vpn_servers()
     new_vpn = all_vpns[5]
     resp = new_vpn.switch()
     assert resp
-
 
     # change access token to have mock send no active machine
     backup = mock_htb_client._access_token
@@ -48,8 +47,7 @@ def test_vpn_switch(mock_htb_client: HTBClient):
 def test_vpn_get_current(mock_htb_client: HTBClient):
     """Test getting the current vpn server"""
     cur_vpn = mock_htb_client.get_current_vpn_server()
-    assert cur_vpn.friendly_name == 'EU VIP 20'
+    assert cur_vpn.friendly_name == "EU VIP 20"
 
     cur_ra_vpn = mock_htb_client.get_current_vpn_server(release_arena=True)
     assert cur_ra_vpn.friendly_name == "EU Release Lab 1"
-   

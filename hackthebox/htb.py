@@ -11,8 +11,12 @@ from typing import List, Callable, Union, Optional, Tuple, cast, Any, TYPE_CHECK
 import requests
 
 from .constants import API_BASE, USER_AGENT
-from .errors import AuthenticationException, NotFoundException, \
-    IncorrectOTPException, ApiError
+from .errors import (
+    AuthenticationException,
+    NotFoundException,
+    IncorrectOTPException,
+    ApiError,
+)
 
 if TYPE_CHECKING:
     from .user import User
@@ -27,7 +31,7 @@ if TYPE_CHECKING:
 
 
 def jwt_expired(token: str) -> bool:
-    """ Checks if a JWT token is expired
+    """Checks if a JWT token is expired
 
     Args:
         token: A JWT string - 3 Base64 sequences joined with .
@@ -36,8 +40,8 @@ def jwt_expired(token: str) -> bool:
         If the token is expired
 
     """
-    payload = base64.b64decode(token.split('.')[1] + "==").decode()
-    if time.time() > json.loads(payload)['exp']:
+    payload = base64.b64decode(token.split(".")[1] + "==").decode()
+    if time.time() > json.loads(payload)["exp"]:
         return True
     else:
         return False
@@ -55,6 +59,7 @@ class HTBClient:
         challenge_cooldown: Time when next download is allowed
 
     """
+
     # noinspection PyUnresolvedReferences
     _user: Optional["User"] = None
     _access_token: Optional[str]
@@ -71,17 +76,26 @@ class HTBClient:
 
         """
         headers = {"User-Agent": USER_AGENT}
-        r = requests.post(self._api_base + "login/refresh", json={
-            "refresh_token": self._refresh_token
-        }, headers=headers)
-        data = r.json()['message']
+        r = requests.post(
+            self._api_base + "login/refresh",
+            json={"refresh_token": self._refresh_token},
+            headers=headers,
+        )
+        data = r.json()["message"]
         if isinstance(data, str) and data.startswith("Unauthenticated"):
             raise AuthenticationException
-        self._access_token = data['access_token']
-        self._refresh_token = data['refresh_token']
+        self._access_token = data["access_token"]
+        self._refresh_token = data["refresh_token"]
 
-    def do_request(self, endpoint, json_data=None, data=None, authorized=True, download=False, post=False) -> Union[
-            dict, bytes]:
+    def do_request(
+        self,
+        endpoint,
+        json_data=None,
+        data=None,
+        authorized=True,
+        download=False,
+        post=False,
+    ) -> Union[dict, bytes]:
         """
 
         Args:
@@ -100,22 +114,30 @@ class HTBClient:
             # Don't use authorization if the API base URL isn't the real one -
             # i.e. we're running a test
             if self._app_token is not None:
-                headers['Authorization'] = "Bearer " + self._app_token
+                headers["Authorization"] = "Bearer " + self._app_token
             elif self._access_token is not None and self._refresh_token is not None:
                 if jwt_expired(self._access_token):
                     self._refresh_access_token()
-                headers['Authorization'] = "Bearer " + self._access_token
+                headers["Authorization"] = "Bearer " + self._access_token
             else:
                 raise AuthenticationException("No authentication tokens available")
         while True:
             if not json_data and not data:
                 if post:
-                    r = requests.post(self._api_base + endpoint, headers=headers, stream=download)
+                    r = requests.post(
+                        self._api_base + endpoint, headers=headers, stream=download
+                    )
                 else:
-                    r = requests.get(self._api_base + endpoint, headers=headers, stream=download)
+                    r = requests.get(
+                        self._api_base + endpoint, headers=headers, stream=download
+                    )
             else:
                 r = requests.post(
-                    self._api_base + endpoint, json=json_data, data=data, headers=headers, stream=download
+                    self._api_base + endpoint,
+                    json=json_data,
+                    data=data,
+                    headers=headers,
+                    stream=download,
                 )
             if r.status_code != 429:
                 break
@@ -129,9 +151,16 @@ class HTBClient:
         else:
             return r.json()
 
-    def __init__(self, email: Optional[str] = None, password: Optional[str] = None, otp: Optional[str | int] = None,
-                 cache: Optional[str] = None, api_base: str = API_BASE, remember: Optional[bool] = False,
-                 app_token: Optional[str] = None):
+    def __init__(
+        self,
+        email: Optional[str] = None,
+        password: Optional[str] = None,
+        otp: Optional[str | int] = None,
+        cache: Optional[str] = None,
+        api_base: str = API_BASE,
+        remember: Optional[bool] = False,
+        app_token: Optional[str] = None,
+    ):
         """
         Authenticates to the API.
 
@@ -166,11 +195,11 @@ class HTBClient:
         """
         if not os.path.exists(cache):
             return False
-        with open(cache, 'r') as f:
+        with open(cache, "r") as f:
             data = json.load(f)
-        self._access_token = data.get('access_token')
-        self._refresh_token = data.get('refresh_token')
-        self._app_token = data.get('app_token')
+        self._access_token = data.get("access_token")
+        self._refresh_token = data.get("refresh_token")
+        self._app_token = data.get("app_token")
         if self._access_token is not None:
             if jwt_expired(self._access_token):
                 try:
@@ -186,15 +215,24 @@ class HTBClient:
         Args:
             cache: The path to the cache file
         """
-        with open(cache, 'w') as f:
-            json.dump({
-                "access_token": self._access_token,
-                "refresh_token": self._refresh_token,
-                "app_token": self._app_token
-            }, f)
+        with open(cache, "w") as f:
+            json.dump(
+                {
+                    "access_token": self._access_token,
+                    "refresh_token": self._refresh_token,
+                    "app_token": self._app_token,
+                },
+                f,
+            )
 
-    def do_login(self, email: Optional[str] = None, password: Optional[str] = None, otp: Optional[str | int] = None,
-                 remember: Optional[bool] = False, app_token: Optional[str] = None):
+    def do_login(
+        self,
+        email: Optional[str] = None,
+        password: Optional[str] = None,
+        otp: Optional[str | int] = None,
+        remember: Optional[bool] = False,
+        app_token: Optional[str] = None,
+    ):
         """
         Authenticates against the API. If credentials are not provided, they will be prompted for.
         """
@@ -208,27 +246,37 @@ class HTBClient:
             if password is None:
                 password = getpass.getpass()
 
-            data = cast(dict, self.do_request("login", json_data={
-                "email": email, "password": password, "remember": remember
-            }, authorized=False))
-            msg = data['message']
+            data = cast(
+                dict,
+                self.do_request(
+                    "login",
+                    json_data={
+                        "email": email,
+                        "password": password,
+                        "remember": remember,
+                    },
+                    authorized=False,
+                ),
+            )
+            msg = data["message"]
 
-            self._access_token = msg.get('access_token')
+            self._access_token = msg.get("access_token")
             if self._access_token is None:
                 raise ApiError(f"Failed to get access token: {msg}")
-            self._refresh_token = msg.get('refresh_token')
+            self._refresh_token = msg.get("refresh_token")
             if self._refresh_token is None:
                 raise ApiError(f"Failed to get refresh token: {msg}")
-            if data['message']['is2FAEnabled'] is True:
+            if data["message"]["is2FAEnabled"] is True:
                 if otp is None:
                     otp = input("OTP: ")
                 if type(otp) == int:
                     # Optimistically try and create a string
                     otp = f"{otp:06d}"
-                resp = cast(dict, self.do_request("2fa/login", json_data={
-                    "one_time_password": otp
-                }))
-                if "correct" not in resp['message']:
+                resp = cast(
+                    dict,
+                    self.do_request("2fa/login", json_data={"one_time_password": otp}),
+                )
+                if "correct" not in resp["message"]:
                     raise IncorrectOTPException
 
     # noinspection PyUnresolvedReferences
@@ -242,6 +290,7 @@ class HTBClient:
 
         """
         from .search import Search
+
         return Search(search_term, self)
 
     # noinspection PyUnresolvedReferences
@@ -255,7 +304,8 @@ class HTBClient:
 
         """
         from .machine import Machine
-        data = cast(dict, self.do_request(f"machine/profile/{machine_id}"))['info']
+
+        data = cast(dict, self.do_request(f"machine/profile/{machine_id}"))["info"]
         return Machine(data, self)
 
     # noinspection PyUnresolvedReferences
@@ -270,12 +320,13 @@ class HTBClient:
         Returns: A list of `Machine` ID's
 
         """
-        data = cast(dict, self.do_request("home/user/todo"))['data']['machines'][:limit]
-        return [m['id'] for m in data]
-
+        data = cast(dict, self.do_request("home/user/todo"))["data"]["machines"][:limit]
+        return [m["id"] for m in data]
 
     # noinspection PyUnresolvedReferences
-    def get_active_machine(self, release_arena: bool=False) -> Optional["MachineInstance"]:
+    def get_active_machine(
+        self, release_arena: bool = False
+    ) -> Optional["MachineInstance"]:
         """
 
         Retrieve `Machine` currently assigned to user
@@ -284,16 +335,16 @@ class HTBClient:
 
         """
         from .machine import Machine, MachineInstance
+
         if release_arena:
-            info = cast(dict, self.do_request(f"release_arena/active"))['info']
+            info = cast(dict, self.do_request(f"release_arena/active"))["info"]
         else:
-            info = cast(dict, self.do_request(f"machine/active"))['info']
+            info = cast(dict, self.do_request(f"machine/active"))["info"]
         if info:
-            box = self.get_machine(info['id'])
+            box = self.get_machine(info["id"])
             server = box._client.get_current_vpn_server(release_arena)
             return MachineInstance(box.ip, server, box, box._client)
         return None
-        
 
     # noinspection PyUnresolvedReferences
     def get_machines(self, limit: int = None, retired: bool = False) -> List["Machine"]:
@@ -309,10 +360,11 @@ class HTBClient:
 
         """
         from .machine import Machine
+
         if not retired:
-            data = cast(dict, self.do_request("machine/list"))['info'][:limit]
+            data = cast(dict, self.do_request("machine/list"))["info"][:limit]
         else:
-            data = cast(dict, self.do_request("machine/list/retired"))['info'][:limit]
+            data = cast(dict, self.do_request("machine/list/retired"))["info"][:limit]
         machines = [Machine(m, self, summary=True) for m in data]
         for machine in machines:
             machine.retired = retired
@@ -329,7 +381,10 @@ class HTBClient:
 
         """
         from .challenge import Challenge
-        data = cast(dict, self.do_request(f"challenge/info/{challenge_id}"))['challenge']
+
+        data = cast(dict, self.do_request(f"challenge/info/{challenge_id}"))[
+            "challenge"
+        ]
         return Challenge(data, self)
 
     # noinspection PyUnresolvedReferences
@@ -344,12 +399,13 @@ class HTBClient:
 
         """
         from .challenge import Challenge
+
         if retired:
             data = cast(dict, self.do_request("challenge/list/retired"))
         else:
             data = cast(dict, self.do_request("challenge/list"))
         challenges = []
-        for challenge in data['challenges'][:limit]:
+        for challenge in data["challenges"][:limit]:
             challenges.append(Challenge(challenge, self, summary=True))
         return challenges
 
@@ -364,6 +420,7 @@ class HTBClient:
 
         """
         from .endgame import Endgame
+
         data = cast(dict, self.do_request(f"endgame/{endgame_id}"))["data"]
         return Endgame(data, self)
 
@@ -378,6 +435,7 @@ class HTBClient:
 
         """
         from .endgame import Endgame
+
         data = cast(dict, self.do_request(f"endgames"))["data"][:limit]
         endgames = []
         for endgame in data:
@@ -395,6 +453,7 @@ class HTBClient:
 
         """
         from .fortress import Fortress
+
         data = cast(dict, self.do_request(f"fortress/{fortress_id}"))["data"]
         return Fortress(data, self)
 
@@ -409,6 +468,7 @@ class HTBClient:
 
         """
         from .fortress import Fortress
+
         data = cast(dict, self.do_request(f"fortresses"))["data"]
         fortresses = []
         # For some  reason, the fortress list is in the format {"1": <fortress1>, "2": <fortress2>}
@@ -428,7 +488,8 @@ class HTBClient:
 
         """
         from .user import User
-        data = cast(dict, self.do_request(f"user/profile/basic/{user_id}"))['profile']
+
+        data = cast(dict, self.do_request(f"user/profile/basic/{user_id}"))["profile"]
         return User(data, self)
 
     # noinspection PyUnresolvedReferences
@@ -442,6 +503,7 @@ class HTBClient:
 
         """
         from .team import Team
+
         data = cast(dict, self.do_request(f"team/info/{team_id}"))
         return Team(data, self)
 
@@ -452,10 +514,11 @@ class HTBClient:
         """
         from .leaderboard import Leaderboard
         from .user import User
+
         endpoint = "rankings/users"
         if vip:
             endpoint += "?vip=1"
-        data = cast(dict, self.do_request(endpoint))['data']
+        data = cast(dict, self.do_request(endpoint))["data"]
         return Leaderboard(data, self, User)
 
     # noinspection PyUnresolvedReferences
@@ -464,7 +527,8 @@ class HTBClient:
         Returns: A Leaderboard of the top 100 Countries
         """
         from .leaderboard import Leaderboard, Country
-        data = cast(dict, self.do_request("rankings/countries"))['data']
+
+        data = cast(dict, self.do_request("rankings/countries"))["data"]
         return Leaderboard(data, self, Country)
 
     # noinspection PyUnresolvedReferences
@@ -476,7 +540,8 @@ class HTBClient:
         """
         from .leaderboard import Leaderboard
         from .team import Team
-        data = cast(dict, self.do_request("rankings/teams"))['data']
+
+        data = cast(dict, self.do_request("rankings/teams"))["data"]
         return Leaderboard(data, self, Team)
 
     # noinspection PyUnresolvedReferences
@@ -486,7 +551,8 @@ class HTBClient:
 
         """
         from .leaderboard import Leaderboard, University
-        data = cast(dict, self.do_request("rankings/universities"))['data']
+
+        data = cast(dict, self.do_request("rankings/universities"))["data"]
         return Leaderboard(data, self, University)
 
     # noinspection PyUnresolvedReferences
@@ -498,12 +564,15 @@ class HTBClient:
             release_arena: Get the current release arena VPN server
         """
         from .vpn import VPNServer
+
         if release_arena:
-            connections = cast(dict, self.do_request('connections/servers?product=release_arena'))['data']
-            data = connections['assigned']
+            connections = cast(
+                dict, self.do_request("connections/servers?product=release_arena")
+            )["data"]
+            data = connections["assigned"]
         else:
-            connections = cast(dict, self.do_request('connections'))['data']
-            data = connections['lab']['assigned_server']
+            connections = cast(dict, self.do_request("connections"))["data"]
+            data = connections["lab"]["assigned_server"]
 
         return VPNServer(data, self)
 
@@ -516,10 +585,15 @@ class HTBClient:
             release_arena: Use the release arena VPN servers
         """
         from .vpn import VPNServer
+
         if release_arena:
-            data = cast(dict, self.do_request("connections/servers?product=release_arena"))["data"]["options"]
+            data = cast(
+                dict, self.do_request("connections/servers?product=release_arena")
+            )["data"]["options"]
         else:
-            data = cast(dict, self.do_request("connections/servers?product=labs"))["data"]["options"]
+            data = cast(dict, self.do_request("connections/servers?product=labs"))[
+                "data"
+            ]["options"]
         servers = []
         for location in data.keys():  # 'EU'
             for location_role in data[location].keys():  # 'EU - Free'
@@ -536,17 +610,18 @@ class HTBClient:
 
         """
         if not self._user:
-            uid = cast(dict, self.do_request("user/info"))['info']['id']
+            uid = cast(dict, self.do_request("user/info"))["info"]["id"]
             self._user = self.get_user(uid)
         return self._user
 
 
 class HTBObject:
-    """ Base class of all API objects
+    """Base class of all API objects
 
     Attributes:
         id: The ID of the associated object
     """
+
     _client: HTBClient
     # Attributes not fetched by a summary
     _detailed_attributes: Tuple[str, ...]

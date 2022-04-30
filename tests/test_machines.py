@@ -48,7 +48,7 @@ def test_get_active_machine(mock_htb_client: HTBClient):
         ).decode()
         + "."
     )
- 
+
     machine = mock_htb_client.get_active_machine()
     assert machine is None
 
@@ -140,4 +140,3 @@ def test_machine_reset(mock_htb_client: HTBClient):
         active_box.reset()
 
     mock_htb_client._access_token = backup
-

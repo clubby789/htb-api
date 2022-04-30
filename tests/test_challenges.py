@@ -2,7 +2,12 @@ import os
 
 from pytest import raises
 
-from hackthebox import HTBClient, NoDockerException, NoDownloadException, RateLimitException
+from hackthebox import (
+    HTBClient,
+    NoDockerException,
+    NoDownloadException,
+    RateLimitException,
+)
 
 
 def test_get_challenge(mock_htb_client: HTBClient):

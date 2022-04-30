@@ -8,4 +8,5 @@ def main(client, _testing=False):
 
 if __name__ == "__main__":
     from base import client as example_client
+
     main(example_client)

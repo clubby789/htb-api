@@ -22,8 +22,13 @@ import dateutil.parser
 
 from . import htb
 from .constants import DOWNLOAD_COOLDOWN
-from .errors import IncorrectFlagException, IncorrectArgumentException, NoDockerException, \
-    NoDownloadException, RateLimitException
+from .errors import (
+    IncorrectFlagException,
+    IncorrectArgumentException,
+    NoDockerException,
+    NoDownloadException,
+    RateLimitException,
+)
 
 if TYPE_CHECKING:
     from .htb import HTBClient
@@ -31,7 +36,7 @@ if TYPE_CHECKING:
 
 
 class Challenge(htb.HTBObject):
-    """ The class representing Hack The Box challenges
+    """The class representing Hack The Box challenges
 
     Attributes:
         name (str): The name of the challenge
@@ -54,6 +59,7 @@ class Challenge(htb.HTBObject):
         has_docker: Whether the challenge has a remote instance available
 
     """
+
     name: str
     retired: bool
     difficulty: str
@@ -73,7 +79,13 @@ class Challenge(htb.HTBObject):
     _authors: Optional[List["User"]] = None
     _author_ids: List[int]
 
-    _detailed_attributes = ('description', 'category', 'has_download', 'has_docker', 'instance')
+    _detailed_attributes = (
+        "description",
+        "category",
+        "has_download",
+        "has_docker",
+        "instance",
+    )
     description: str
     category: str
     has_download: bool
@@ -81,7 +93,7 @@ class Challenge(htb.HTBObject):
     instance: Optional[DockerInstance]
 
     def submit(self, flag: str, difficulty: int):
-        """ Submits a flag for a Challenge
+        """Submits a flag for a Challenge
 
         Args:
             flag: The flag for the Challenge
@@ -90,14 +102,22 @@ class Challenge(htb.HTBObject):
 
         """
         if difficulty < 10 or difficulty > 100 or difficulty % 10 != 0:
-            raise IncorrectArgumentException(reason="Difficulty must be a multiple of 10, between 10 and 100")
+            raise IncorrectArgumentException(
+                reason="Difficulty must be a multiple of 10, between 10 and 100"
+            )
 
-        submission = cast(dict, self._client.do_request("challenge/own", json_data={
-            "flag": flag,
-            "challenge_id": self.id,
-            "difficulty": difficulty
-        }))
-        if submission['message'] == "Incorrect flag":
+        submission = cast(
+            dict,
+            self._client.do_request(
+                "challenge/own",
+                json_data={
+                    "flag": flag,
+                    "challenge_id": self.id,
+                    "difficulty": difficulty,
+                },
+            ),
+        )
+        if submission["message"] == "Incorrect flag":
             raise IncorrectFlagException
         return True
 
@@ -111,9 +131,16 @@ class Challenge(htb.HTBObject):
         """
         if not self.has_docker:
             raise NoDockerException
-        instance = cast(dict, self._client.do_request("challenge/start", json_data={"challenge_id": self.id}))
+        instance = cast(
+            dict,
+            self._client.do_request(
+                "challenge/start", json_data={"challenge_id": self.id}
+            ),
+        )
         # TODO: Handle failure to start
-        self.instance = DockerInstance(instance['ip'], instance['port'], self.id, self._client, instance['id'])
+        self.instance = DockerInstance(
+            instance["ip"], instance["port"], self.id, self._client, instance["id"]
+        )
         return self.instance
 
     def download(self, path=None) -> str:
@@ -128,12 +155,17 @@ class Challenge(htb.HTBObject):
         if not self.has_download:
             raise NoDownloadException
         if self._client.challenge_cooldown > time.time():
-            raise RateLimitException("Challenge download ratelimit exceeded - please do not remove this")
+            raise RateLimitException(
+                "Challenge download ratelimit exceeded - please do not remove this"
+            )
         if path is None:
             path = os.path.join(os.getcwd(), f"{self.name}.zip")
-        data = cast(bytes, self._client.do_request(f"challenge/download/{self.id}", download=True))
+        data = cast(
+            bytes,
+            self._client.do_request(f"challenge/download/{self.id}", download=True),
+        )
         self._client.challenge_cooldown = int(time.time()) + DOWNLOAD_COOLDOWN
-        with open(path, 'wb') as f:
+        with open(path, "wb") as f:
             f.write(data)
         return path
 
@@ -159,27 +191,29 @@ class Challenge(htb.HTBObject):
         """Initialise a `Challenge` using API data"""
         self._client = client
         self._detailed_func = client.get_challenge  # type: ignore
-        self.id = data['id']
-        self.name = data['name']
-        self.retired = bool(data['retired'])
-        self.points = int(data['points'])
+        self.id = data["id"]
+        self.name = data["name"]
+        self.retired = bool(data["retired"])
+        self.points = int(data["points"])
         self.difficulty = data["difficulty"]
-        self.difficulty_ratings = data['difficulty_chart']
-        self.solves = data['solves']
-        self.solved = data['authUserSolve']
-        self.likes = data['likes']
-        self.dislikes = data['dislikes']
-        self.release_date = dateutil.parser.parse(data['release_date'])
+        self.difficulty_ratings = data["difficulty_chart"]
+        self.solves = data["solves"]
+        self.solved = data["authUserSolve"]
+        self.likes = data["likes"]
+        self.dislikes = data["dislikes"]
+        self.release_date = dateutil.parser.parse(data["release_date"])
         if not summary:
-            self.description = data['description']
-            self.category = data['category_name']
-            self._author_ids = [data['creator_id']]
-            if data['creator2_id']:
-                self._author_ids.append(data['creator2_id'])
-            self.has_download = data['download']
-            self.has_docker = data['docker']
-            if data['docker_ip']:
-                self.instance = DockerInstance(data['docker_ip'], data['docker_port'], self.id, self._client)
+            self.description = data["description"]
+            self.category = data["category_name"]
+            self._author_ids = [data["creator_id"]]
+            if data["creator2_id"]:
+                self._author_ids.append(data["creator2_id"])
+            self.has_download = data["download"]
+            self.has_docker = data["docker"]
+            if data["docker_ip"]:
+                self.instance = DockerInstance(
+                    data["docker_ip"], data["docker_port"], self.id, self._client
+                )
             else:
                 self.instance = None
         else:
@@ -204,7 +238,14 @@ class DockerInstance:
     chall_id: int
     client: htb.HTBClient
 
-    def __init__(self, ip: str, port: int,  chall_id: int, client: htb.HTBClient, container_id: str = None):
+    def __init__(
+        self,
+        ip: str,
+        port: int,
+        chall_id: int,
+        client: htb.HTBClient,
+        container_id: str = None,
+    ):
         self.client = client
         self.id = container_id or ""
         self.port = port
@@ -213,5 +254,7 @@ class DockerInstance:
 
     def stop(self):
         """Request the instance be stopped. Zeroes out all properties"""
-        self.client.do_request("challenge/stop", json_data={"challenge_id": self.chall_id})
+        self.client.do_request(
+            "challenge/stop", json_data={"challenge_id": self.chall_id}
+        )
         # TODO: Handle failures to stop

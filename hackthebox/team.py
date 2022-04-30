@@ -1,12 +1,13 @@
 from . import htb
 
 from typing import TYPE_CHECKING, cast, Optional
+
 if TYPE_CHECKING:
     from .user import User
 
 
 class Team(htb.HTBObject):
-    """ The class representing Hack The Box teams
+    """The class representing Hack The Box teams
 
     Attributes:
         name: The name of the Team
@@ -24,11 +25,25 @@ class Team(htb.HTBObject):
         join_request_sent: Whether the active User has sent a request to join the Team
 
     """
+
     name: str
 
-    _detailed_attributes = ('points', 'motto', 'description', 'country_name', 'avatar_url', 'cover_image_url',
-                            'twitter', 'facebook', 'discord', 'public', 'can_delete_avatar', 'captain',
-                            'is_respected', 'join_request_sent')
+    _detailed_attributes = (
+        "points",
+        "motto",
+        "description",
+        "country_name",
+        "avatar_url",
+        "cover_image_url",
+        "twitter",
+        "facebook",
+        "discord",
+        "public",
+        "can_delete_avatar",
+        "captain",
+        "is_respected",
+        "join_request_sent",
+    )
     points: int
     motto: str
     description: str
@@ -53,23 +68,23 @@ class Team(htb.HTBObject):
     def __init__(self, data: dict, client: htb.HTBClient, summary: bool = False):
         self._client = client
         self._detailed_func = client.get_team  # type: ignore
-        self.id = data['id']
-        self.name = data['name']
+        self.id = data["id"]
+        self.name = data["name"]
         if not summary:
-            self.points = data['points']
-            self.motto = data['motto']
-            self.description = data['description']
-            self.country_name = data['country_name']
-            self.avatar_url = data['avatar_url']
-            self.cover_image_url = data['cover_image_url']
-            self.twitter = data['twitter']
-            self.facebook = data['facebook']
-            self.discord = data['facebook']
-            self.public = data['public']
-            self.can_delete_avatar = data['can_delete_avatar']
-            self._captain_id = data['captain']['id']
-            self.is_respected = data['is_respected']
-            self.join_request_sent = data['join_request_sent']
+            self.points = data["points"]
+            self.motto = data["motto"]
+            self.description = data["description"]
+            self.country_name = data["country_name"]
+            self.avatar_url = data["avatar_url"]
+            self.cover_image_url = data["cover_image_url"]
+            self.twitter = data["twitter"]
+            self.facebook = data["facebook"]
+            self.discord = data["facebook"]
+            self.public = data["public"]
+            self.can_delete_avatar = data["can_delete_avatar"]
+            self._captain_id = data["captain"]["id"]
+            self.is_respected = data["is_respected"]
+            self.join_request_sent = data["join_request_sent"]
         else:
             self._is_summary = True
 
@@ -82,13 +97,14 @@ class Team(htb.HTBObject):
         """
         if not self._ranking:
             data = cast(dict, self._client.do_request(f"team/stats/owns/{self.id}"))
-            self._ranking = data['rank']
+            self._ranking = data["rank"]
         return cast(int, self._ranking)
 
     # noinspection PyUnresolvedReferences
     @property
     def captain(self) -> "User":
         from .user import User
+
         if not self._captain:
             self._captain = self._client.get_user(self._captain_id)
         return cast(User, self._captain)

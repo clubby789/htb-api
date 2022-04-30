@@ -9,7 +9,7 @@ from . import htb
 
 
 class Search:
-    """ Representation of a search on the platform
+    """Representation of a search on the platform
 
     Attributes:
         users: Users returned by the Search
@@ -90,12 +90,17 @@ class Search:
             "users": self.users,
             "machines": self.machines,
             "teams": self.teams,
-            "challenges": self.challenges
+            "challenges": self.challenges,
         }
 
     # noinspection PyStatementEffect
     def __len__(self):
-        return len(self._user_ids) + len(self._team_ids) + len(self._machine_ids) + len(self._challenge_ids)
+        return (
+            len(self._user_ids)
+            + len(self._team_ids)
+            + len(self._machine_ids)
+            + len(self._challenge_ids)
+        )
 
     def __repr__(self):
         return f"<Search '{self._term}': {len(self)} results>"
@@ -109,8 +114,10 @@ class Search:
         self._term = search
         self._client = client
         # Ignoring tags - they seem to currently not work on the API level
-        search_data = cast(dict, self._client.do_request("search/fetch?query=" + search))
-        self._user_ids = [x['id'] for x in search_data.get("users", [])]
-        self._machine_ids = [x['id'] for x in search_data.get("machines", [])]
-        self._team_ids = [x['id'] for x in search_data.get("teams", [])]
-        self._challenge_ids = [x['id'] for x in search_data.get("challenges", [])]
+        search_data = cast(
+            dict, self._client.do_request("search/fetch?query=" + search)
+        )
+        self._user_ids = [x["id"] for x in search_data.get("users", [])]
+        self._machine_ids = [x["id"] for x in search_data.get("machines", [])]
+        self._team_ids = [x["id"] for x in search_data.get("teams", [])]
+        self._challenge_ids = [x["id"] for x in search_data.get("challenges", [])]

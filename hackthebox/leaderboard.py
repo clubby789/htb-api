@@ -6,7 +6,7 @@ from .user import User
 
 
 class Leaderboard(htb.HTBObject):
-    """ The class representing a Leaderboard
+    """The class representing a Leaderboard
 
     Args:
         data: A list of Leaderboard entries
@@ -46,7 +46,7 @@ class Leaderboard(htb.HTBObject):
 
 
 class Country(htb.HTBObject):
-    """ The class representing a Country
+    """The class representing a Country
 
     Attributes:
         rank: The Country's global rank
@@ -82,22 +82,22 @@ class Country(htb.HTBObject):
     name: str
 
     def __init__(self, data: dict):
-        self.rank = data['rank']
-        self.country_code = data['country']
-        self.members = data['members']
-        self.points = data['points']
-        self.user_owns = data['user_owns']
-        self.root_owns = data['root_owns']
-        self.challenge_owns = data['challenge_owns']
-        self.user_bloods = data['user_bloods']
-        self.root_owns = data['root_bloods']
-        self.fortress = data['fortress']
-        self.endgame = data['endgame']
-        self.name = data['name']
+        self.rank = data["rank"]
+        self.country_code = data["country"]
+        self.members = data["members"]
+        self.points = data["points"]
+        self.user_owns = data["user_owns"]
+        self.root_owns = data["root_owns"]
+        self.challenge_owns = data["challenge_owns"]
+        self.user_bloods = data["user_bloods"]
+        self.root_owns = data["root_bloods"]
+        self.fortress = data["fortress"]
+        self.endgame = data["endgame"]
+        self.name = data["name"]
 
 
 class University(htb.HTBObject):
-    """ The class representing a University
+    """The class representing a University
 
     Attributes:
         rank: The University's global rank
@@ -129,14 +129,14 @@ class University(htb.HTBObject):
     name: str
 
     def __init__(self, data: dict):
-        self.rank = data['rank']
-        self.students = data['students']
-        self.points = data['points']
-        self.user_owns = data['user_owns']
-        self.root_owns = data['root_owns']
-        self.challenge_owns = data['challenge_owns']
-        self.user_bloods = data['user_bloods']
-        self.root_owns = data['root_bloods']
-        self.fortress = data['fortress']
-        self.endgame = data['endgame']
-        self.name = data['name']
+        self.rank = data["rank"]
+        self.students = data["students"]
+        self.points = data["points"]
+        self.user_owns = data["user_owns"]
+        self.root_owns = data["root_owns"]
+        self.challenge_owns = data["challenge_owns"]
+        self.user_bloods = data["user_bloods"]
+        self.root_owns = data["root_bloods"]
+        self.fortress = data["fortress"]
+        self.endgame = data["endgame"]
+        self.name = data["name"]

@@ -6,7 +6,7 @@ from .errors import IncorrectFlagException
 
 
 class Endgame(htb.HTBObject):
-    """ The class representing Hack The Box endgames
+    """The class representing Hack The Box endgames
 
     Attributes:
         name: The name of the Endgame
@@ -28,7 +28,13 @@ class Endgame(htb.HTBObject):
     retired: bool
     vip: bool
 
-    _detailed_attributes = ('points', 'completions', 'reset_votes', 'entry_points', 'description')
+    _detailed_attributes = (
+        "points",
+        "completions",
+        "reset_votes",
+        "entry_points",
+        "description",
+    )
     points: int
     completions: int
     reset_votes: int
@@ -39,16 +45,22 @@ class Endgame(htb.HTBObject):
     _author_ids: Optional[List[int]] = None
 
     def submit(self, flag: str):
-        """ Submits a flag for an Endgame
+        """Submits a flag for an Endgame
 
         Args:
             flag: The flag for the Endgame
 
         """
-        submission = cast(dict, self._client.do_request(f"endgame/{self.id}/flag", json_data={
-            "flag": flag,
-        }))
-        if submission['message'] == "Wrong flag":
+        submission = cast(
+            dict,
+            self._client.do_request(
+                f"endgame/{self.id}/flag",
+                json_data={
+                    "flag": flag,
+                },
+            ),
+        )
+        if submission["message"] == "Wrong flag":
             raise IncorrectFlagException
         return True
 
@@ -71,20 +83,20 @@ class Endgame(htb.HTBObject):
     def __init__(self, data: dict, client: htb.HTBClient, summary=False):
         self._client = client
         self._detailed_func = client.get_endgame  # type: ignore
-        self.id = data['id']
-        self.name = data['name']
-        self.avatar = data['avatar_url']
-        self.cover_image = data['cover_image_url']
-        self.retired = data['retired']
+        self.id = data["id"]
+        self.name = data["name"]
+        self.avatar = data["avatar_url"]
+        self.cover_image = data["cover_image_url"]
+        self.retired = data["retired"]
         self._author_ids = []
-        self.vip = data['vip']
-        for user in data['creators']:
-            self._author_ids.append(user['id'])
+        self.vip = data["vip"]
+        for user in data["creators"]:
+            self._author_ids.append(user["id"])
         if not summary:
-            self.points = int(data['points'])
-            self.entry_points = data['entry_points']
-            self.completions = data['players_completed']
-            self.reset_votes = data['endgame_reset_votes']
-            self.description = data['description']
+            self.points = int(data["points"])
+            self.entry_points = data["entry_points"]
+            self.completions = data["players_completed"]
+            self.reset_votes = data["endgame_reset_votes"]
+            self.description = data["description"]
         else:
             self._is_summary = True

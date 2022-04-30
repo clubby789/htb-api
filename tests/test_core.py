@@ -15,7 +15,11 @@ def test_login(mock_htb_client: HTBClient):
 def test_app_token_login(token_mock_htb_client: HTBClient):
     """Tests the ability to login and receive a bearer token"""
     assert token_mock_htb_client._app_token is not None
-    assert token_mock_htb_client._access_token == token_mock_htb_client._refresh_token is None
+    assert (
+        token_mock_htb_client._access_token
+        == token_mock_htb_client._refresh_token
+        is None
+    )
 
 
 def test_interactive_login(monkeypatch):
@@ -24,14 +28,15 @@ def test_interactive_login(monkeypatch):
 
     from mock_api.app import start_server
     import time
+
     port = random.randint(1024, 65535)
     start_server(port)
     # Wait for server thread to start
     time.sleep(0.5)
     inp1 = StringIO("user@example.com\n")
     inp2 = "password"
-    monkeypatch.setattr('sys.stdin', inp1)
-    monkeypatch.setattr('getpass.getpass', lambda: inp2)
+    monkeypatch.setattr("sys.stdin", inp1)
+    monkeypatch.setattr("getpass.getpass", lambda: inp2)
 
     client = HTBClient(api_base=f"http://localhost:{port}/api/v4/")
     assert client._access_token is not None
@@ -95,21 +100,21 @@ def test_refresh_token(mock_htb_client: HTBClient):
     """Tests the ability to refresh an expired access token"""
     token = mock_htb_client._access_token
     mock_htb_client._access_token = (
-            base64.b64encode(json.dumps({"typ": "JWT", "alg": "RS256"}).encode()).decode()
-            + "."
-            + base64.b64encode(
-        json.dumps(
-            {
-                "aud": "0",
-                "jti": "",
-                "iat": 0,
-                "nbf": 0,
-                "exp": 0,
-                "sub": "0",
-                "scopes": [],
-            }
-        ).encode()
-    ).decode()
-            + "."
+        base64.b64encode(json.dumps({"typ": "JWT", "alg": "RS256"}).encode()).decode()
+        + "."
+        + base64.b64encode(
+            json.dumps(
+                {
+                    "aud": "0",
+                    "jti": "",
+                    "iat": 0,
+                    "nbf": 0,
+                    "exp": 0,
+                    "sub": "0",
+                    "scopes": [],
+                }
+            ).encode()
+        ).decode()
+        + "."
     )
     assert mock_htb_client.get_machine(1) is not None
