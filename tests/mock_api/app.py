@@ -136,10 +136,12 @@ USER_CH4P = {
     "country_name": None,
     "team": {},
     "public": True,
+    "avatar": "/storage/avatars/08c255a334e10b3033ab7263e6b32422.png"
 }
 
 USER_MAKELARISJR = {
     "id": 95,
+    "avatar": "/storage/avatars/de9d121d5a059ceb6e633dc15e17ef1c.png",
     "name": "makelarisjr",
     "system_owns": 67,
     "user_owns": 67,
@@ -168,6 +170,7 @@ USER_MAKELARISJR = {
 
 USER_MAKELARIS = {
     "id": 107,
+    "avatar": "/storage/avatars/da0edd7cf314ed4070f4fce48ba18964.png",
     "name": "makelaris",
     "system_owns": 67,
     "user_owns": 67,
@@ -196,6 +199,7 @@ USER_MAKELARIS = {
 
 USER_HTBBOT = {
     "id": 16,
+    "avatar": "/storage/avatars/9177afe0c83dc47db062d0581891560b.png",
     "name": "HTB Bot",
     "system_owns": 67,
     "user_owns": 67,
@@ -224,6 +228,7 @@ USER_HTBBOT = {
 
 USER_ISTARCHEATERS = {
     "id": 272569,
+    "avatar": "/storage/avatars/9f51f66092d2a1baad08f2d815814da4.png",
     "name": "IStarCheaters",
     "system_owns": 67,
     "user_owns": 67,
@@ -252,6 +257,7 @@ USER_ISTARCHEATERS = {
 
 USER_CLUBBY = {
     "id": 83743,
+    "avatar": "/storage/avatars/df933a86af33a9323a05c5533c992e42.png",
     "name": "clubby789",
     "server_id": 254,
     "avatar": None,
