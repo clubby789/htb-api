@@ -142,6 +142,7 @@ class User(htb.HTBObject):
         self.name = data["name"]
         self.user_owns = data["user_owns"]
         self.points = data["points"]
+        self.avatar = f'https://www.hackthebox.com{data["avatar"]}'
 
         if summary:
             self._is_summary = True
