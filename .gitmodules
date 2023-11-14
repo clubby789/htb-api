@@ -1,0 +1,3 @@
+[submodule "hackthebox-rs"]
+	path = hackthebox-rs
+	url = git@github.com:clubby789/hackthebox-rs.git
